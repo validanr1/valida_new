@@ -34,6 +34,8 @@ const EmailTemplates = () => {
   const [activeTab, setActiveTab] = useState('welcome');
   const [showPreview, setShowPreview] = useState(false);
   const [previewHtml, setPreviewHtml] = useState('');
+  const [sendingTest, setSendingTest] = useState(false);
+  const [testEmail, setTestEmail] = useState('');
 
   useEffect(() => {
     loadTemplates();
@@ -190,6 +192,44 @@ const EmailTemplates = () => {
     setShowPreview(true);
   };
 
+  const sendTestEmail = async () => {
+    if (!testEmail) {
+      showError('Digite um e-mail para enviar o teste');
+      return;
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(testEmail)) {
+      showError('Digite um e-mail válido');
+      return;
+    }
+
+    setSendingTest(true);
+    try {
+      const template = templates[activeTab];
+      
+      const { data, error } = await supabase.functions.invoke('send-email', {
+        body: {
+          to: testEmail,
+          subject: `[TESTE] ${template.subject}`,
+          html: previewHtml,
+          is_test: true,
+        }
+      });
+
+      if (error) throw error;
+
+      showSuccess(`E-mail de teste enviado para ${testEmail}!`);
+      setTestEmail('');
+    } catch (err: any) {
+      console.error('Erro ao enviar e-mail de teste:', err);
+      showError('Erro ao enviar e-mail de teste: ' + (err.message || 'Erro desconhecido'));
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
   if (loading) {
     return <div className="p-6 text-center">Carregando templates...</div>;
   }
@@ -296,14 +336,44 @@ const EmailTemplates = () => {
           <DialogHeader>
             <DialogTitle>Preview do E-mail</DialogTitle>
           </DialogHeader>
-          <div className="border rounded-lg p-4 bg-gray-50">
-            <iframe
-              srcDoc={previewHtml}
-              className="w-full h-[600px] bg-white rounded border"
-              title="Email Preview"
-              sandbox="allow-same-origin"
-            />
+          
+          <div className="space-y-4">
+            {/* Preview do email */}
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <iframe
+                srcDoc={previewHtml}
+                className="w-full h-[600px] bg-white rounded border"
+                title="Email Preview"
+                sandbox="allow-same-origin"
+              />
+            </div>
+
+            {/* Enviar email de teste */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold mb-3">📧 Enviar E-mail de Teste</h4>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="seu-email@exemplo.com"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && sendTestEmail()}
+                  className="flex-1"
+                  disabled={sendingTest}
+                />
+                <Button 
+                  onClick={sendTestEmail}
+                  disabled={sendingTest || !testEmail}
+                >
+                  {sendingTest ? 'Enviando...' : '✉️ Enviar Teste'}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                O e-mail será enviado com os dados de exemplo mostrados no preview.
+              </p>
+            </div>
           </div>
+
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowPreview(false)}>
               Fechar
