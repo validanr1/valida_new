@@ -1,23 +1,39 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Mail, Phone } from "lucide-react";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import { signOut } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Suspended = () => {
   const { session } = useSession();
   const navigate = useNavigate();
-  const partnerName = session?.partnerPlatformName || "Parceiro";
-  const supportWhatsapp = session?.partnerSupportWhatsapp;
-  const supportEmail = session?.profile?.first_name 
-    ? `suporte@${session.partnerPlatformName?.toLowerCase().replace(/\s+/g, '')}.com.br`
-    : "suporte@validanr1.com.br";
+  const [supportWhatsapp, setSupportWhatsapp] = useState<string>("");
+  const [supportEmail, setSupportEmail] = useState<string>("suporte@validanr1.com.br");
 
   useEffect(() => {
     document.title = "Acesso Suspenso — Valida NR1";
+    loadSupportSettings();
   }, []);
+
+  const loadSupportSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('platform_settings')
+        .select('support_email, support_whatsapp')
+        .limit(1)
+        .maybeSingle();
+
+      if (!error && data) {
+        if (data.support_email) setSupportEmail(data.support_email);
+        if (data.support_whatsapp) setSupportWhatsapp(data.support_whatsapp);
+      }
+    } catch (err) {
+      console.error('Erro ao carregar configurações de suporte:', err);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
