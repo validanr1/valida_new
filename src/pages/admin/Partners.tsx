@@ -615,6 +615,26 @@ const Partners = () => {
         });
       }
 
+      // Enviar email de suspensão
+      try {
+        await supabase.functions.invoke('send-email', {
+          body: {
+            action: 'send_suspension',
+            recipient_email: partner.responsible_email || '',
+            data: {
+              first_name: partner.responsible_name?.split(' ')[0] || 'Parceiro',
+              partner_name: partner.name,
+              platform_name: 'Valida NR1',
+              reason: 'Suspensão administrativa',
+              support_whatsapp: '+55 11 98765-4321',
+            }
+          }
+        });
+      } catch (emailErr) {
+        console.error('Erro ao enviar email de suspensão:', emailErr);
+        // Não bloqueia a suspensão se o email falhar
+      }
+
       showSuccess('Parceiro suspenso e e-mail enviado.');
       setSuspendOpen(false);
       setSuspendTarget(null);
