@@ -8,6 +8,7 @@ export type PlatformSettings = {
   maintenanceMode: boolean;      // bloquear acesso ao sistema
   allowNewRegistrations: boolean; // permitir criação de novas contas
   supportWhatsapp?: string;       // WhatsApp de suporte
+  supportEmail?: string;          // E-mail de suporte
   resendApiKey?: string;          // Chave de API do Resend para envio de e-mails
   emailFromAddress: string;       // Endereço de e-mail padrão para envio
   smtpHost?: string;              // Host do servidor SMTP
@@ -79,6 +80,7 @@ export async function getSettings(): Promise<PlatformSettings> {
     maintenanceMode: data.maintenance_mode,
     allowNewRegistrations: data.allow_new_registrations,
     supportWhatsapp: data.support_whatsapp ?? undefined,
+    supportEmail: data.support_email ?? undefined,
     resendApiKey: data.resend_api_key ?? undefined,
     emailFromAddress: data.email_from_address ?? DEFAULTS.emailFromAddress,
     smtpHost: data.smtp_host ?? undefined,
@@ -108,6 +110,7 @@ export async function saveSettings(next: PlatformSettings): Promise<void> {
     maintenance_mode: next.maintenanceMode,
     allow_new_registrations: next.allowNewRegistrations,
     support_whatsapp: next.supportWhatsapp ?? null,
+    support_email: next.supportEmail ?? null,
     resend_api_key: next.resendApiKey ?? null,
     email_from_address: next.emailFromAddress,
     smtp_host: next.smtpHost ?? null,
