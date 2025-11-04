@@ -12,7 +12,7 @@ const POLL_MS = 5000;
 const Activation = () => {
   const { session } = useSession();
   const navigate = useNavigate();
-  const partnerId = session?.partnerId;
+  const userId = session?.user?.id;
 
   const [partner, setPartner] = useState<PartnerRow | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,13 +21,29 @@ const Activation = () => {
   const isActive = status === "active";
 
   const fetchStatus = async () => {
-    if (!partnerId) return;
+    if (!userId) return;
     setLoading(true);
+    
+    // Buscar partner_id através da tabela partner_members
+    const { data: memberData, error: memberError } = await supabase
+      .from("partner_members")
+      .select("partner_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    
+    if (memberError || !memberData) {
+      console.error("Erro ao buscar partner_member:", memberError);
+      setLoading(false);
+      return;
+    }
+    
+    // Buscar dados do parceiro
     const { data, error } = await supabase
       .from("partners")
       .select("name,status")
-      .eq("id", partnerId)
+      .eq("id", memberData.partner_id)
       .maybeSingle();
+      
     if (!error) setPartner((data as PartnerRow) ?? null);
     setLoading(false);
   };
@@ -36,7 +52,7 @@ const Activation = () => {
     fetchStatus();
     const t = setInterval(fetchStatus, POLL_MS);
     return () => clearInterval(t);
-  }, [partnerId]);
+  }, [userId]);
 
   useEffect(() => {
     if (isActive) {
