@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo à {{platform_name}}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f7;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, {{theme_primary}} 0%, {{theme_secondary}} 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .header-title {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .content {
+            padding: 40px 30px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .greeting {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+        .text-block {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555555;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, {{theme_primary}}15 0%, {{theme_secondary}}15 100%);
+            border-left: 4px solid {{theme_primary}};
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        .highlight-box h3 {
+            margin: 0 0 15px 0;
+            color: {{theme_primary}};
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #333333;
+            min-width: 120px;
+        }
+        .info-value {
+            color: #555555;
+            word-break: break-all;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, {{theme_primary}} 0%, {{theme_secondary}} 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 30px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+        .steps-section {
+            margin: 30px 0;
+        }
+        .step {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        .step-number {
+            background: linear-gradient(135deg, {{theme_primary}} 0%, {{theme_secondary}} 100%);
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 5px;
+        }
+        .step-description {
+            color: #666666;
+            font-size: 14px;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        .footer-text {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .footer-links {
+            margin-top: 15px;
+        }
+        .footer-link {
+            color: {{theme_primary}};
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+            margin: 30px 0;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+            .greeting {
+                font-size: 20px;
+            }
+            .header-title {
+                font-size: 24px;
+            }
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .info-label {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            {{#if logo_url}}
+            <img src="{{logo_url}}" alt="{{platform_name}}" class="logo">
+            {{/if}}
+            <h1 class="header-title">Bem-vindo ao {{platform_name}}!</h1>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="greeting">
+                Olá, {{first_name}} {{last_name}}! 👋
+            </div>
+
+            <div class="text-block">
+                É com grande satisfação que damos as boas-vindas à <strong>{{partner_name}}</strong> como nosso novo parceiro!
+            </div>
+
+            <div class="text-block">
+                Sua conta foi criada com sucesso e estamos animados para iniciar esta parceria. Em breve, você receberá um e-mail de convite do Supabase para definir sua senha de acesso.
+            </div>
+
+            <!-- Highlight Box -->
+            <div class="highlight-box">
+                <h3>📋 Informações da sua conta</h3>
+                <div class="info-row">
+                    <span class="info-label">Empresa:</span>
+                    <span class="info-value">{{partner_name}}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Responsável:</span>
+                    <span class="info-value">{{first_name}} {{last_name}}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value">Aguardando Ativação</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Steps Section -->
+            <div class="steps-section">
+                <h3 style="color: #333333; margin-bottom: 20px;">🚀 Próximos passos:</h3>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Verifique seu e-mail</div>
+                        <div class="step-description">
+                            Você receberá um e-mail do Supabase com o link para definir sua senha de acesso.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Defina sua senha</div>
+                        <div class="step-description">
+                            Clique no link do e-mail e crie uma senha segura para sua conta.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Aguarde a ativação</div>
+                        <div class="step-description">
+                            Nossa equipe irá revisar e ativar sua conta. Você será notificado assim que estiver tudo pronto!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">Acesse a plataforma</div>
+                        <div class="step-description">
+                            Após a ativação, você poderá acessar todas as funcionalidades da plataforma.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div style="text-align: center;">
+                <a href="{{activation_link}}" class="cta-button">
+                    Acompanhar Status da Ativação
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="text-block">
+                <strong>Precisa de ajuda?</strong><br>
+                Nossa equipe está à disposição para auxiliá-lo em qualquer dúvida durante o processo de ativação.
+            </div>
+
+            <div class="text-block" style="font-size: 14px; color: #666666;">
+                <em>Este é um e-mail automático. Por favor, não responda diretamente a esta mensagem.</em>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                <strong>{{platform_name}}</strong>
+            </div>
+            <div class="footer-text">
+                Avaliação de Riscos Psicossociais
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Suporte</a>
+                <a href="#" class="footer-link">Política de Privacidade</a>
+                <a href="#" class="footer-link">Termos de Uso</a>
+            </div>
+            <div class="footer-text" style="margin-top: 15px; font-size: 12px;">
+                © {{year}} {{platform_name}}. Todos os direitos reservados.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
