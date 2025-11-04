@@ -486,6 +486,11 @@ const Partners = () => {
 
   const handleUpdatePartner = async () => {
     setIsSaving(true);
+    
+    // Buscar status anterior para detectar mudanças
+    const previousPartner = partners.find(p => p.id === editingId);
+    const previousStatus = previousPartner?.status;
+    
     const partnerPayload = {
       id: editingId,
       name: name.trim(),
@@ -558,6 +563,45 @@ const Partners = () => {
         }
       } catch (syncErr) {
         console.warn("[Partners] Não foi possível sincronizar nome do usuário responsável:", syncErr);
+      }
+
+      // Enviar email se o status mudou
+      if (previousStatus && previousStatus !== status && savedPartner.responsible_email) {
+        try {
+          const emailData = {
+            first_name: savedPartner.responsible_name?.split(' ')[0] || 'Parceiro',
+            partner_name: savedPartner.name,
+            platform_name: 'Valida NR1',
+            dashboard_link: `${window.location.origin}/partner/dashboard`,
+            support_whatsapp: '+55 11 98765-4321',
+          };
+
+          if (status === 'active' && (previousStatus === 'suspended' || previousStatus === 'inactive')) {
+            // Reativação
+            await supabase.functions.invoke('send-email', {
+              body: {
+                action: 'send_reactivation',
+                recipient_email: savedPartner.responsible_email,
+                data: emailData,
+              }
+            });
+          } else if (status === 'inactive') {
+            // Inativação
+            await supabase.functions.invoke('send-email', {
+              body: {
+                action: 'send_inactivation',
+                recipient_email: savedPartner.responsible_email,
+                data: {
+                  ...emailData,
+                  reason: 'Inativação administrativa',
+                },
+              }
+            });
+          }
+        } catch (emailErr) {
+          console.error('Erro ao enviar email de mudança de status:', emailErr);
+          // Não bloqueia a atualização se o email falhar
+        }
       }
 
       showSuccess("Parceiro atualizado.");
