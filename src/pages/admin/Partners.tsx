@@ -576,8 +576,17 @@ const Partners = () => {
             support_whatsapp: '+55 11 98765-4321',
           };
 
-          if (status === 'active' && (previousStatus === 'suspended' || previousStatus === 'inactive')) {
-            // Reativação
+          if (status === 'active' && previousStatus === 'pending') {
+            // Ativação completa (de pending para active)
+            await supabase.functions.invoke('send-email', {
+              body: {
+                action: 'send_activation_complete',
+                recipient_email: savedPartner.responsible_email,
+                data: emailData,
+              }
+            });
+          } else if (status === 'active' && (previousStatus === 'suspended' || previousStatus === 'inactive')) {
+            // Reativação (de suspended/inactive para active)
             await supabase.functions.invoke('send-email', {
               body: {
                 action: 'send_reactivation',
