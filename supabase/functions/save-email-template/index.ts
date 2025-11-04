@@ -54,7 +54,7 @@ serve(async (req) => {
     const insertData: any = {
       type,
       subject,
-      body_html,
+      content: body_html, // A tabela usa 'content' ao invés de 'body_html'
     };
     
     // Adicionar variables se fornecido
@@ -62,9 +62,9 @@ serve(async (req) => {
       insertData.variables = variables;
     }
     
-    // Adicionar status se fornecido (campo pode ter nome diferente)
+    // Adicionar is_active se fornecido
     if (is_active !== undefined) {
-      insertData.status = is_active ? 'active' : 'inactive';
+      insertData.is_active = is_active;
     }
     
     console.log("Dados a inserir:", insertData);
