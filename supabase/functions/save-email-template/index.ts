@@ -39,38 +39,43 @@ serve(async (req) => {
       throw new Error("Campo 'body_html' é obrigatório");
     }
 
-    console.log("Salvando template com upsert...");
+    console.log("Salvando template com SQL direto...");
 
-    // Usar upsert para inserir ou atualizar (service_role bypassa RLS)
-    const upsertData: any = {
-      type,
-      subject,
-      content: body_html, // A tabela usa 'content' ao invés de 'body_html'
-      updated_at: new Date().toISOString(),
-    };
+    // Usar SQL direto para evitar problemas de schema cache
+    const variablesJson = variables ? JSON.stringify(variables) : '[]';
+    const isActiveValue = is_active !== undefined ? is_active : true;
     
-    // Adicionar variables se fornecido
-    if (variables) {
-      upsertData.variables = variables;
-    }
-    
-    // Adicionar is_active se fornecido
-    if (is_active !== undefined) {
-      upsertData.is_active = is_active;
-    }
-    
-    console.log("Dados a fazer upsert:", upsertData);
-    
-    const { error: upsertError } = await supabase
-      .from('email_templates')
-      .upsert(upsertData, { 
-        onConflict: 'type',
-        ignoreDuplicates: false 
+    const { error: sqlError } = await supabase.rpc('exec_sql', {
+      sql_query: `
+        INSERT INTO public.email_templates (type, subject, content, variables, is_active, updated_at)
+        VALUES ($1, $2, $3, $4::jsonb, $5, NOW())
+        ON CONFLICT (type) 
+        DO UPDATE SET 
+          subject = EXCLUDED.subject,
+          content = EXCLUDED.content,
+          variables = EXCLUDED.variables,
+          is_active = EXCLUDED.is_active,
+          updated_at = NOW()
+      `,
+      params: [type, subject, body_html, variablesJson, isActiveValue]
+    });
+
+    if (sqlError) {
+      console.error("Erro ao executar SQL:", JSON.stringify(sqlError));
+      
+      // Fallback: tentar com query SQL direta via supabase client
+      const { error: directError } = await supabase.rpc('upsert_email_template', {
+        p_type: type,
+        p_subject: subject,
+        p_content: body_html,
+        p_variables: variablesJson,
+        p_is_active: isActiveValue
       });
-
-    if (upsertError) {
-      console.error("Erro ao fazer upsert:", JSON.stringify(upsertError));
-      throw new Error(`Erro ao salvar: ${upsertError.message || JSON.stringify(upsertError)}`);
+      
+      if (directError) {
+        console.error("Erro no fallback:", JSON.stringify(directError));
+        throw new Error(`Erro ao salvar: ${directError.message || JSON.stringify(directError)}`);
+      }
     }
 
     console.log("Template salvo com sucesso!");
