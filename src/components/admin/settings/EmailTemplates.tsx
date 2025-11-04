@@ -48,8 +48,25 @@ const EmailTemplates = () => {
       if (error) throw error;
 
       const templatesMap: Record<string, EmailTemplate> = {};
+      
+      // Inicializar templates vazios para todos os tipos
+      TEMPLATE_TYPES.forEach(type => {
+        templatesMap[type.value] = {
+          id: crypto.randomUUID(),
+          type: type.value,
+          subject: '',
+          body_html: '',
+          variables: [],
+          is_active: true,
+        };
+      });
+      
+      // Sobrescrever com dados do banco se existirem
       data?.forEach((template: any) => {
-        templatesMap[template.type] = template;
+        templatesMap[template.type] = {
+          ...template,
+          variables: Array.isArray(template.variables) ? template.variables : [],
+        };
       });
 
       setTemplates(templatesMap);
