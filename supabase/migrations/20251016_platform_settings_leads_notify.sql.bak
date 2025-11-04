@@ -1,0 +1,28 @@
+-- Add leads_notify_email to platform_settings and adjust RLS policies
+
+alter table public.platform_settings
+  add column if not exists leads_notify_email text;
+
+alter table public.platform_settings enable row level security;
+
+drop policy if exists platform_settings_select_anon on public.platform_settings;
+create policy platform_settings_select_anon
+on public.platform_settings
+for select
+to anon
+using (true);
+
+drop policy if exists platform_settings_insert_admin on public.platform_settings;
+create policy platform_settings_insert_admin
+on public.platform_settings
+for insert
+to authenticated
+with check (true);
+
+drop policy if exists platform_settings_update_admin on public.platform_settings;
+create policy platform_settings_update_admin
+on public.platform_settings
+for update
+to authenticated
+using (true)
+with check (true);

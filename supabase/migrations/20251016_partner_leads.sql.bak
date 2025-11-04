@@ -1,0 +1,55 @@
+-- Migration: partner_leads + RLS + helpers
+-- Run with: supabase db push (after link)
+
+-- 1) Extensions
+create extension if not exists pgcrypto;
+
+-- 2) Table
+create table if not exists public.partner_leads (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  company text,
+  phone_whatsapp text,
+  plan_id uuid references public.plans(id) on delete set null,
+  status text not null default 'new' check (status in ('new','contacted','awaiting_payment','approved','rejected')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+-- 3) updated_at trigger
+create or replace function public.set_updated_at()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at = now();
+  return new;
+end
+$$;
+
+drop trigger if exists trg_partner_leads_updated_at on public.partner_leads;
+create trigger trg_partner_leads_updated_at
+before update on public.partner_leads
+for each row execute function public.set_updated_at();
+
+-- 4) RLS: enable and policies
+alter table public.partner_leads enable row level security;
+
+drop policy if exists partner_leads_insert_anon on public.partner_leads;
+create policy partner_leads_insert_anon
+on public.partner_leads
+for insert
+to anon
+with check (status = 'new');
+
+-- 5) Helpful indexes
+create index if not exists idx_partner_leads_created_at on public.partner_leads(created_at desc);
+create index if not exists idx_partner_leads_status on public.partner_leads(status);
+
+-- 6) (Optional) Allow public read of platform_settings (for reading support_whatsapp)
+-- Uncomment if your platform_settings uses RLS and the frontend anon must read it.
+-- drop policy if exists platform_settings_select_anon on public.platform_settings;
+-- create policy platform_settings_select_anon
+-- on public.platform_settings
+-- for select
+-- to anon
+-- using (true);

@@ -1,0 +1,31 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE action_plan_categories (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE action_plans (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  category_id UUID REFERENCES action_plan_categories(id) ON DELETE CASCADE,
+  description TEXT NOT NULL,
+  is_global BOOLEAN DEFAULT TRUE,
+  partner_id UUID REFERENCES partners(id) ON DELETE CASCADE, -- Nulo se for global
+  show_in_report BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT chk_plan_scope CHECK ((is_global AND partner_id IS NULL) OR (NOT is_global AND partner_id IS NOT NULL))
+);
+
+-- RLS Policies
+ALTER TABLE action_plan_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE action_plans ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow read access to all authenticated users" ON action_plan_categories FOR SELECT TO authenticated USING (TRUE);
+CREATE POLICY "Allow full access for admins" ON action_plan_categories FOR ALL TO service_role USING (TRUE);
+
+CREATE POLICY "Allow read access to all authenticated users" ON action_plans FOR SELECT TO authenticated USING (TRUE);
+CREATE POLICY "Allow partners to manage their own plans" ON action_plans FOR ALL TO authenticated USING (partner_id = (SELECT partner_id FROM user_profiles WHERE user_id = auth.uid()));
+CREATE POLICY "Allow admins to manage all plans" ON action_plans FOR ALL TO service_role USING (TRUE);

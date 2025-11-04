@@ -1,0 +1,33 @@
+-- Ensure partners.status supports manual onboarding states
+-- Allowed: pending, active, suspended, inactive
+
+-- 1) Add column if missing
+alter table if exists public.partners
+  add column if not exists status text;
+
+-- 2) Normalize nulls to a default
+update public.partners set status = coalesce(status, 'active');
+
+-- 3) Drop existing check constraint if any, then create the correct one
+DO $$
+DECLARE
+  cons_name text;
+BEGIN
+  SELECT conname
+    INTO cons_name
+  FROM pg_constraint c
+  JOIN pg_class t ON c.conrelid = t.oid
+  JOIN pg_namespace n ON n.oid = t.relnamespace
+  WHERE t.relname = 'partners'
+    AND n.nspname = 'public'
+    AND c.contype = 'c'
+    AND pg_get_constraintdef(c.oid) ILIKE '%status%check%';
+
+  IF cons_name IS NOT NULL THEN
+    EXECUTE format('alter table public.partners drop constraint %I', cons_name);
+  END IF;
+
+  -- Recreate the desired check constraint with a stable name
+  EXECUTE 'alter table public.partners add constraint partners_status_check
+           check (status in (''pending'',''active'',''suspended'',''inactive''))';
+END$$;
