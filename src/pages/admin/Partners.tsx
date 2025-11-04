@@ -472,7 +472,39 @@ const Partners = () => {
         });
       }
 
-      showSuccess("Parceiro criado com sucesso. Um e-mail de convite foi enviado ao responsável.");
+      // Enviar email de boas-vindas customizado
+      try {
+        // Buscar configurações da plataforma para o email
+        const { data: platformSettings } = await (supabase as any)
+          .from('platform_settings')
+          .select('email_theme_primary, email_theme_secondary, email_logo_url, platform_name')
+          .limit(1)
+          .maybeSingle();
+
+        await supabase.functions.invoke('send-email', {
+          body: {
+            action: 'send_welcome',
+            recipient_email: newPartner.responsible_email,
+            data: {
+              first_name: responsibleFirstName.trim(),
+              last_name: responsibleLastName.trim(),
+              partner_name: newPartner.name,
+              platform_name: platformSettings?.platform_name || 'Valida NR1',
+              recipient_email: newPartner.responsible_email,
+              temp_password: '(enviada no email de convite)',
+              activation_link: `${window.location.origin}/partner/ativacao`,
+              theme_primary: platformSettings?.email_theme_primary || '#667eea',
+              theme_secondary: platformSettings?.email_theme_secondary || '#764ba2',
+              logo_url: platformSettings?.email_logo_url || '',
+            }
+          }
+        });
+      } catch (emailErr) {
+        console.error('Erro ao enviar email de boas-vindas:', emailErr);
+        // Não bloqueia a criação se o email falhar
+      }
+
+      showSuccess("Parceiro criado com sucesso. E-mails de convite e boas-vindas foram enviados.");
       
     } catch (err) {
       console.error("Unexpected error:", err);
