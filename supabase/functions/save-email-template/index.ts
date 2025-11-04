@@ -39,43 +39,38 @@ serve(async (req) => {
       throw new Error("Campo 'body_html' é obrigatório");
     }
 
-    console.log("Deletando template existente...");
+    console.log("Salvando template com upsert...");
 
-    // Primeiro deletar o existente
-    await supabase
-      .from('email_templates')
-      .delete()
-      .eq('type', type);
-
-    console.log("Inserindo novo template...");
-
-    // Depois inserir o novo (usando service_role bypassa schema cache)
-    // Inserir apenas os campos que sabemos que existem
-    const insertData: any = {
+    // Usar upsert para inserir ou atualizar (service_role bypassa RLS)
+    const upsertData: any = {
       type,
       subject,
       content: body_html, // A tabela usa 'content' ao invés de 'body_html'
+      updated_at: new Date().toISOString(),
     };
     
     // Adicionar variables se fornecido
     if (variables) {
-      insertData.variables = variables;
+      upsertData.variables = variables;
     }
     
     // Adicionar is_active se fornecido
     if (is_active !== undefined) {
-      insertData.is_active = is_active;
+      upsertData.is_active = is_active;
     }
     
-    console.log("Dados a inserir:", insertData);
+    console.log("Dados a fazer upsert:", upsertData);
     
-    const { error: insertError } = await supabase
+    const { error: upsertError } = await supabase
       .from('email_templates')
-      .insert(insertData);
+      .upsert(upsertData, { 
+        onConflict: 'type',
+        ignoreDuplicates: false 
+      });
 
-    if (insertError) {
-      console.error("Erro ao inserir:", JSON.stringify(insertError));
-      throw new Error(`Erro ao salvar: ${insertError.message || JSON.stringify(insertError)}`);
+    if (upsertError) {
+      console.error("Erro ao fazer upsert:", JSON.stringify(upsertError));
+      throw new Error(`Erro ao salvar: ${upsertError.message || JSON.stringify(upsertError)}`);
     }
 
     console.log("Template salvo com sucesso!");
