@@ -209,12 +209,38 @@ const EmailTemplates = () => {
     try {
       const template = templates[activeTab];
       
+      // Dados de exemplo para o teste
+      const sampleData = {
+        first_name: 'João',
+        last_name: 'Silva',
+        partner_name: 'Empresa Exemplo LTDA',
+        platform_name: 'Valida NR1',
+        recipient_email: testEmail,
+        temp_password: 'Senha123!',
+        activation_link: 'https://validanr1.com.br/ativacao',
+        theme_primary: '#667eea',
+        theme_secondary: '#764ba2',
+        logo_url: 'https://via.placeholder.com/150x50/667eea/ffffff?text=Logo',
+        reason: 'Pagamento em atraso',
+        support_whatsapp: '+55 11 98765-4321',
+        dashboard_link: 'https://validanr1.com.br/dashboard',
+      };
+      
+      // Mapear tipo de template para action
+      const typeToAction: Record<string, string> = {
+        'welcome': 'send_welcome',
+        'activation_complete': 'send_activation_complete',
+        'suspension': 'send_suspension',
+        'reactivation': 'send_reactivation',
+        'inactivation': 'send_inactivation',
+        'reminder': 'send_reminder',
+      };
+      
       const { data, error } = await supabase.functions.invoke('send-email', {
         body: {
-          to: testEmail,
-          subject: `[TESTE] ${template.subject}`,
-          html: previewHtml,
-          is_test: true,
+          action: typeToAction[activeTab],
+          recipient_email: testEmail,
+          data: sampleData,
         }
       });
 
