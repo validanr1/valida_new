@@ -70,8 +70,6 @@ const Activation = () => {
 
   useEffect(() => {
     fetchStatus();
-    const t = setInterval(fetchStatus, POLL_MS);
-    return () => clearInterval(t);
   }, [userId]);
 
   useEffect(() => {
@@ -122,15 +120,10 @@ const Activation = () => {
           </div>
         </div>
 
-        <div className="pt-2 flex gap-2">
+        <div className="pt-2">
           <Button variant="outline" onClick={fetchStatus} disabled={loading}>
-            {loading ? "Atualizando..." : "Atualizar"}
+            {loading ? "Atualizando..." : "Atualizar Status"}
           </Button>
-          {!isActive ? (
-            <div className="text-xs text-muted-foreground self-center">
-              Esta página atualiza automaticamente a cada {POLL_MS / 1000}s.
-            </div>
-          ) : null}
         </div>
       </Card>
     </div>
