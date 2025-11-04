@@ -39,43 +39,23 @@ serve(async (req) => {
       throw new Error("Campo 'body_html' é obrigatório");
     }
 
-    console.log("Salvando template com SQL direto...");
+    console.log("Salvando template usando função RPC...");
 
-    // Usar SQL direto para evitar problemas de schema cache
+    // Usar função RPC que bypassa schema cache
     const variablesJson = variables ? JSON.stringify(variables) : '[]';
     const isActiveValue = is_active !== undefined ? is_active : true;
     
-    const { error: sqlError } = await supabase.rpc('exec_sql', {
-      sql_query: `
-        INSERT INTO public.email_templates (type, subject, content, variables, is_active, updated_at)
-        VALUES ($1, $2, $3, $4::jsonb, $5, NOW())
-        ON CONFLICT (type) 
-        DO UPDATE SET 
-          subject = EXCLUDED.subject,
-          content = EXCLUDED.content,
-          variables = EXCLUDED.variables,
-          is_active = EXCLUDED.is_active,
-          updated_at = NOW()
-      `,
-      params: [type, subject, body_html, variablesJson, isActiveValue]
+    const { error: rpcError } = await supabase.rpc('upsert_email_template', {
+      p_type: type,
+      p_subject: subject,
+      p_body_html: body_html,
+      p_variables: variablesJson,
+      p_is_active: isActiveValue
     });
 
-    if (sqlError) {
-      console.error("Erro ao executar SQL:", JSON.stringify(sqlError));
-      
-      // Fallback: tentar com query SQL direta via supabase client
-      const { error: directError } = await supabase.rpc('upsert_email_template', {
-        p_type: type,
-        p_subject: subject,
-        p_content: body_html,
-        p_variables: variablesJson,
-        p_is_active: isActiveValue
-      });
-      
-      if (directError) {
-        console.error("Erro no fallback:", JSON.stringify(directError));
-        throw new Error(`Erro ao salvar: ${directError.message || JSON.stringify(directError)}`);
-      }
+    if (rpcError) {
+      console.error("Erro ao executar RPC:", JSON.stringify(rpcError));
+      throw new Error(`Erro ao salvar: ${rpcError.message || JSON.stringify(rpcError)}`);
     }
 
     console.log("Template salvo com sucesso!");

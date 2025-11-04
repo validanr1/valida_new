@@ -49,11 +49,7 @@ const EmailTemplates = () => {
 
       const templatesMap: Record<string, EmailTemplate> = {};
       data?.forEach((template: any) => {
-        // Mapear 'content' para 'body_html' para compatibilidade com o componente
-        templatesMap[template.type] = {
-          ...template,
-          body_html: template.content || template.body_html || '',
-        };
+        templatesMap[template.type] = template;
       });
 
       setTemplates(templatesMap);
