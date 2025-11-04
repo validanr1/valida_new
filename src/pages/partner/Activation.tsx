@@ -21,31 +21,51 @@ const Activation = () => {
   const isActive = status === "active";
 
   const fetchStatus = async () => {
-    if (!userId) return;
-    setLoading(true);
-    
-    // Buscar partner_id através da tabela partner_members
-    const { data: memberData, error: memberError } = await supabase
-      .from("partner_members")
-      .select("partner_id")
-      .eq("user_id", userId)
-      .maybeSingle();
-    
-    if (memberError || !memberData) {
-      console.error("Erro ao buscar partner_member:", memberError);
-      setLoading(false);
+    if (!userId) {
+      console.log("Activation: userId não encontrado");
       return;
     }
+    setLoading(true);
     
-    // Buscar dados do parceiro
-    const { data, error } = await supabase
-      .from("partners")
-      .select("name,status")
-      .eq("id", memberData.partner_id)
-      .maybeSingle();
+    try {
+      // Buscar partner_id através da tabela partner_members
+      const { data: memberData, error: memberError } = await supabase
+        .from("partner_members")
+        .select("partner_id")
+        .eq("user_id", userId)
+        .maybeSingle();
       
-    if (!error) setPartner((data as PartnerRow) ?? null);
-    setLoading(false);
+      console.log("Activation: memberData =", memberData, "error =", memberError);
+      
+      if (memberError) {
+        console.error("Erro ao buscar partner_member:", memberError);
+        setLoading(false);
+        return;
+      }
+      
+      if (!memberData) {
+        console.warn("Nenhum partner_member encontrado para user_id:", userId);
+        setLoading(false);
+        return;
+      }
+      
+      // Buscar dados do parceiro
+      const { data, error } = await supabase
+        .from("partners")
+        .select("name,status")
+        .eq("id", memberData.partner_id)
+        .maybeSingle();
+      
+      console.log("Activation: partner data =", data, "error =", error);
+        
+      if (!error && data) {
+        setPartner(data as PartnerRow);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar status de ativação:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
