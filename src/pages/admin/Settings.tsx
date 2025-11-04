@@ -243,9 +243,9 @@ const Settings = () => {
                 <label className="text-sm font-medium">E-mail de Suporte</label>
                 <Input
                   type="email"
-                  placeholder="ex.: comercial@validanr1.com.br"
-                  value={settings.leadsNotifyEmail ?? ""}
-                  onChange={(e) => setSettings((s) => (s ? { ...s, leadsNotifyEmail: e.target.value } : null))}
+                  placeholder="ex.: suporte@validanr1.com.br"
+                  value={settings.supportEmail ?? ""}
+                  onChange={(e) => setSettings((s) => (s ? { ...s, supportEmail: e.target.value } : null))}
                   className="h-10 rounded-xl"
                 />
               </div>
