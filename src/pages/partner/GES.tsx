@@ -145,8 +145,6 @@ const GES = () => {
     <div className="space-y-5">
       <div>
         <h1 className="text-xl font-semibold">{typeLabel}</h1>
-        <div className="text-sm text-muted-foreground">Empresa: {company?.name ?? "—"}</div>
-        <div className="text-sm text-muted-foreground">Tipo selecionado: {assessmentType?.name ?? "—"}</div>
       </div>
 
       <Card className="p-0 overflow-x-auto">
@@ -156,20 +154,24 @@ const GES = () => {
             <DialogTrigger asChild>
               <Button onClick={openCreate}>+ Novo Item</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
-                <DialogTitle>{editing ? "Editar Item" : "Novo Item"}</DialogTitle>
+                <DialogTitle>{editing ? `Editar ${typeLabel}` : `Cadastrar ${typeLabel}`}</DialogTitle>
               </DialogHeader>
-              <div className="space-y-3 py-1">
+              <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Nome</label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} className="h-10 rounded-xl" />
+                  <label className="text-sm font-medium">Nome do {typeLabel} *</label>
+                  <Input 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    placeholder={`Ex: ${typeLabel} 01 - Escritório Administrativo`}
+                  />
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Status</label>
                     <Select value={status} onValueChange={(v: any) => setStatus(v)}>
-                      <SelectTrigger className="h-10 rounded-xl"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="active">Ativo</SelectItem>
                         <SelectItem value="inactive">Inativo</SelectItem>
@@ -178,11 +180,18 @@ const GES = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Ordem</label>
-                    <Input type="number" inputMode="numeric" value={order} onChange={(e) => setOrder(e.target.value)} className="h-10 rounded-xl" />
+                    <Input 
+                      type="number" 
+                      inputMode="numeric" 
+                      value={order} 
+                      onChange={(e) => setOrder(e.target.value)} 
+                      placeholder="1"
+                    />
                   </div>
                 </div>
               </div>
               <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
                 <Button onClick={saveItem}>{editing ? "Salvar alterações" : "Salvar"}</Button>
               </DialogFooter>
             </DialogContent>
