@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { showError, showSuccess } from "@/utils/toast";
+import { emailService } from "@/services/emailService";
+import { getSettings } from "@/services/settings";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
@@ -79,6 +81,26 @@ const PartnerSignup = () => {
         .from("partner_members")
         .insert({ partner_id: (partner as any).id, user_id: session.user.id } as any);
       showSuccess("Solicitação enviada. Em breve entraremos em contato com instruções de pagamento.");
+
+      // Fire-and-forget admin notification (non-blocking)
+      try {
+        const settings = await getSettings();
+        const recipient = settings.leadsNotifyEmail || settings.supportEmail || settings.emailFromAddress;
+        if (recipient) {
+          await emailService.sendEdgeNotificationEmail({
+            action: 'notify_signup',
+            recipient_email: recipient,
+            data: {
+              user_email: session.user.email || '',
+              when: new Date().toISOString(),
+              name,
+              plan: selectedPlan?.name,
+            },
+          });
+        }
+      } catch (e) {
+        console.warn('[PartnerSignup] notify_signup email failed (non-blocking):', e);
+      }
       navigate("/partner/ativacao", { replace: true });
     } catch (err) {
       console.error("[PartnerSignup] erro:", err);

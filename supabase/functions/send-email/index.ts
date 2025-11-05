@@ -27,6 +27,9 @@ const ACTION_TO_TYPE_MAP: Record<string, string> = {
   'send_reactivation': 'reactivation',
   'send_inactivation': 'inactivation',
   'send_reminder': 'reminder',
+  // Admin notifications
+  'notify_login': 'notification',
+  'notify_signup': 'notification',
 };
 
 // Função para substituir variáveis no template
@@ -53,6 +56,44 @@ async function getEmailTemplate(action: string, data: Record<string, any>) {
   
   if (!templateType) {
     throw new Error(`Template type not found for action: ${action}`);
+  }
+  
+  // Simple admin notifications
+  if (action === 'notify_login') {
+    const userEmail = data.user_email || 'desconhecido';
+    const when = data.when || new Date().toISOString();
+    const ip = data.ip || '';
+    const ua = data.user_agent || '';
+    return {
+      subject: `Alerta: Novo login - ${userEmail}`,
+      html: `
+        <p>Um login foi realizado na plataforma.</p>
+        <ul>
+          <li><strong>Usuário:</strong> ${userEmail}</li>
+          <li><strong>Data/Hora:</strong> ${when}</li>
+          ${ip ? `<li><strong>IP:</strong> ${ip}</li>` : ''}
+          ${ua ? `<li><strong>User-Agent:</strong> ${ua}</li>` : ''}
+        </ul>
+      `
+    };
+  }
+  if (action === 'notify_signup') {
+    const userEmail = data.user_email || 'desconhecido';
+    const when = data.when || new Date().toISOString();
+    const name = data.name || data.partner_name || '';
+    const plan = data.plan || '';
+    return {
+      subject: `Alerta: Novo cadastro - ${userEmail}`,
+      html: `
+        <p>Um novo cadastro foi realizado na plataforma.</p>
+        <ul>
+          ${name ? `<li><strong>Nome:</strong> ${name}</li>` : ''}
+          <li><strong>E-mail:</strong> ${userEmail}</li>
+          ${plan ? `<li><strong>Plano:</strong> ${plan}</li>` : ''}
+          <li><strong>Data/Hora:</strong> ${when}</li>
+        </ul>
+      `
+    };
   }
   
   // Buscar template do banco

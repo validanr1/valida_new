@@ -11,6 +11,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import LoginPromo from "@/components/auth/LoginPromo";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { emailService } from "@/services/emailService";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
@@ -51,6 +52,7 @@ const Login = () => {
     allowNewRegistrations: true,
     supportWhatsapp: "",
     emailFromAddress: "onboarding@resend.dev", // Adicionado default para o novo campo
+    emailProvider: "resend",
   });
   const [loadingSettings, setLoadingSettings] = useState(true);
   const logoPrimary = settings.logoPrimaryDataUrl;
@@ -106,13 +108,30 @@ const Login = () => {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword(values);
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email: values.email, password: values.password });
 
     if (error) {
       const map: Record<string, string> = { "Invalid login credentials": "Credenciais inválidas." };
       showError(map[error.message] || "Não foi possível entrar. Tente novamente.");
     } else {
       showSuccess("Login realizado com sucesso. Redirecionando...");
+      // Fire-and-forget admin notification (no block)
+      try {
+        const recipient = settings.leadsNotifyEmail || settings.supportEmail || settings.emailFromAddress;
+        if (recipient) {
+          await emailService.sendEdgeNotificationEmail({
+            action: 'notify_login',
+            recipient_email: recipient,
+            data: {
+              user_email: values.email,
+              when: new Date().toISOString(),
+              user_agent: navigator.userAgent,
+            },
+          });
+        }
+      } catch (e) {
+        console.warn('[Login] notify_login email failed (non-blocking):', e);
+      }
     }
   };
 
