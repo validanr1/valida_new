@@ -267,22 +267,6 @@ const Colaboradores = () => {
     return csv;
   };
 
-  const getSampleJson = () => {
-    const data = [
-      {
-        first_name: 'Joao', last_name: 'Silva', email: 'joao.silva@empresa.com', cpf_cnpj: '12345678909',
-        registration_number: 'MAT-001', phone: '(82) 99999-9999', date_of_birth: '1990-05-20', admission_date: '2020-01-10',
-        department: 'Operacional', role: 'Auxiliar', gender: 'masculino', education_level: 'medio', status: 'active'
-      },
-      {
-        first_name: 'Maria', last_name: 'Souza', email: 'maria.souza@empresa.com', cpf_cnpj: '98765432100',
-        registration_number: 'MAT-002', phone: '(11) 98888-7777', date_of_birth: '1988-10-05', admission_date: '2021-03-15',
-        department: 'Administrativo', role: 'Assistente', gender: 'feminino', education_level: 'superior', status: 'inactive'
-      }
-    ];
-    return JSON.stringify(data, null, 2);
-  };
-
   const handleUploadFile: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -1005,7 +989,6 @@ const Colaboradores = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => downloadFile(getSampleCsv(), 'modelo_colaboradores.csv', 'text/csv')}>Baixar modelo CSV</Button>
-                  <Button variant="outline" onClick={() => downloadFile(getSampleJson(), 'modelo_colaboradores.json', 'application/json')}>Baixar modelo JSON</Button>
                 </div>
                 <div className="flex justify-end">
                   <Button onClick={() => setImportStep(2)}>Começar</Button>
