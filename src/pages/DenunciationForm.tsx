@@ -168,6 +168,8 @@ const FormDenuncia = () => {
       company_id: company.id,
       titulo: finalTitle,
       descricao: description.trim(),
+      status: "open", // Status inicial: Aberta
+      tratada: false, // Não tratada inicialmente
     };
     // Inclui campos opcionais somente se informados (Português)
     if (department.trim()) basePayload.setor = department.trim();
