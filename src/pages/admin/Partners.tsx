@@ -788,47 +788,6 @@ const Partners = () => {
         </div>
 
         <div className="flex gap-2">
-          <Button 
-            onClick={async () => {
-              try {
-                // Busca configurações de e-mail da tabela platform_settings
-                const { data: platformSettings } = await (supabase as any)
-                  .from('platform_settings')
-                  .select('email_theme_primary, email_theme_secondary, email_logo_url, platform_name')
-                  .limit(1)
-                  .maybeSingle();
-                
-                const testPartner = partners[0];
-                
-                const { data, error } = await supabase.functions.invoke('send-email', {
-                  body: {
-                    action: 'send_welcome',
-                    recipient_email: session?.user?.email || 'teste@example.com',
-                    data: {
-                      first_name: userFirstName,
-                      partner_name: testPartner?.name || 'Teste',
-                      platform_name: platformSettings?.platform_name || 'Valida NR1',
-                      activation_link: `${window.location.origin}/partner/ativacao`,
-                      temp_password: 'teste123',
-                      recipient_email: session?.user?.email || 'teste@example.com',
-                      theme_primary: platformSettings?.email_theme_primary || '#667eea',
-                      theme_secondary: platformSettings?.email_theme_secondary || '#764ba2',
-                      logo_url: platformSettings?.email_logo_url || ''
-                    }
-                  }
-                });
-                if (error) throw error;
-                showSuccess('E-mail de teste enviado com sucesso! Verifique sua caixa de entrada.');
-              } catch (err: any) {
-                showError('Erro ao enviar e-mail: ' + err.message);
-              }
-            }}
-            variant="outline"
-            className="whitespace-nowrap"
-          >
-            📧 Testar E-mail
-          </Button>
-          
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
             <DialogTrigger asChild>
               <Button onClick={openCreate} className="whitespace-nowrap">+ Novo Parceiro</Button>
