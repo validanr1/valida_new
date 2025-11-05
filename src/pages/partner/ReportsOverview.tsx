@@ -457,39 +457,40 @@ const ReportsOverview = () => {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 100vh;
-        padding: 40px;
+        width: 100%;
+        height: 100vh;
+        padding: 20px;
         text-align: center;
-        background: linear-gradient(135deg, #1B365D 0%, #2C5282 100%);
-        color: white;
+        background: #ffffff;
+        box-sizing: border-box;
       `;
 
-      // Logo (parceiro ou plataforma)
+      // Logo (parceiro prioritário, plataforma como fallback)
       const logoToUse = partnerLogo || platformLogo;
       if (logoToUse) {
         const logoImg = document.createElement('img');
         logoImg.src = logoToUse;
-        logoImg.style.cssText = 'max-width: 300px; max-height: 150px; margin-bottom: 60px; object-fit: contain;';
+        logoImg.style.cssText = 'max-width: 400px; max-height: 200px; margin-bottom: 80px; object-fit: contain;';
         coverPage.appendChild(logoImg);
       }
 
       // Título
       const title = document.createElement('h1');
       title.textContent = 'Relatório de Avaliação';
-      title.style.cssText = 'font-size: 48px; font-weight: bold; margin-bottom: 20px; color: white;';
+      title.style.cssText = 'font-size: 48px; font-weight: bold; margin-bottom: 20px; color: #1B365D;';
       coverPage.appendChild(title);
 
       // Subtítulo com nome da empresa
       const subtitle = document.createElement('h2');
       subtitle.textContent = company?.name || 'Empresa';
-      subtitle.style.cssText = 'font-size: 32px; font-weight: 300; margin-bottom: 60px; color: rgba(255,255,255,0.9);';
+      subtitle.style.cssText = 'font-size: 32px; font-weight: 300; margin-bottom: 80px; color: #2C5282;';
       coverPage.appendChild(subtitle);
 
       // Data
       const dateText = document.createElement('p');
       const today = new Date();
       dateText.textContent = `Gerado em ${today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`;
-      dateText.style.cssText = 'font-size: 18px; color: rgba(255,255,255,0.8);';
+      dateText.style.cssText = 'font-size: 18px; color: #64748b;';
       coverPage.appendChild(dateText);
 
       // Clone o elemento do conteúdo para não afetar a página
