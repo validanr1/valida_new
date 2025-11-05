@@ -81,6 +81,8 @@ const NewTemplateReport = () => {
   const [apCategories, setApCategories] = useState<ActionPlanCategory[]>([]);
   const [apByCategory, setApByCategory] = useState<Record<string, ActionPlan[]>>({});
   const [primaryResponsible, setPrimaryResponsible] = useState<TechnicalResponsible | null>(null);
+  const [partnerLogo, setPartnerLogo] = useState<string | null>(null);
+  const [platformName, setPlatformName] = useState<string>("Valida NR1");
 
   const fmtPercent = (v?: number | null) => (typeof v === "number" ? `${v.toFixed(1)}%` : "—");
   const formatAddress = (addr: any): string => {
@@ -112,6 +114,22 @@ const NewTemplateReport = () => {
         .maybeSingle();
       if (companyError) throw companyError;
       setCompany((companyData as Company) || null);
+
+      // Fetch partner logo
+      const { data: partnerData } = await supabase
+        .from("partners")
+        .select("logo_data_url")
+        .eq("id", partnerId)
+        .maybeSingle();
+      setPartnerLogo(partnerData?.logo_data_url ?? null);
+
+      // Fetch platform name
+      const { data: platformData } = await supabase
+        .from("platform_settings")
+        .select("platform_name")
+        .limit(1)
+        .maybeSingle();
+      setPlatformName(platformData?.platform_name || "Valida NR1");
 
       // Fetch technical responsible: company-level primary first; fallback to partner-level primary
       let tr: TechnicalResponsible | null = null;
@@ -422,6 +440,13 @@ const NewTemplateReport = () => {
       </div>
 
       <div id="report-content" className="space-y-6">
+        {/* Logo do parceiro */}
+        {partnerLogo && (
+          <div className="flex justify-center mb-6">
+            <img src={partnerLogo} alt="Logo" className="max-w-[300px] max-h-[120px] object-contain" />
+          </div>
+        )}
+
         <div className="space-y-1">
           <h1 className="text-2xl font-extrabold tracking-tight">RELATÓRIO DE FATORES DE RISCOS PSICOSSOCIAIS RELACIONADOS AO TRABALHO</h1>
           <div className="text-sm text-muted-foreground">NR-1, NR-17, Guia de Fatores Psicossociais, HSE-SIT, ISO 45003</div>
@@ -712,17 +737,26 @@ const NewTemplateReport = () => {
                         <span className="font-medium">Média:</span> {typeof catAvg==='number' ? catAvg.toFixed(1) : '—'}% • <span className={`font-medium ${risk.color}`}>{risk.label}</span>
                       </div>
                     </div>
-                    <ul className="list-disc ml-5 space-y-2 text-sm text-slate-700">
-                      {items.map((item) => (
-                        <li key={item.id}>{item.description}</li>
+                    <div className="space-y-3 text-sm text-slate-700">
+                      {items.map((item, idx) => (
+                        <div key={item.id} className="pl-4 border-l-2 border-slate-300">
+                          <div className="font-medium text-slate-900 mb-1">Ação {idx + 1}:</div>
+                          <div className="whitespace-pre-line leading-relaxed">{item.description}</div>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 );
               })}
             </Card>
           </div>
         )}
+
+        {/* Nome da plataforma no final */}
+        <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
+          <div>Relatório gerado por <span className="font-semibold">{platformName}</span></div>
+          <div className="text-xs mt-1">Sistema de Avaliação de Riscos Psicossociais</div>
+        </div>
       </div>
     </div>
   );
