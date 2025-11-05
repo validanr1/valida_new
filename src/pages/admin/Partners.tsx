@@ -577,6 +577,7 @@ const Partners = () => {
       }
 
       // Sincroniza Nome/Sobrenome do responsável no perfil do usuário (public.profiles)
+      let responsibleUserId: string | undefined;
       try {
         const { data: memberRow, error: memberErr } = await supabase
           .from("partner_members")
@@ -586,10 +587,10 @@ const Partners = () => {
         if (memberErr) {
           console.warn("[Partners] Falha ao obter partner_members:", memberErr.message);
         }
-        const userId = memberRow?.user_id as string | undefined;
-        if (userId) {
+        responsibleUserId = memberRow?.user_id as string | undefined;
+        if (responsibleUserId) {
           await userManagementService.updateUser({
-            userId,
+            userId: responsibleUserId,
             firstName: (responsibleFirstName || "").trim() || undefined,
             lastName: (responsibleLastName || "").trim() || undefined,
           });
@@ -604,11 +605,11 @@ const Partners = () => {
           // Buscar nome do usuário responsável da tabela profiles
           let firstName = 'Parceiro';
           let lastName = '';
-          if (savedPartner.responsible_user_id) {
+          if (responsibleUserId) {
             const { data: profile, error: profileError } = await supabase
               .from('profiles')
               .select('first_name, last_name')
-              .eq('id', savedPartner.responsible_user_id)
+              .eq('id', responsibleUserId)
               .maybeSingle();
             
             if (!profileError && profile) {
