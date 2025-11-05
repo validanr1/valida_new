@@ -109,14 +109,21 @@ async function getEmailTemplate(action: string, data: Record<string, any>) {
     .single();
   
   if (error || !template) {
-    console.error('Template not found in database, using fallback');
+    console.log('[getEmailTemplate] Template not found in database, using fallback. Error:', error?.message);
+    console.log('[getEmailTemplate] Template type:', templateType);
     // Fallback para templates hardcoded (mantém compatibilidade)
     return getFallbackTemplate(action, data);
   }
   
+  console.log('[getEmailTemplate] Template found in database for type:', templateType);
+  console.log('[getEmailTemplate] Template subject before replace:', template.subject);
+  console.log('[getEmailTemplate] Variables to replace:', Object.keys(data));
+  
   // Substituir variáveis no assunto e conteúdo
   const subject = replaceVariables(template.subject, data);
   const html = replaceVariables(template.body_html, data);
+  
+  console.log('[getEmailTemplate] Subject after replace:', subject);
   
   return { subject, html };
 }
@@ -542,8 +549,22 @@ async function sendEmail(emailData: EmailData) {
     throw new Error("RESEND_API_KEY não configurada");
   }
 
+  // Log dos dados recebidos para debug
+  console.log('[send-email] Action:', emailData.action);
+  console.log('[send-email] Data received:', JSON.stringify(emailData.data, null, 2));
+
   // Buscar template do banco de dados
   const { subject, html } = await getEmailTemplate(emailData.action, emailData.data);
+
+  // Log do HTML final para debug
+  console.log('[send-email] Subject after replace:', subject);
+  console.log('[send-email] HTML contains {{:', html.includes('{{'));
+  
+  // Verificar se ainda há variáveis não substituídas
+  const unreplacedVars = html.match(/\{\{[^}]+\}\}/g);
+  if (unreplacedVars) {
+    console.warn('[send-email] Unreplaced variables found:', unreplacedVars);
+  }
 
   // Envia via Resend
   const response = await fetch("https://api.resend.com/emails", {
