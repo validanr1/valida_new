@@ -157,7 +157,7 @@ const AppContent = () => {
           <Route path="/partner/reports/overview" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><ReportsOverview /></PartnerRoute>} key="partner-reports-overview" /> {/* Nova rota para o relatório geral */}
           <Route path="/partner/reports/individual/:assessmentId" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><IndividualReport /></PartnerRoute>} key="partner-individual-report" /> {/* Nova rota para o relatório individual */}
           <Route path="/partner/reports/template2-viewer" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><ReportTemplate2Viewer /></PartnerRoute>} key="partner-report-template2-viewer" /> {/* Nova rota para o segundo modelo de relatório */}
-          <Route path="/partner/reports/new_template" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><NewTemplateReport /></PartnerRoute>} key="partner-report-new-template" />
+          <Route path="/partner/reports/versao-completa" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><NewTemplateReport /></PartnerRoute>} key="partner-report-versao-completa" />
           <Route path="/partner/planos-acao" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><ActionPlans /></PartnerRoute>} key="partner-action-plans" />
           <Route path="/partner/links" element={<PartnerRoute requiredPermissions={["partner:links:view"]}><PartnerLinks /></PartnerRoute>} key="partner-links" />
           <Route path="/partner/perfil" element={<PartnerRoute><PartnerPerfil /></PartnerRoute>} key="partner-perfil" />

@@ -657,7 +657,7 @@ const ReportsOverview = () => {
             <ReportActions
               onSave={handleSaveReport}
               onGeneratePdf={handleGeneratePdf}
-              onOpenNewTemplate={() => navigate('/partner/reports/new_template')}
+              onOpenNewTemplate={() => navigate('/partner/reports/versao-completa')}
               loading={loading}
             />
             <div className="mt-3 grid gap-2">
