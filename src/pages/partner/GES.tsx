@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +31,7 @@ const GES = () => {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Item | null>(null);
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [order, setOrder] = useState<string>("");
 
@@ -92,6 +94,7 @@ const GES = () => {
   const openCreate = () => {
     setEditing(null);
     setName("");
+    setDescription("");
     setStatus("active");
     setOrder("");
     setOpen(true);
@@ -100,6 +103,7 @@ const GES = () => {
   const openEdit = (it: Item) => {
     setEditing(it);
     setName(it.name);
+    setDescription((it as any).description || "");
     setStatus(it.status);
     setOrder(String(it.order ?? ""));
     setOpen(true);
@@ -116,6 +120,7 @@ const GES = () => {
       partner_id: company.partner_id,
       assessment_type_id: assessmentType.id,
       name: name.trim(),
+      description: description.trim() || null,
       status,
       order: Number(order) || null,
     };
@@ -157,6 +162,9 @@ const GES = () => {
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>{editing ? `Editar ${typeLabel}` : `Cadastrar ${typeLabel}`}</DialogTitle>
+                <p className="text-sm text-muted-foreground">
+                  Preencha os dados para cadastrar um novo {typeLabel}.
+                </p>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
@@ -166,6 +174,20 @@ const GES = () => {
                     onChange={(e) => setName(e.target.value)} 
                     placeholder={`Ex: ${typeLabel} 01 - Escritório Administrativo`}
                   />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Descrição (Opcional)</label>
+                  <Textarea 
+                    value={description} 
+                    onChange={(e) => setDescription(e.target.value)} 
+                    placeholder="Descreva brevemente esta opção..."
+                    className="resize-none"
+                    rows={3}
+                    maxLength={255}
+                  />
+                  <div className="text-xs text-right text-muted-foreground">
+                    Máx. caracteres: {description.length}/255
+                  </div>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -192,7 +214,7 @@ const GES = () => {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-                <Button onClick={saveItem}>{editing ? "Salvar alterações" : "Salvar"}</Button>
+                <Button onClick={saveItem}>Criar</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
