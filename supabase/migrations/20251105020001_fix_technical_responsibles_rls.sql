@@ -16,8 +16,8 @@ ON technical_responsibles
 FOR SELECT
 TO authenticated
 USING (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
+  partner_id IN (
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
@@ -27,8 +27,8 @@ ON technical_responsibles
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
+  partner_id IN (
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
@@ -38,13 +38,13 @@ ON technical_responsibles
 FOR UPDATE
 TO authenticated
 USING (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
+  partner_id IN (
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 )
 WITH CHECK (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
+  partner_id IN (
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
@@ -54,8 +54,8 @@ ON technical_responsibles
 FOR DELETE
 TO authenticated
 USING (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
+  partner_id IN (
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
