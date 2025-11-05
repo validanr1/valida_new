@@ -118,12 +118,23 @@ async function getEmailTemplate(action: string, data: Record<string, any>) {
   console.log('[getEmailTemplate] Template found in database for type:', templateType);
   console.log('[getEmailTemplate] Template subject before replace:', template.subject);
   console.log('[getEmailTemplate] Variables to replace:', Object.keys(data));
+  console.log('[getEmailTemplate] Data values:', JSON.stringify(data, null, 2));
+  
+  // Verificar se o template contém as variáveis esperadas
+  const varsInTemplate = template.body_html.match(/\{\{[^}]+\}\}/g);
+  console.log('[getEmailTemplate] Variables found in template:', varsInTemplate);
   
   // Substituir variáveis no assunto e conteúdo
   const subject = replaceVariables(template.subject, data);
   const html = replaceVariables(template.body_html, data);
   
   console.log('[getEmailTemplate] Subject after replace:', subject);
+  
+  // Verificar se ainda há variáveis não substituídas
+  const unreplacedInHtml = html.match(/\{\{[^}]+\}\}/g);
+  if (unreplacedInHtml) {
+    console.warn('[getEmailTemplate] Unreplaced variables in HTML:', unreplacedInHtml);
+  }
   
   return { subject, html };
 }
