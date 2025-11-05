@@ -2,9 +2,14 @@ import { useEffect, useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
+import { showError, showSuccess } from "@/utils/toast";
+import { Clock, MessageSquare, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 
 type Report = {
   id: string;
@@ -28,6 +33,12 @@ const Denuncias = () => {
   const [employees, setEmployees] = useState<Record<string, { id: string; first_name?: string; last_name?: string; email?: string }>>({});
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selected, setSelected] = useState<Report | null>(null);
+  
+  // Modal treatment states
+  const [newStatus, setNewStatus] = useState<string>("");
+  const [newComment, setNewComment] = useState<string>("");
+  const [comments, setComments] = useState<any[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -81,6 +92,85 @@ const Denuncias = () => {
   };
 
   const empName = (e?: { first_name?: string; last_name?: string }) => [e?.first_name, e?.last_name].filter(Boolean).join(" ");
+
+  // Load comments when modal opens
+  useEffect(() => {
+    if (detailsOpen && selected) {
+      setNewStatus(selected.status || "open");
+      loadComments(selected.id);
+    }
+  }, [detailsOpen, selected]);
+
+  const loadComments = async (reportId: string) => {
+    const { data } = await supabase
+      .from("denuncia_comments")
+      .select("*")
+      .eq("denuncia_id", reportId)
+      .order("created_at", { ascending: true });
+    setComments(data || []);
+  };
+
+  const handleSaveStatus = async () => {
+    if (!selected) return;
+    setIsSaving(true);
+    
+    const updates: any = { status: newStatus };
+    if (newStatus === "resolved") {
+      updates.treated = true;
+    }
+
+    const { error } = await supabase
+      .from("denuncias")
+      .update(updates)
+      .eq("id", selected.id);
+
+    if (error) {
+      showError("Erro ao atualizar status");
+      setIsSaving(false);
+      return;
+    }
+
+    // Add comment if provided
+    if (newComment.trim()) {
+      await supabase.from("denuncia_comments").insert({
+        denuncia_id: selected.id,
+        user_id: session?.user?.id,
+        comment: newComment.trim(),
+        status_changed_to: newStatus,
+      });
+      setNewComment("");
+    }
+
+    // Reload data
+    setItems(prev => prev.map(item => 
+      item.id === selected.id ? { ...item, status: newStatus, treated: newStatus === "resolved" } : item
+    ));
+    await loadComments(selected.id);
+    showSuccess("Status atualizado com sucesso");
+    setIsSaving(false);
+  };
+
+  const handleAddComment = async () => {
+    if (!selected || !newComment.trim()) return;
+    setIsSaving(true);
+
+    const { error } = await supabase.from("denuncia_comments").insert({
+      denuncia_id: selected.id,
+      user_id: session?.user?.id,
+      comment: newComment.trim(),
+    });
+
+    if (error) {
+      showError("Erro ao adicionar comentário");
+      setIsSaving(false);
+      return;
+    }
+
+    setNewComment("");
+    await loadComments(selected.id);
+    showSuccess("Comentário adicionado");
+    setIsSaving(false);
+  };
 
   const fmtStatusPtBR = (s?: string) => {
     if (!s) return "—";
@@ -175,72 +265,180 @@ const Denuncias = () => {
         </Table>
       </Card>
 
-      <Dialog open={detailsOpen} onOpenChange={(v) => { setDetailsOpen(v); if (!v) setSelected(null); }}>
-        <DialogContent className="sm:max-w-[600px] max-h-[95vh] overflow-y-auto">
+      <Dialog open={detailsOpen} onOpenChange={(v) => { setDetailsOpen(v); if (!v) { setSelected(null); setNewComment(""); } }}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detalhes da Denúncia</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5" />
+              Gerenciar Denúncia
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              ID: {selected?.id}
+            </p>
           </DialogHeader>
           {selected && (
-            <div className="space-y-4 py-1">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <div className="text-sm text-muted-foreground">Parceiro</div>
-                  <div className="text-sm">{partners[selected.partner_id!]?.name ?? "—"}</div>
+            <div className="space-y-6 py-2">
+              {/* Informações Básicas */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  Informações da Denúncia
+                </h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <div className="text-xs text-muted-foreground">Empresa</div>
+                    <div className="text-sm font-medium">{companies[selected.company_id!]?.name ?? "—"}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Data</div>
+                    <div className="text-sm">{fmtDate(selected.created_at)}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Funcionário</div>
+                    <div className="text-sm">{empName(employees[selected.employee_id!]) || employees[selected.employee_id!]?.email || "Anônimo"}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Setor</div>
+                    <div className="text-sm">{(selected as any).department || "—"}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Empresa</div>
-                  <div className="text-sm">{companies[selected.company_id!]?.name ?? "—"}</div>
+                <div className="mt-3">
+                  <div className="text-xs text-muted-foreground">Título</div>
+                  <div className="text-sm font-medium">{selected.title || "—"}</div>
                 </div>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <div className="text-sm text-muted-foreground">Funcionário</div>
-                  <div className="text-sm">{empName(employees[selected.employee_id!]) || employees[selected.employee_id!]?.email || "—"}</div>
+                <div className="mt-3">
+                  <div className="text-xs text-muted-foreground">Descrição</div>
+                  <div className="text-sm whitespace-pre-wrap">{(selected as any).description || "—"}</div>
                 </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Data</div>
-                  <div className="text-sm">{fmtDate(selected.created_at)}</div>
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground">Título</div>
-                <div className="text-sm">{selected.title || "—"}</div>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <div className="text-sm text-muted-foreground">Status</div>
-                  <div className="text-sm">{fmtStatusPtBR(selected.status)}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground">Tratada</div>
-                  <div className="text-sm">{(selected.treated ? "Sim" : "Não")}</div>
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Anexos</div>
-                {Array.isArray((selected as any).attachments) && (selected as any).attachments.length > 0 ? (
-                  <ul className="list-disc pl-5 space-y-1 text-sm">
-                    {(selected as any).attachments.map((p: string, idx: number) => (
-                      <li key={idx}>
-                        <a className="text-blue-600 underline" href={storagePublicUrl(p)} target="_blank" rel="noreferrer">
-                          {p.split("/").pop()}
+                {Array.isArray((selected as any).attachments) && (selected as any).attachments.length > 0 && (
+                  <div className="mt-3">
+                    <div className="text-xs text-muted-foreground mb-2">Anexos</div>
+                    <div className="flex flex-wrap gap-2">
+                      {(selected as any).attachments.map((p: string, idx: number) => (
+                        <a
+                          key={idx}
+                          href={storagePublicUrl(p)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center rounded border px-3 py-1 text-xs hover:bg-muted transition-colors"
+                        >
+                          📎 {p.split("/").pop()}
                         </a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-sm text-muted-foreground">Nenhum anexo</div>
+                      ))}
+                    </div>
+                  </div>
                 )}
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Linha do tempo</div>
-                <div className="space-y-2">
-                  <div className="text-xs">Criada: {fmtDate(selected.created_at)}</div>
-                  <div className="text-xs">Atualizada: {fmtDate((selected as any).updated_at)}</div>
+              </Card>
+
+              {/* Status e Tratamento */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  {selected.status === "resolved" ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : 
+                   selected.status === "rejected" ? <XCircle className="h-4 w-4 text-red-600" /> :
+                   <AlertCircle className="h-4 w-4 text-yellow-600" />}
+                  Status e Tratamento
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="text-xs text-muted-foreground">Status Atual</label>
+                      <Select value={newStatus} onValueChange={setNewStatus}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="open">Aberta</SelectItem>
+                          <SelectItem value="in_progress">Em andamento</SelectItem>
+                          <SelectItem value="resolved">Resolvida</SelectItem>
+                          <SelectItem value="rejected">Rejeitada</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Tratada</label>
+                      <div className="mt-2">
+                        {treatedBadge(selected)}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground">Adicionar Comentário/Nota</label>
+                    <Textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Descreva as ações tomadas, observações ou atualizações..."
+                      className="mt-1 resize-none"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handleSaveStatus} 
+                      disabled={isSaving || newStatus === selected.status}
+                      className="flex-1"
+                    >
+                      {isSaving ? "Salvando..." : "Atualizar Status"}
+                    </Button>
+                    {newComment.trim() && newStatus === selected.status && (
+                      <Button 
+                        onClick={handleAddComment} 
+                        disabled={isSaving}
+                        variant="outline"
+                      >
+                        Adicionar Comentário
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Card>
+
+              {/* Linha do Tempo / Histórico */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  Linha do Tempo
+                </h3>
+                <div className="space-y-3">
+                  {/* Evento de criação */}
+                  <div className="flex gap-3 pb-3 border-b">
+                    <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-500 mt-1.5"></div>
+                    <div className="flex-1">
+                      <div className="text-xs text-muted-foreground">{fmtDate(selected.created_at)}</div>
+                      <div className="text-sm font-medium">Denúncia criada</div>
+                      <div className="text-xs text-muted-foreground">Status inicial: {fmtStatusPtBR("open")}</div>
+                    </div>
+                  </div>
+
+                  {/* Comentários/Histórico */}
+                  {comments.map((comment, idx) => (
+                    <div key={idx} className="flex gap-3 pb-3 border-b last:border-0">
+                      <div className="flex-shrink-0 w-2 h-2 rounded-full bg-green-500 mt-1.5"></div>
+                      <div className="flex-1">
+                        <div className="text-xs text-muted-foreground">{fmtDate(comment.created_at)}</div>
+                        {comment.status_changed_to && (
+                          <div className="text-sm font-medium">
+                            Status alterado para: <Badge variant="outline">{fmtStatusPtBR(comment.status_changed_to)}</Badge>
+                          </div>
+                        )}
+                        {comment.comment && (
+                          <div className="text-sm mt-1 whitespace-pre-wrap">{comment.comment}</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {comments.length === 0 && (
+                    <div className="text-sm text-muted-foreground text-center py-4">
+                      Nenhum comentário ou atualização ainda
+                    </div>
+                  )}
+                </div>
+              </Card>
             </div>
           )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDetailsOpen(false)}>Fechar</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
