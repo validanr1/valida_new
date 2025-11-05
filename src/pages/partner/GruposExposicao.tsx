@@ -33,7 +33,10 @@ const GES = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
-  const [order, setOrder] = useState<string>("");
+  
+  // Delete confirmation modal
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
 
   const typeLabel = useMemo(() => {
     const n = (assessmentType?.name || "").toUpperCase();
@@ -96,7 +99,6 @@ const GES = () => {
     setName("");
     setDescription("");
     setStatus("active");
-    setOrder("");
     setOpen(true);
   };
 
@@ -105,7 +107,6 @@ const GES = () => {
     setName(it.name);
     setDescription((it as any).description || "");
     setStatus(it.status);
-    setOrder(String(it.order ?? ""));
     setOpen(true);
   };
 
@@ -125,7 +126,6 @@ const GES = () => {
       name: name.trim(),
       description: description.trim() || null,
       status,
-      order: Number(order) || null,
     };
     console.log("[GES] Salvando item:", payload);
     const { data, error } = await supabase.from("assessment_type_items").upsert(payload).select("id,name,status,order").single();
@@ -143,13 +143,6 @@ const GES = () => {
     });
     setOpen(false);
     showSuccess(editing ? "Item atualizado." : "Item criado.");
-  };
-
-  const deleteItem = async (it: Item) => {
-    const { error } = await supabase.from("assessment_type_items").delete().eq("id", it.id);
-    if (error) { showError("Falha ao excluir."); return; }
-    setItems((prev) => prev.filter((x) => x.id !== it.id));
-    showSuccess("Item excluído.");
   };
 
   return (
@@ -195,27 +188,15 @@ const GES = () => {
                     Máx. caracteres: {description.length}/255
                   </div>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Status</label>
-                    <Select value={status} onValueChange={(v: any) => setStatus(v)}>
-                      <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Ativo</SelectItem>
-                        <SelectItem value="inactive">Inativo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Ordem</label>
-                    <Input 
-                      type="number" 
-                      inputMode="numeric" 
-                      value={order} 
-                      onChange={(e) => setOrder(e.target.value)} 
-                      placeholder="1"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Status</label>
+                  <Select value={status} onValueChange={(v: any) => setStatus(v)}>
+                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Ativo</SelectItem>
+                      <SelectItem value="inactive">Inativo</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <DialogFooter>
@@ -231,7 +212,6 @@ const GES = () => {
             <TableRow className="bg-[#1B365D] hover:bg-[#1B365D]">
               <TableHead className="text-white first:rounded-tl-xl">Nome</TableHead>
               <TableHead className="text-white">Status</TableHead>
-              <TableHead className="text-white">Ordem</TableHead>
               <TableHead className="text-right text-white last:rounded-tr-xl">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -244,20 +224,52 @@ const GES = () => {
                     {it.status === "active" ? "Ativo" : "Inativo"}
                   </span>
                 </TableCell>
-                <TableCell>{typeof it.order === "number" ? it.order : "—"}</TableCell>
                 <TableCell className="text-right space-x-2">
                   <Button size="sm" variant="outline" onClick={() => openEdit(it)}>Editar</Button>
-                  <Button size="sm" variant="destructive" onClick={() => deleteItem(it)}>Excluir</Button>
+                  <Button size="sm" variant="destructive" onClick={() => { setItemToDelete(it); setDeleteOpen(true); }}>Excluir</Button>
                 </TableCell>
               </TableRow>
             )) : (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-sm text-muted-foreground">Nenhum item cadastrado para este tipo.</TableCell>
+                <TableCell colSpan={3} className="text-center text-sm text-muted-foreground">Nenhum item cadastrado para este tipo.</TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirmar exclusão</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Tem certeza que deseja excluir o item "{itemToDelete?.name}"?
+            </p>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancelar</Button>
+            <Button 
+              variant="destructive" 
+              onClick={async () => {
+                if (itemToDelete) {
+                  const { error } = await supabase.from("assessment_type_items").delete().eq("id", itemToDelete.id);
+                  if (error) { 
+                    showError("Falha ao excluir."); 
+                  } else {
+                    setItems((prev) => prev.filter((x) => x.id !== itemToDelete.id));
+                    showSuccess("Item excluído.");
+                    setDeleteOpen(false);
+                    setItemToDelete(null);
+                  }
+                }
+              }}
+            >
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
