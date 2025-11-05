@@ -187,7 +187,7 @@ const TopbarLayout = () => {
   const isCargos = location.pathname.startsWith("/partner/cargos");
   const isColabs = location.pathname.startsWith("/partner/colaboradores");
   const isDenuncias = location.pathname.startsWith("/partner/denuncias");
-  const isGES = location.pathname.startsWith("/partner/ges");
+  const isGruposExposicao = location.pathname.startsWith("/partner/grupos-exposicao");
   const isAvaliacoes = location.pathname.startsWith("/partner/avaliacoes");
   const isRelatorios = location.pathname.startsWith("/partner/reports");
   const isLinks = location.pathname.startsWith("/partner/links");
@@ -203,16 +203,16 @@ const TopbarLayout = () => {
     ];
     const t = (currentAssessmentTypeName || "").toUpperCase();
     if (t.includes("GHE")) {
-      items.push({ label: "GHE", to: "/partner/ges", active: isGES } as any);
+      items.push({ label: "GHE", to: "/partner/grupos-exposicao", active: isGruposExposicao } as any);
     } else if (t.includes("GES")) {
-      items.push({ label: "GES", to: "/partner/ges", active: isGES } as any);
+      items.push({ label: "GES", to: "/partner/grupos-exposicao", active: isGruposExposicao } as any);
     }
     items.push(
       { label: "Relatórios", to: "/partner/reports/overview", active: isRelatorios } as any,
       { label: "Links", to: "/partner/links", active: isLinks } as any,
     );
     return items;
-  }, [isPainel, isEmpresas, isSetores, isCargos, isColabs, isDenuncias, isGES, isAvaliacoes, isRelatorios, isLinks, currentAssessmentTypeName]);
+  }, [isPainel, isEmpresas, isSetores, isCargos, isColabs, isDenuncias, isGruposExposicao, isAvaliacoes, isRelatorios, isLinks, currentAssessmentTypeName]);
 
   const onLogout = async () => {
     console.log("[TopbarLayout] onLogout called. Initiating signOut.");

@@ -28,7 +28,7 @@ import PartnerDashboard from "./pages/partner/Dashboard";
 import PartnerSetores from "./pages/partner/Setores";
 import PartnerCargos from "./pages/partner/Cargos";
 import PartnerDenuncias from "./pages/partner/Denuncias";
-import PartnerGES from "./pages/partner/GES";
+import GruposExposicao from "./pages/partner/GruposExposicao";
 import PartnerLinks from "./pages/partner/Links";
 import PartnerPerfil from "./pages/partner/Perfil";
 import PartnerConfiguracoes from "./pages/partner/Configuracoes";
@@ -152,7 +152,7 @@ const AppContent = () => {
           <Route path="/partner/cargos" element={<PartnerRoute requiredPermissions={["partner:roles:read"]}><PartnerCargos /></PartnerRoute>} key="partner-cargos" />
           <Route path="/partner/colaboradores" element={<PartnerRoute requiredPermissions={["partner:employees:read"]}><Colaboradores /></PartnerRoute>} key="partner-colaboradores" />
           <Route path="/partner/denuncias" element={<PartnerRoute requiredPermissions={["partner:reports:view"]}><PartnerDenuncias /></PartnerRoute>} key="partner-denuncias" />
-          <Route path="/partner/ges" element={<PartnerRoute requiredPermissions={["partner:ges:view"]}><PartnerGES /></PartnerRoute>} key="partner-ges" />
+          <Route path="/partner/grupos-exposicao" element={<PartnerRoute requiredPermissions={["partner:ges:view"]}><GruposExposicao /></PartnerRoute>} key="partner-grupos-exposicao" />
           <Route path="/partner/avaliacoes" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><AssessmentsList /></PartnerRoute>} key="partner-assessments-list" /> {/* Rota para a lista de avaliações */}
           <Route path="/partner/reports/overview" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><ReportsOverview /></PartnerRoute>} key="partner-reports-overview" /> {/* Nova rota para o relatório geral */}
           <Route path="/partner/reports/individual/:assessmentId" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><IndividualReport /></PartnerRoute>} key="partner-individual-report" /> {/* Nova rota para o relatório individual */}
