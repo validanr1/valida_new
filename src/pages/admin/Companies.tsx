@@ -157,27 +157,36 @@ const Companies = () => {
       setResponsibleOptions([]);
       return;
     }
+    let mounted = true;
     (async () => {
       const { data: members, error } = await supabase
         .from("partner_members")
         .select("user_id")
         .eq("partner_id", partnerId);
       if (error || !members || members.length === 0) {
-        setResponsibleOptions([]);
+        console.log("[Companies] Nenhum membro encontrado para o parceiro:", partnerId, error);
+        if (mounted) setResponsibleOptions([]);
         return;
       }
       const userIds = members.map((m: any) => m.user_id);
-      const { data: profiles } = await supabase
+      const { data: profiles, error: profileError } = await supabase
         .from("profiles")
         .select("id, first_name, last_name")
         .in("id", userIds);
+      if (profileError) {
+        console.error("[Companies] Erro ao buscar profiles:", profileError);
+        if (mounted) setResponsibleOptions([]);
+        return;
+      }
       const opts =
         (profiles?.map((p: any) => ({
           id: p.id as string,
           label: [p.first_name, p.last_name].filter(Boolean).join(" ") || (p.id as string),
         })) as Array<{ id: string; label: string }>) ?? [];
-      setResponsibleOptions(opts);
+      console.log("[Companies] Responsáveis carregados:", opts);
+      if (mounted) setResponsibleOptions(opts);
     })();
+    return () => { mounted = false; };
   }, [partnerId]);
 
   const partnersById = useMemo(() => {
@@ -200,6 +209,15 @@ const Companies = () => {
     () => riskGrades.filter((g) => (g.status ?? "active") === "active"),
     [riskGrades],
   );
+
+  // Garantir que o responsibleUserId atual esteja nas options (mesmo que temporariamente)
+  const displayResponsibleOptions = useMemo(() => {
+    if (!responsibleUserId) return responsibleOptions;
+    const hasCurrentValue = responsibleOptions.some(opt => opt.id === responsibleUserId);
+    if (hasCurrentValue) return responsibleOptions;
+    // Se o valor atual não está nas options, adiciona temporariamente
+    return [{ id: responsibleUserId, label: "Carregando..." }, ...responsibleOptions];
+  }, [responsibleOptions, responsibleUserId]);
 
   const totalCompanies = useMemo(() => companies.length, [companies]);
 
@@ -395,13 +413,13 @@ const Companies = () => {
                   <Select
                     value={responsibleUserId}
                     onValueChange={setResponsibleUserId}
-                    disabled={!partnerId || responsibleOptions.length === 0}
+                    disabled={!partnerId || displayResponsibleOptions.length === 0}
                   >
                     <SelectTrigger className="h-10 focus-brand-glow">
-                      <SelectValue placeholder={!partnerId ? "Selecione um parceiro primeiro" : (responsibleOptions.length ? "Selecione o responsável" : "Nenhum responsável disponível")} />
+                      <SelectValue placeholder={!partnerId ? "Selecione um parceiro primeiro" : (displayResponsibleOptions.length ? "Selecione o responsável" : "Nenhum responsável disponível")} />
                     </SelectTrigger>
                     <SelectContent>
-                      {responsibleOptions.map((u) => (
+                      {displayResponsibleOptions.map((u) => (
                         <SelectItem key={u.id} value={u.id}>
                           {u.label}
                         </SelectItem>
