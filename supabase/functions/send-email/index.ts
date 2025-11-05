@@ -188,6 +188,201 @@ function getFallbackTemplate(action: string, data: any) {
     };
   }
   
+  if (action === 'send_activation_complete') {
+    return {
+      subject: "✅ Ativação Concluída - Bem-vindo à Valida NR1!",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f9fafb; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+            .button { display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 500; }
+            .button:hover { opacity: 0.9; }
+            .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>✅ Conta Ativada!</h1>
+            </div>
+            <div class="content">
+              <p>Parabéns, <strong>${data.first_name || 'Parceiro'}</strong>!</p>
+              <p>Sua conta foi ativada com sucesso. Você já pode começar a usar todos os recursos da plataforma.</p>
+              
+              <div style="text-align: center;">
+                <a href="${data.dashboard_link || 'https://painel.validanr1.com.br'}" class="button">Acessar Painel</a>
+              </div>
+
+              <p><strong>Recursos disponíveis:</strong></p>
+              <ul>
+                <li>Gerenciamento de empresas e colaboradores</li>
+                <li>Criação e envio de avaliações</li>
+                <li>Relatórios e análises detalhadas</li>
+                <li>Planos de ação personalizados</li>
+              </ul>
+
+              <p>Bom trabalho!<br><strong>Equipe Valida NR1</strong></p>
+            </div>
+            <div class="footer">
+              <p>Este é um e-mail automático. Por favor, não responda.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+  }
+  
+  if (action === 'send_suspension') {
+    return {
+      subject: "⚠️ Conta Temporariamente Suspensa",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f9fafb; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+            .alert { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
+            .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>⚠️ Conta Suspensa</h1>
+            </div>
+            <div class="content">
+              <p>Olá, <strong>${data.first_name || 'Parceiro'}</strong>,</p>
+              <p>Informamos que a conta do parceiro <strong>${data.partner_name || 'sua empresa'}</strong> foi temporariamente suspensa.</p>
+              
+              <div class="alert">
+                <p><strong>Motivo:</strong> ${data.reason || "Pendências administrativas"}</p>
+              </div>
+
+              <p><strong>O que isso significa?</strong></p>
+              <p>Seu acesso à plataforma está temporariamente bloqueado até que a situação seja regularizada.</p>
+
+              <p><strong>Como resolver?</strong></p>
+              <p>Entre em contato com nosso suporte:</p>
+              <ul>
+                <li>📱 WhatsApp: ${data.support_whatsapp || "(consulte seu contato)"}</li>
+                <li>📧 E-mail: suporte@validanr1.com.br</li>
+              </ul>
+
+              <p>Atenciosamente,<br><strong>Equipe Valida NR1</strong></p>
+            </div>
+            <div class="footer">
+              <p>Este é um e-mail automático. Por favor, não responda.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+  }
+  
+  if (action === 'send_reactivation') {
+    return {
+      subject: "✅ Conta Reativada - Acesso Liberado",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f9fafb; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+            .button { display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 500; }
+            .button:hover { opacity: 0.9; }
+            .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>✅ Conta Reativada!</h1>
+            </div>
+            <div class="content">
+              <p>Olá, <strong>${data.first_name || 'Parceiro'}</strong>,</p>
+              <p>Ótimas notícias! A conta do parceiro <strong>${data.partner_name || 'sua empresa'}</strong> foi reativada.</p>
+              
+              <p>Seu acesso à plataforma foi totalmente restaurado e você já pode voltar a usar todos os recursos.</p>
+
+              <div style="text-align: center;">
+                <a href="${data.dashboard_link || 'https://painel.validanr1.com.br'}" class="button">Acessar Painel</a>
+              </div>
+
+              <p>Obrigado pela compreensão!<br><strong>Equipe Valida NR1</strong></p>
+            </div>
+            <div class="footer">
+              <p>Este é um e-mail automático. Por favor, não responda.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+  }
+  
+  if (action === 'send_inactivation') {
+    return {
+      subject: "❌ Conta Inativada",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: #f9fafb; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px; }
+            .alert { background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px; }
+            .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>❌ Conta Inativada</h1>
+            </div>
+            <div class="content">
+              <p>Olá, <strong>${data.first_name || 'Parceiro'}</strong>,</p>
+              <p>Informamos que a conta do parceiro <strong>${data.partner_name || 'sua empresa'}</strong> foi inativada.</p>
+              
+              <div class="alert">
+                <p><strong>Motivo:</strong> ${data.reason || "Inativação administrativa"}</p>
+              </div>
+
+              <p>Se você acredita que isso é um erro ou deseja reativar sua conta, entre em contato com nosso suporte:</p>
+              <ul>
+                <li>📧 E-mail: suporte@validanr1.com.br</li>
+              </ul>
+
+              <p>Atenciosamente,<br><strong>Equipe Valida NR1</strong></p>
+            </div>
+            <div class="footer">
+              <p>Este é um e-mail automático. Por favor, não responda.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+  }
+  
   // Retornar template padrão genérico se não encontrar
   return {
     subject: 'Notificação',
