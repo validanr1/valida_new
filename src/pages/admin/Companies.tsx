@@ -411,8 +411,8 @@ const Companies = () => {
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Selecionar Responsável</div>
                   <Select
-                    value={responsibleUserId}
-                    onValueChange={setResponsibleUserId}
+                    value={responsibleUserId || ""}
+                    onValueChange={(val) => setResponsibleUserId(val || undefined)}
                     disabled={!partnerId || displayResponsibleOptions.length === 0}
                   >
                     <SelectTrigger className="h-10 focus-brand-glow">
