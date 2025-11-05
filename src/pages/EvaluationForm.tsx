@@ -597,17 +597,6 @@ const EvaluationForm = () => {
                 </Select>
               </div>
             )}
-
-            <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${!formEnabled ? "pointer-events-none opacity-60" : ""}`}>
-              <div className="space-y-2 md:col-span-2">
-                <Label>{typeLabel}</Label>
-                <Input
-                  value={assessmentTypeName ?? "—"}
-                  disabled
-                  className="h-10 rounded-xl"
-                />
-              </div>
-            </div>
           </div>
         ) : sortedCategories.length === 0 ? (
           <div className="text-center text-muted-foreground p-6">
