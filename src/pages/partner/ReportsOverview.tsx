@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/integrations/supabase/SupabaseProvider';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { showError, showSuccess } from '@/utils/toast';
+import html2pdf from 'html2pdf.js';
 
 import ReportLegend from '@/components/reports/ReportLegend';
 import OverallScoreCard from '@/components/reports/OverallScoreCard';
@@ -421,7 +422,7 @@ const ReportsOverview = () => {
     }
   };
 
-  const handleGeneratePdf = () => {
+  const handleGeneratePdf = async () => {
     try {
       const node = document.getElementById('report-content');
       if (!node) {
@@ -429,53 +430,44 @@ const ReportsOverview = () => {
         return;
       }
 
-      const html = `<!DOCTYPE html>
-      <html lang="pt-BR">
-        <head>
-          <meta charset="utf-8" />
-          <title>Relatório de Avaliação - ${company?.name || 'Empresa'}</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-          <style>
-            body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 20px; }
-            .page-break { page-break-before: always; }
-            .print-break { page-break-before: always; }
-            .avoid-break { break-inside: avoid; page-break-inside: avoid; }
-            @media print { .no-print { display: none !important; } }
-            /* Garantir contraste e bordas básicas */
-            .card-print { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #e5e7eb; padding: 6px 8px; }
-          </style>
-        </head>
-        <body>
-          <div class="container mx-auto p-4">
-            ${node.innerHTML}
-          </div>
-          <div class="no-print fixed bottom-4 right-4">
-            <button onclick="window.print()" class="px-3 py-2 border rounded-md">Imprimir / Salvar PDF</button>
-            <button onclick="window.close()" class="ml-2 px-3 py-2 border rounded-md">Fechar</button>
-          </div>
-          <script>
-            window.onload = function() {
-              // Tentar aguardar imagens/gráficos carregarem antes de imprimir automaticamente
-              setTimeout(function(){ try { window.print(); } catch(e) { /* no-op */ } }, 400);
-            };
-          </script>
-        </body>
-      </html>`;
+      showSuccess('Gerando PDF... Aguarde.');
 
-      const w = window.open('', '_blank');
-      if (!w) {
-        showError('Popup bloqueado. Permita popups para gerar o PDF.');
-        return;
-      }
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
+      // Clone o elemento para não afetar a página
+      const clone = node.cloneNode(true) as HTMLElement;
+      
+      // Remove elementos que não devem aparecer no PDF
+      clone.querySelectorAll('.no-print').forEach(el => el.remove());
+
+      // Configurações do html2pdf
+      const opt = {
+        margin: [10, 10, 10, 10] as [number, number, number, number],
+        filename: `Relatorio_${company?.name || 'Empresa'}_${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait' as const
+        },
+        pagebreak: { 
+          mode: ['avoid-all', 'css', 'legacy'],
+          before: '.print-break',
+          avoid: '.avoid-break'
+        }
+      };
+
+      // Gera e faz download do PDF
+      await html2pdf().set(opt).from(clone).save();
+      
+      showSuccess('PDF gerado com sucesso!');
     } catch (e) {
       console.error('Falha ao gerar PDF:', e);
-      showError('Falha ao gerar o PDF.');
+      showError('Falha ao gerar o PDF. Tente novamente.');
     }
   };
 
