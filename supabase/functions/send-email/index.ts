@@ -38,14 +38,18 @@ function replaceVariables(template: string, data: Record<string, any>): string {
   
   // Substituir variáveis simples {{variable}}
   Object.keys(data).forEach(key => {
-    const regex = new RegExp(`{{${key}}}`, 'g');
-    result = result.replace(regex, data[key] || '');
+    const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+    const value = data[key] !== undefined && data[key] !== null ? String(data[key]) : '';
+    result = result.replace(regex, value);
   });
   
   // Processar condicionais simples {{#if variable}}...{{/if}}
-  result = result.replace(/{{#if\s+(\w+)}}(.*?){{\/if}}/gs, (match, variable, content) => {
+  result = result.replace(/\{\{#if\s+(\w+)\}\}(.*?)\{\{\/if\}\}/gs, (match, variable, content) => {
     return data[variable] ? content : '';
   });
+  
+  // Remover quaisquer variáveis não substituídas (fallback de segurança)
+  result = result.replace(/\{\{[^}]+\}\}/g, '');
   
   return result;
 }
