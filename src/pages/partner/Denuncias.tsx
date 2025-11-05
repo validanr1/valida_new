@@ -116,7 +116,7 @@ const Denuncias = () => {
     
     const updates: any = { status: newStatus };
     if (newStatus === "resolved") {
-      updates.treated = true;
+      updates.tratada = true; // Campo em português
     }
 
     const { error } = await supabase
@@ -125,7 +125,8 @@ const Denuncias = () => {
       .eq("id", selected.id);
 
     if (error) {
-      showError("Erro ao atualizar status");
+      console.error("[Denuncias] Erro ao atualizar status:", error);
+      showError(`Erro ao atualizar status: ${error.message}`);
       setIsSaving(false);
       return;
     }
