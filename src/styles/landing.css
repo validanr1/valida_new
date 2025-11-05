@@ -10,6 +10,11 @@
     box-sizing: border-box;
 }
 
+/* ==================== SMOOTH SCROLL ==================== */
+html {
+    scroll-behavior: smooth;
+}
+
 /* ==================== CSS VARIABLES ==================== */
 .landing-page-container {
     /* Core Brand Colors */
@@ -961,10 +966,6 @@
     grid-template-columns: 1fr;
     gap: 2rem;
     margin-bottom: 3rem;
-}
-
-.landing-page-container .footer-col {
-    /* This class is a grid item, no specific styles needed if using grid */
 }
 
 .landing-page-container .footer-logo {
