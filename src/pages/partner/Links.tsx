@@ -184,6 +184,8 @@ const Links = () => {
     );
   }
 
+  const linkTrackReport = `${currentOrigin}/acompanhar-denuncia`;
+
   return (
     <div className="space-y-6 p-6">
       <h1 className="text-xl font-semibold">Links de Acesso</h1>
@@ -246,6 +248,33 @@ const Links = () => {
               Abrir <ExternalLink className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+      </Card>
+
+      <Card className="p-4">
+        <div className="mb-4">
+          <h2 className="text-base font-medium">Link de Acompanhamento de Denúncia</h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Página pública onde o denunciante pode acompanhar o status usando o protocolo
+          </p>
+        </div>
+        <div className="space-y-2 rounded-lg border p-4 bg-background/80">
+          <div className="flex items-center gap-2">
+            <Input
+              value={linkTrackReport}
+              readOnly
+              className="flex-1"
+            />
+            <Button variant="outline" onClick={() => safeCopy(linkTrackReport)} className="flex items-center gap-2">
+              <Copy className="h-4 w-4" /> Copiar
+            </Button>
+            <Button onClick={() => window.open(linkTrackReport, "_blank")} className="bg-[#1B365D] text-white flex items-center gap-2">
+              Abrir <ExternalLink className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            💡 Compartilhe este link com os denunciantes para que possam acompanhar suas denúncias
+          </p>
         </div>
       </Card>
     </div>

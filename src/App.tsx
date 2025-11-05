@@ -42,6 +42,7 @@ import { useSession } from "./integrations/supabase/SupabaseProvider";
 import LoadingSpinner from "./components/LoadingSpinner";
 import DenunciationForm from "./pages/DenunciationForm";
 import EvaluationForm from "./pages/EvaluationForm";
+import TrackReport from "./pages/public/TrackReport";
 // Supabase client will be dynamically imported only if env vars are present
 
 // Novas importações para relatórios
@@ -117,6 +118,7 @@ const AppContent = () => {
         <Route path="/auth/callback" element={<AuthCallback />} key="auth-callback" />
         <Route path="/set-password" element={<SetPassword />} key="set-password" />
         <Route path="/denuncia" element={<DenunciationForm />} key="denuncia-form" />
+        <Route path="/acompanhar-denuncia" element={<TrackReport />} key="track-report" />
         <Route path="/avaliacao" element={<EvaluationForm />} key="evaluation-form" />
         <Route path="/cadastro-parceiro" element={<PartnerSignup />} key="partner-signup" />
         <Route path="/interesse-parceiro" element={<PartnerLead />} key="partner-lead" />
