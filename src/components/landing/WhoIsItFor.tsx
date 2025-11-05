@@ -73,7 +73,9 @@ const WhoIsItFor = () => {
                     <li key={featureIndex}>{feature}</li>
                   ))}
                 </ul>
-                <Button className="btn btn-hero btn-full mt-auto">{audience.cta}</Button>
+                <a href="#planos">
+                  <Button className="btn btn-hero btn-full mt-auto">{audience.cta}</Button>
+                </a>
               </Card>
             );
           })}

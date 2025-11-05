@@ -19,11 +19,11 @@ const HeroSection = () => {
             Transforme a gestão de riscos psicossociais da sua empresa com nossa plataforma inteligente. Conformidade garantida com <span className="text-teal">NR-01</span> e <span className="text-teal">ISO 45003</span>, processos automatizados e relatórios auditáveis em tempo real.
           </p>
           <div className="hero-ctas">
-            <Link to="/login">
+            <a href="#planos">
               <Button className="btn btn-hero btn-lg">
-                <CheckCircle className="h-5 w-5" /> Criar conta gratuita
+                <CheckCircle className="h-5 w-5" /> Implementar na empresa
               </Button>
-            </Link>
+            </a>
             <Button variant="secondary" className="btn btn-secondary btn-lg">
               <PlayCircle className="h-5 w-5" /> Assistir demo
             </Button>
