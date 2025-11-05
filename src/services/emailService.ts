@@ -37,9 +37,15 @@ export const emailService = {
   
   // New helper: send email via Edge Function with action-based payload
   sendEdgeNotificationEmail: async (payload: { action: string; recipient_email: string; data?: Record<string, any> }): Promise<any> => {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.access_token) {
+      throw new Error("Sessão não encontrada para enviar notificação.");
+    }
+
     const response = await fetch(SUPABASE_EDGE_FUNCTION_BASE_URL, {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${session.access_token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ action: payload.action, recipient_email: payload.recipient_email, data: payload.data || {} }),
