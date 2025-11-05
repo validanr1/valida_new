@@ -47,6 +47,8 @@ type ActionPlan = {
   is_global: boolean;
   partner_id: string | null;
   show_in_report?: boolean;
+  score_min?: number | null;
+  score_max?: number | null;
 };
 
 const defaultTemplate = `Relatório Narrativo — {{empresa.nome}}
@@ -232,41 +234,67 @@ const NewTemplateReport = () => {
 
       setProcessedCategories(cats);
 
-      // Load Action Plans from DB (Partner > Global; filter show_in_report)
+      // Load Action Plans from DB (Partner > Global; filter show_in_report and score range)
       const [catsRes, partnerRes, globalRes] = await Promise.all([
-        supabase.from('action_plan_categories').select('id,name').order('name', { ascending: true }),
+        supabase
+          .from('question_categories')
+          .select('id,name')
+          .order('name', { ascending: true }),
         supabase
           .from('action_plans')
-          .select('id,category_id,description,is_global,partner_id,show_in_report')
+          .select('id,category_id,description,is_global,partner_id,show_in_report,score_min,score_max')
           .eq('is_global', false)
           .eq('partner_id', partnerId)
           .eq('show_in_report', true),
         supabase
           .from('action_plans')
-          .select('id,category_id,description,is_global,partner_id,show_in_report')
+          .select('id,category_id,description,is_global,partner_id,show_in_report,score_min,score_max')
           .eq('is_global', true)
           .eq('show_in_report', true),
       ]);
       if (catsRes.error || partnerRes.error || globalRes.error) {
         throw catsRes.error || partnerRes.error || globalRes.error;
       }
+      
       const catsDb = (catsRes.data as ActionPlanCategory[]) || [];
-      setApCategories(catsDb);
       const partnerByCat: Record<string, ActionPlan[]> = {};
       ((partnerRes.data as ActionPlan[]) || []).forEach((p) => {
         const k = p.category_id || 'uncat';
         (partnerByCat[k] ||= []).push(p);
       });
+      
       const globalByCat: Record<string, ActionPlan[]> = {};
       ((globalRes.data as ActionPlan[]) || []).forEach((p) => {
         const k = p.category_id || 'uncat';
         (globalByCat[k] ||= []).push(p);
       });
+      
+      // Build map of category average scores
+      const catAvgMap = new Map<string, number>();
+      cats.forEach(c => { catAvgMap.set(c.id, c.averageScore); });
+      
+      // Decide final plans per category: partner first; else global filtered by score band
       const finalByCat: Record<string, ActionPlan[]> = {};
-      catsDb.forEach((c: ActionPlanCategory) => {
+      catsDb.forEach((c) => {
         const k = c.id;
-        finalByCat[k] = partnerByCat[k] && partnerByCat[k].length ? partnerByCat[k] : (globalByCat[k] || []);
+        const partnerItems = partnerByCat[k] || [];
+        if (partnerItems.length) {
+          finalByCat[k] = partnerItems;
+        } else {
+          const avg = catAvgMap.get(k);
+          const globals = (globalByCat[k] || []).filter(g => {
+            if (avg == null) return false;
+            const min = typeof g.score_min === 'number' ? g.score_min : 0;
+            const max = typeof g.score_max === 'number' ? g.score_max : 100;
+            return avg >= min && avg <= max;
+          });
+          finalByCat[k] = globals;
+        }
       });
+      
+      // Show only categories that have plans to display
+      const catsWithPlans = catsDb.filter(c => (finalByCat[c.id] || []).length > 0);
+      setApCategories(catsWithPlans);
       setApByCategory(finalByCat);
     } catch (e) {
       console.error("[NewTemplateReport] Erro ao carregar dados:", e);
@@ -665,6 +693,41 @@ const NewTemplateReport = () => {
             </Card>
           ))}
         </div>
+
+        {/* Plano de Ação (only if overall score < 75) */}
+        {overallAverageScore !== null && overallAverageScore < 75 && apCategories.length > 0 && (
+          <div className="space-y-4 print-break">
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold mb-4">Anexo III – Plano de Ação e Monitoramento</h3>
+              {apCategories.map((cat) => {
+                const items = apByCategory[cat.id] || [];
+                if (!items.length) return null;
+                const catAvg = processedCategories.find(c => c.id === cat.id)?.averageScore ?? null;
+                const risk = (() => {
+                  if (catAvg === null) return { label: 'Sem dados', color: 'text-slate-500' };
+                  if (catAvg < 40) return { label: 'Risco Elevado (Zona Vermelha)', color: 'text-red-600' };
+                  if (catAvg < 75) return { label: 'Risco Moderado (Zona Amarela)', color: 'text-amber-600' };
+                  return { label: 'Risco Baixo (Zona Verde)', color: 'text-green-600' };
+                })();
+                return (
+                  <div key={cat.id} className="rounded-lg border p-4 mb-4 avoid-break">
+                    <div className="mb-3">
+                      <div className="font-semibold text-lg">{cat.name}</div>
+                      <div className="text-sm text-slate-700 mt-1">
+                        <span className="font-medium">Média:</span> {typeof catAvg==='number' ? catAvg.toFixed(1) : '—'}% • <span className={`font-medium ${risk.color}`}>{risk.label}</span>
+                      </div>
+                    </div>
+                    <ul className="list-disc ml-5 space-y-2 text-sm text-slate-700">
+                      {items.map((item) => (
+                        <li key={item.id}>{item.description}</li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
