@@ -584,10 +584,16 @@ const Partners = () => {
           .select("user_id")
           .eq("partner_id", savedPartner.id)
           .maybeSingle();
+        
+        console.log('[Partners] partner_members query result:', { memberRow, error: memberErr?.message });
+        
         if (memberErr) {
           console.warn("[Partners] Falha ao obter partner_members:", memberErr.message);
         }
         responsibleUserId = memberRow?.user_id as string | undefined;
+        
+        console.log('[Partners] responsibleUserId:', responsibleUserId);
+        
         if (responsibleUserId) {
           await userManagementService.updateUser({
             userId: responsibleUserId,
@@ -602,6 +608,8 @@ const Partners = () => {
       // Enviar email se o status mudou
       if (previousStatus && previousStatus !== status && savedPartner.responsible_email) {
         try {
+          console.log('[Partners] Sending email for status change. responsibleUserId:', responsibleUserId);
+          
           // Buscar nome do usuário responsável da tabela profiles
           let firstName = 'Parceiro';
           let lastName = '';
@@ -612,6 +620,8 @@ const Partners = () => {
               .eq('id', responsibleUserId)
               .maybeSingle();
             
+            console.log('[Partners] Profile query result:', { profile, error: profileError?.message });
+            
             if (!profileError && profile) {
               const profileData = profile as { first_name?: string; last_name?: string };
               if (profileData.first_name) {
@@ -621,7 +631,11 @@ const Partners = () => {
                 lastName = profileData.last_name;
               }
             }
+          } else {
+            console.warn('[Partners] No responsibleUserId found, using fallback name');
           }
+          
+          console.log('[Partners] Email data:', { firstName, lastName });
 
           const emailData = {
             first_name: firstName,
