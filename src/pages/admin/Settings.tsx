@@ -58,7 +58,7 @@ const Settings = () => {
     };
     loadInitialSettings();
     return () => { mounted = false; };
-  }, [session?.user_id]);
+  }, [session?.user?.id]);
 
   const onFileChange = (file: File, which: "primary" | "negative") => {
     const reader = new FileReader();
@@ -248,6 +248,20 @@ const Settings = () => {
                   onChange={(e) => setSettings((s) => (s ? { ...s, supportEmail: e.target.value } : null))}
                   className="h-10 rounded-xl"
                 />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-medium">E-mail para Notificações (Logins e Cadastros)</label>
+                <Input
+                  type="email"
+                  placeholder="ex.: admin@validanr1.com.br"
+                  value={settings.leadsNotifyEmail ?? ""}
+                  onChange={(e) => setSettings((s) => (s ? { ...s, leadsNotifyEmail: e.target.value } : null))}
+                  className="h-10 rounded-xl"
+                />
+                <p className="text-xs text-muted-foreground">
+                  E-mail que receberá notificações automáticas de novos logins e cadastros de parceiros.
+                </p>
               </div>
             </div>
 
