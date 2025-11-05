@@ -202,7 +202,9 @@ const TopbarLayout = () => {
       { label: "Denúncias", to: "/partner/denuncias", active: isDenuncias },
     ];
     const t = (currentAssessmentTypeName || "").toUpperCase();
-    if (t.includes("GES")) {
+    if (t.includes("GHE")) {
+      items.push({ label: "GHE", to: "/partner/ges", active: isGES } as any);
+    } else if (t.includes("GES")) {
       items.push({ label: "GES", to: "/partner/ges", active: isGES } as any);
     }
     items.push(
