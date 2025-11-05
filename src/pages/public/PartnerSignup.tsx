@@ -85,7 +85,14 @@ const PartnerSignup = () => {
       // Fire-and-forget admin notification (non-blocking)
       getSettings().then((settings) => {
         const recipient = settings.leadsNotifyEmail || settings.supportEmail || settings.emailFromAddress;
+        console.log('[PartnerSignup] DEBUG - settings:', { 
+          leadsNotifyEmail: settings.leadsNotifyEmail, 
+          supportEmail: settings.supportEmail, 
+          emailFromAddress: settings.emailFromAddress,
+          recipient 
+        });
         if (recipient) {
+          console.log('[PartnerSignup] Enviando notificação para:', recipient);
           emailService.sendEdgeNotificationEmail({
             action: 'notify_signup',
             recipient_email: recipient,
@@ -98,6 +105,8 @@ const PartnerSignup = () => {
           }).catch((e) => {
             console.warn('[PartnerSignup] notify_signup email failed (non-blocking):', e);
           });
+        } else {
+          console.warn('[PartnerSignup] Nenhum recipient configurado - notificação não enviada');
         }
       }).catch((e) => {
         console.warn('[PartnerSignup] getSettings failed (non-blocking):', e);

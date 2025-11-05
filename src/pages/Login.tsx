@@ -117,7 +117,14 @@ const Login = () => {
       showSuccess("Login realizado com sucesso. Redirecionando...");
       // Fire-and-forget admin notification (non-blocking)
       const recipient = settings.leadsNotifyEmail || settings.supportEmail || settings.emailFromAddress;
+      console.log('[Login] DEBUG - settings:', { 
+        leadsNotifyEmail: settings.leadsNotifyEmail, 
+        supportEmail: settings.supportEmail, 
+        emailFromAddress: settings.emailFromAddress,
+        recipient 
+      });
       if (recipient) {
+        console.log('[Login] Enviando notificação para:', recipient);
         emailService.sendEdgeNotificationEmail({
           action: 'notify_login',
           recipient_email: recipient,
@@ -129,6 +136,8 @@ const Login = () => {
         }).catch((e) => {
           console.warn('[Login] notify_login email failed (non-blocking):', e);
         });
+      } else {
+        console.warn('[Login] Nenhum recipient configurado - notificação não enviada');
       }
     }
   };
