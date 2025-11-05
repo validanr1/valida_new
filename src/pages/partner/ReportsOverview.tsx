@@ -70,7 +70,6 @@ const ReportsOverview = () => {
   const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
   const [tab, setTab] = useState<'saved'|'overview'|'individuals'>('overview');
   const [partnerLogo, setPartnerLogo] = useState<string | null>(null);
-  const [platformLogo, setPlatformLogo] = useState<string | null>(null);
   // DB Action Plans state
   const [apCategories, setApCategories] = useState<ActionPlanCategory[]>([]);
   const [apByCategory, setApByCategory] = useState<Record<string, ActionPlan[]>>({});
@@ -102,21 +101,13 @@ const ReportsOverview = () => {
       if (companyError) throw companyError;
       setCompany((companyData as Company) || null);
 
-      // Fetch partner logo
+      // Fetch partner logo (campo correto: logo_data_url)
       const { data: partnerData } = await supabase
         .from("partners")
-        .select("logo_primary_data_url")
+        .select("logo_data_url")
         .eq("id", partnerId)
         .maybeSingle();
-      setPartnerLogo(partnerData?.logo_primary_data_url ?? null);
-
-      // Fetch platform logo
-      const { data: platformData } = await supabase
-        .from("platform_settings")
-        .select("logo_primary_data_url")
-        .limit(1)
-        .maybeSingle();
-      setPlatformLogo(platformData?.logo_primary_data_url ?? null);
+      setPartnerLogo(partnerData?.logo_data_url ?? null);
 
       const { data: assessmentsData, error: assessmentsError } = await supabase.from("assessments").select("id,company_id,score,created_at").eq("company_id", companyId).eq("partner_id", partnerId);
       if (assessmentsError) throw assessmentsError;
@@ -465,11 +456,10 @@ const ReportsOverview = () => {
         box-sizing: border-box;
       `;
 
-      // Logo (parceiro prioritário, plataforma como fallback)
-      const logoToUse = partnerLogo || platformLogo;
-      if (logoToUse) {
+      // Logo do parceiro apenas
+      if (partnerLogo) {
         const logoImg = document.createElement('img');
-        logoImg.src = logoToUse;
+        logoImg.src = partnerLogo;
         logoImg.style.cssText = 'max-width: 400px; max-height: 200px; margin-bottom: 80px; object-fit: contain;';
         coverPage.appendChild(logoImg);
       }
