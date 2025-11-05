@@ -19,6 +19,7 @@ type Question = { id: string; category_id?: string | null; text: string; kind?: 
 type ScaleItem = { id: string; label: string; value: number; order: number };
 type Department = { id: string; name: string };
 type Role = { id: string; name: string; department_id?: string };
+type AssessmentItem = { id: string; name: string; description?: string };
 
 type Demographics = {
   firstName: string;
@@ -26,6 +27,7 @@ type Demographics = {
   gender: string;
   department: string; // ID do departamento
   role: string;       // ID do cargo
+  assessmentItem: string; // ID do item GES/GHE
 };
 
 type Answer = {
@@ -55,6 +57,7 @@ const EvaluationForm = () => {
   const [answerScale, setAnswerScale] = useState<ScaleItem[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
+  const [assessmentItems, setAssessmentItems] = useState<AssessmentItem[]>([]);
 
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -64,6 +67,7 @@ const EvaluationForm = () => {
     gender: "",
     department: sectorParam,
     role: positionParam,
+    assessmentItem: "",
   });
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
 
@@ -161,6 +165,18 @@ const EvaluationForm = () => {
       setAnswerScale((scaleData as ScaleItem[]) || []);
       setDepartments((departmentsData as Department[]) || []);
       setRoles((rolesData as Role[]) || []);
+
+      // Buscar itens GES/GHE se a empresa tiver assessment_type_id
+      if (comp?.assessment_type_id && comp?.partner_id) {
+        const { data: itemsData } = await supabase
+          .from("assessment_type_items")
+          .select("id,name,description")
+          .eq("partner_id", comp.partner_id)
+          .eq("assessment_type_id", comp.assessment_type_id)
+          .eq("status", "active")
+          .order("name", { ascending: true });
+        setAssessmentItems((itemsData as AssessmentItem[]) || []);
+      }
 
       const globalSettings = await getSettings();
       setPlatformName(globalSettings.platformName);
@@ -313,9 +329,10 @@ const EvaluationForm = () => {
     const rawAverageScore = answeredQuestionsCount > 0 ? totalScore / answeredQuestionsCount : 0;
     const averageScore = Math.round(rawAverageScore * 10) / 10; // Arredonda para 1 casa decimal, mantendo como número
 
-    // Mapear IDs de departamento e cargo para seus nomes antes de enviar
+    // Mapear IDs de departamento, cargo e item GES/GHE para seus nomes antes de enviar
     const departmentName = departments.find(d => d.id === demographics.department)?.name || demographics.department;
     const roleName = roles.find(r => r.id === demographics.role)?.name || demographics.role;
+    const assessmentItemName = assessmentItems.find(i => i.id === demographics.assessmentItem)?.name || null;
 
     const payload = {
       company_id: company.id,
@@ -326,6 +343,7 @@ const EvaluationForm = () => {
       department: departmentName,
       role: roleName,
       assessment_type_name: assessmentTypeName || null,
+      assessment_item: assessmentItemName, // Nome do item GES/GHE selecionado
       answers,
       averageScore,
     };
@@ -559,6 +577,26 @@ const EvaluationForm = () => {
                 </Select>
               </div>
             </div>
+
+            {/* Seletor de Item GES/GHE */}
+            {assessmentItems.length > 0 && (
+              <div className={`space-y-2 ${!formEnabled ? "pointer-events-none opacity-60" : ""}`}>
+                <Label htmlFor="assessmentItem">{typeLabel}</Label>
+                <Select value={demographics.assessmentItem} onValueChange={(v) => handleDemographicsChange("assessmentItem", v)}>
+                  <SelectTrigger id="assessmentItem" className="h-10 rounded-xl" disabled={!formEnabled}>
+                    <SelectValue placeholder={`Selecione o ${typeLabel}...`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assessmentItems.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.name}
+                        {item.description && <span className="text-xs text-muted-foreground ml-2">- {item.description}</span>}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${!formEnabled ? "pointer-events-none opacity-60" : ""}`}>
               <div className="space-y-2 md:col-span-2">

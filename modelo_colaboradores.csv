@@ -1,0 +1,4 @@
+first_name,last_name,email,cpf_cnpj,registration_number,phone,date_of_birth,admission_date,department,role,gender,education_level,status
+Joao,Silva,joao.silva@empresa.com,12345678909,MAT-001,(82) 99999-9999,1990-05-20,2020-01-10,Operacional,Auxiliar,masculino,medio,active
+Maria,Souza,maria.souza@empresa.com,98765432100,MAT-002,(11) 98888-7777,1988-10-05,2021-03-15,Administrativo,Assistente,feminino,superior,inactive
+Mário,Soares,mario.soares@gmail.com,98765432100,MAT-002,(11) 98888-7777,1988-10-05,2021-03-15,Administrativo,Assistente,feminino,superior,inactive
