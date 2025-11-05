@@ -449,11 +449,13 @@ const ReportsOverview = () => {
         align-items: center;
         justify-content: center;
         width: 100%;
-        height: 100vh;
+        height: 297mm;
         padding: 20px;
         text-align: center;
         background: #ffffff;
         box-sizing: border-box;
+        page-break-after: always;
+        break-after: page;
       `;
 
       // Logo do parceiro apenas
@@ -488,16 +490,13 @@ const ReportsOverview = () => {
       
       // Remove elementos que não devem aparecer no PDF
       clone.querySelectorAll('.no-print').forEach(el => el.remove());
+      
+      // Adiciona espaçamento e garante que comece em nova página
+      clone.style.cssText = 'page-break-before: always; padding-top: 20px;';
 
       // Container final com capa + conteúdo
       const finalContainer = document.createElement('div');
       finalContainer.appendChild(coverPage);
-      
-      // Adiciona quebra de página após a capa
-      const pageBreak = document.createElement('div');
-      pageBreak.style.cssText = 'page-break-after: always;';
-      finalContainer.appendChild(pageBreak);
-      
       finalContainer.appendChild(clone);
 
       // Configurações do html2pdf
