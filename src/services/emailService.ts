@@ -12,8 +12,8 @@ const SUPABASE_EDGE_FUNCTION_BASE_URL = `https://${SUPABASE_PROJECT_ID}.supabase
 
 export const emailService = {
   sendTransactionalEmail: async (payload: SendEmailPayload): Promise<{ message: string }> => {
-    const session = currentSession();
-    if (!session?.access_token) {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.access_token) {
       throw new Error("Sessão não encontrada. Faça login novamente.");
     }
 

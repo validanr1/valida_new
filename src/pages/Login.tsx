@@ -115,22 +115,20 @@ const Login = () => {
       showError(map[error.message] || "Não foi possível entrar. Tente novamente.");
     } else {
       showSuccess("Login realizado com sucesso. Redirecionando...");
-      // Fire-and-forget admin notification (no block)
-      try {
-        const recipient = settings.leadsNotifyEmail || settings.supportEmail || settings.emailFromAddress;
-        if (recipient) {
-          await emailService.sendEdgeNotificationEmail({
-            action: 'notify_login',
-            recipient_email: recipient,
-            data: {
-              user_email: values.email,
-              when: new Date().toISOString(),
-              user_agent: navigator.userAgent,
-            },
-          });
-        }
-      } catch (e) {
-        console.warn('[Login] notify_login email failed (non-blocking):', e);
+      // Fire-and-forget admin notification (non-blocking)
+      const recipient = settings.leadsNotifyEmail || settings.supportEmail || settings.emailFromAddress;
+      if (recipient) {
+        emailService.sendEdgeNotificationEmail({
+          action: 'notify_login',
+          recipient_email: recipient,
+          data: {
+            user_email: values.email,
+            when: new Date().toISOString(),
+            user_agent: navigator.userAgent,
+          },
+        }).catch((e) => {
+          console.warn('[Login] notify_login email failed (non-blocking):', e);
+        });
       }
     }
   };

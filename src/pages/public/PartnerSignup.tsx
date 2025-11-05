@@ -83,11 +83,10 @@ const PartnerSignup = () => {
       showSuccess("Solicitação enviada. Em breve entraremos em contato com instruções de pagamento.");
 
       // Fire-and-forget admin notification (non-blocking)
-      try {
-        const settings = await getSettings();
+      getSettings().then((settings) => {
         const recipient = settings.leadsNotifyEmail || settings.supportEmail || settings.emailFromAddress;
         if (recipient) {
-          await emailService.sendEdgeNotificationEmail({
+          emailService.sendEdgeNotificationEmail({
             action: 'notify_signup',
             recipient_email: recipient,
             data: {
@@ -96,11 +95,13 @@ const PartnerSignup = () => {
               name,
               plan: selectedPlan?.name,
             },
+          }).catch((e) => {
+            console.warn('[PartnerSignup] notify_signup email failed (non-blocking):', e);
           });
         }
-      } catch (e) {
-        console.warn('[PartnerSignup] notify_signup email failed (non-blocking):', e);
-      }
+      }).catch((e) => {
+        console.warn('[PartnerSignup] getSettings failed (non-blocking):', e);
+      });
       navigate("/partner/ativacao", { replace: true });
     } catch (err) {
       console.error("[PartnerSignup] erro:", err);
