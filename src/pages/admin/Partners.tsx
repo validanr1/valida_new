@@ -48,6 +48,7 @@ type Partner = {
   responsible_name?: string;
   responsible_email?: string;
   responsible_phone?: string;
+  responsible_user_id?: string;
   status?: "pending" | "active" | "suspended" | "inactive";
 };
 
@@ -600,8 +601,25 @@ const Partners = () => {
       // Enviar email se o status mudou
       if (previousStatus && previousStatus !== status && savedPartner.responsible_email) {
         try {
+          // Buscar nome do usuário responsável da tabela profiles
+          let firstName = 'Parceiro';
+          if (savedPartner.responsible_user_id) {
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('first_name, last_name')
+              .eq('id', savedPartner.responsible_user_id)
+              .maybeSingle();
+            
+            if (!profileError && profile) {
+              const profileData = profile as { first_name?: string; last_name?: string };
+              if (profileData.first_name) {
+                firstName = profileData.first_name;
+              }
+            }
+          }
+
           const emailData = {
-            first_name: savedPartner.responsible_name?.split(' ')[0] || 'Parceiro',
+            first_name: firstName,
             partner_name: savedPartner.name,
             platform_name: 'Valida NR1',
             dashboard_link: `${window.location.origin}/partner/dashboard`,
