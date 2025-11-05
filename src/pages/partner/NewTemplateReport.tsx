@@ -673,9 +673,9 @@ const NewTemplateReport = () => {
                   <tbody>
                     {c.questions.map((q) => (
                       <tr key={q.id} className="border-b last:border-0">
-                        <td className="px-3 py-2 align-top w-[55%]">{(q.order ?? "-")}. {q.text}</td>
-                        <td className="px-3 py-2 align-top w-[10%]">{fmtPercent(q.averageScore)}</td>
-                        <td className="px-3 py-2 align-top w-[35%]">
+                        <td className="px-3 py-2 align-top w-[40%]">{(q.order ?? "-")}. {q.text}</td>
+                        <td className="px-3 py-2 align-top w-[12%]">{fmtPercent(q.averageScore)}</td>
+                        <td className="px-3 py-2 align-top w-[48%]">
                           <div className="h-3 w-full bg-muted rounded overflow-hidden">
                             <div className="h-3 bg-emerald-500 inline-block" style={{ width: `${q.responseDistribution.favorable.toFixed(0)}%` }} />
                             <div className="h-3 bg-amber-400 inline-block" style={{ width: `${q.responseDistribution.neutral.toFixed(0)}%` }} />
