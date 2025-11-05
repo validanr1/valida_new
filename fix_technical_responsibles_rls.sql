@@ -17,7 +17,7 @@ FOR SELECT
 TO authenticated
 USING (
   partner_id IN (
-    SELECT id FROM partners WHERE id = (auth.jwt() -> 'user_metadata' ->> 'partner_id')::uuid
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
@@ -28,7 +28,7 @@ FOR INSERT
 TO authenticated
 WITH CHECK (
   partner_id IN (
-    SELECT id FROM partners WHERE id = (auth.jwt() -> 'user_metadata' ->> 'partner_id')::uuid
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
@@ -39,12 +39,12 @@ FOR UPDATE
 TO authenticated
 USING (
   partner_id IN (
-    SELECT id FROM partners WHERE id = (auth.jwt() -> 'user_metadata' ->> 'partner_id')::uuid
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 )
 WITH CHECK (
   partner_id IN (
-    SELECT id FROM partners WHERE id = (auth.jwt() -> 'user_metadata' ->> 'partner_id')::uuid
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
@@ -55,7 +55,7 @@ FOR DELETE
 TO authenticated
 USING (
   partner_id IN (
-    SELECT id FROM partners WHERE id = (auth.jwt() -> 'user_metadata' ->> 'partner_id')::uuid
+    SELECT partner_id FROM users WHERE id = auth.uid()
   )
 );
 
