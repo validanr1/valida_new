@@ -661,34 +661,29 @@ const NewTemplateReport = () => {
                   <div className="text-xl font-bold">{fmtPercent(c.averageScore)}</div>
                 </div>
               </div>
-              <div className="mt-4 overflow-x-auto">
-                <table className="min-w-[800px] w-full text-sm">
-                  <thead>
-                    <tr className="bg-muted">
-                      <th className="text-left px-3 py-2">Pergunta</th>
-                      <th className="text-left px-3 py-2">Média</th>
-                      <th className="text-left px-3 py-2">Distribuição</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {c.questions.map((q) => (
-                      <tr key={q.id} className="border-b last:border-0">
-                        <td className="px-3 py-2 align-top w-[40%]">{(q.order ?? "-")}. {q.text}</td>
-                        <td className="px-3 py-2 align-top w-[12%]">{fmtPercent(q.averageScore)}</td>
-                        <td className="px-3 py-2 align-top w-[48%]">
-                          <div className="h-3 w-full bg-muted rounded overflow-hidden">
-                            <div className="h-3 bg-emerald-500 inline-block" style={{ width: `${q.responseDistribution.favorable.toFixed(0)}%` }} />
-                            <div className="h-3 bg-amber-400 inline-block" style={{ width: `${q.responseDistribution.neutral.toFixed(0)}%` }} />
-                            <div className="h-3 bg-rose-500 inline-block" style={{ width: `${q.responseDistribution.unfavorable.toFixed(0)}%` }} />
-                          </div>
-                          <div className="mt-1 text-xs text-muted-foreground">
-                            Fav {q.responseDistribution.favorable.toFixed(0)}% • Neut {q.responseDistribution.neutral.toFixed(0)}% • Desf {q.responseDistribution.unfavorable.toFixed(0)}%
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="mt-4 space-y-4">
+                {c.questions.map((q) => (
+                  <div key={q.id} className="border-b pb-3 last:border-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 text-sm">
+                        <span className="font-medium">{(q.order ?? "-")}.</span> {q.text}
+                      </div>
+                      <div className="ml-4 text-sm font-semibold whitespace-nowrap">
+                        {fmtPercent(q.averageScore)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="h-4 w-full bg-muted rounded overflow-hidden flex">
+                        <div className="h-4 bg-emerald-500" style={{ width: `${q.responseDistribution.favorable.toFixed(0)}%` }} />
+                        <div className="h-4 bg-amber-400" style={{ width: `${q.responseDistribution.neutral.toFixed(0)}%` }} />
+                        <div className="h-4 bg-rose-500" style={{ width: `${q.responseDistribution.unfavorable.toFixed(0)}%` }} />
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        Fav {q.responseDistribution.favorable.toFixed(0)}% • Neut {q.responseDistribution.neutral.toFixed(0)}% • Desf {q.responseDistribution.unfavorable.toFixed(0)}%
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </Card>
           ))}
