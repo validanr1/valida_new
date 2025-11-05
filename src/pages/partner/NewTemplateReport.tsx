@@ -316,14 +316,17 @@ const NewTemplateReport = () => {
 
   const printToPdf = async () => {
     try {
+      // Garante que o preview foi executado
+      if (!renderedText) { 
+        preview(); 
+        // Aguarda um momento para o DOM atualizar
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
       const node = document.getElementById('report-content');
       if (!node) { 
         showError('Conteúdo do relatório não encontrado.'); 
         return; 
-      }
-      
-      if (!renderedText) { 
-        preview(); 
       }
 
       showSuccess('Gerando PDF... Aguarde.');
@@ -338,15 +341,14 @@ const NewTemplateReport = () => {
       const opt = {
         margin: [10, 10, 10, 10] as [number, number, number, number],
         filename: `Relatorio_Completo_${company?.name || 'Empresa'}_${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg' as const, quality: 0.98 },
+        image: { type: 'jpeg' as const, quality: 0.95 },
         html2canvas: { 
           scale: 2,
           useCORS: true,
-          logging: false,
+          logging: true,
           backgroundColor: '#ffffff',
-          // Preserva cores e estilos
-          allowTaint: true,
-          foreignObjectRendering: true
+          windowWidth: 1200,
+          windowHeight: 1600
         },
         jsPDF: { 
           unit: 'mm', 
