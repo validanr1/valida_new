@@ -730,7 +730,7 @@ const NewTemplateReport = () => {
                   return { label: 'Risco Baixo (Zona Verde)', color: 'text-green-600' };
                 })();
                 return (
-                  <div key={cat.id} className="rounded-lg border p-4 mb-4 avoid-break">
+                  <div key={cat.id} className="mb-6 avoid-break">
                     <div className="mb-3">
                       <div className="font-semibold text-lg">{cat.name}</div>
                       <div className="text-sm text-slate-700 mt-1">
@@ -753,9 +753,9 @@ const NewTemplateReport = () => {
         )}
 
         {/* Nome da plataforma no final */}
-        <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
-          <div>Relatório gerado por <span className="font-semibold">{platformName}</span></div>
-          <div className="text-xs mt-1">Sistema de Avaliação de Riscos Psicossociais</div>
+        <div className="mt-8 pt-6 border-t text-center text-muted-foreground">
+          <div className="text-[10px]">Relatório gerado por <span className="font-semibold">{platformName}</span></div>
+          <div className="text-[9px] mt-0.5">Sistema de Avaliação de Riscos Psicossociais</div>
         </div>
       </div>
     </div>
