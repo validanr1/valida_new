@@ -108,7 +108,6 @@ const Companies = () => {
   const [partnerId, setPartnerId] = useState<string | undefined>(undefined);
   const [name, setName] = useState("");
   const [cnpj, setCnpj] = useState("");
-  const [responsibleUserId, setResponsibleUserId] = useState<string | undefined>(undefined);
   const [assessmentTypeId, setAssessmentTypeId] = useState<string | undefined>(undefined);
   const [cnae, setCnae] = useState("");
   const [riskGradeId, setRiskGradeId] = useState<string | undefined>(undefined);
@@ -124,8 +123,6 @@ const Companies = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Company | null>(null);
 
-  // Responsáveis (via Supabase)
-  const [responsibleOptions, setResponsibleOptions] = useState<Array<{ id: string; label: string }>>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -151,43 +148,6 @@ const Companies = () => {
     };
   }, []);
 
-  // Carregar usuários do parceiro a partir de partner_members + profiles
-  useEffect(() => {
-    if (!partnerId) {
-      setResponsibleOptions([]);
-      return;
-    }
-    let mounted = true;
-    (async () => {
-      const { data: members, error } = await supabase
-        .from("partner_members")
-        .select("user_id")
-        .eq("partner_id", partnerId);
-      if (error || !members || members.length === 0) {
-        console.log("[Companies] Nenhum membro encontrado para o parceiro:", partnerId, error);
-        if (mounted) setResponsibleOptions([]);
-        return;
-      }
-      const userIds = members.map((m: any) => m.user_id);
-      const { data: profiles, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, first_name, last_name")
-        .in("id", userIds);
-      if (profileError) {
-        console.error("[Companies] Erro ao buscar profiles:", profileError);
-        if (mounted) setResponsibleOptions([]);
-        return;
-      }
-      const opts =
-        (profiles?.map((p: any) => ({
-          id: p.id as string,
-          label: [p.first_name, p.last_name].filter(Boolean).join(" ") || (p.id as string),
-        })) as Array<{ id: string; label: string }>) ?? [];
-      console.log("[Companies] Responsáveis carregados:", opts);
-      if (mounted) setResponsibleOptions(opts);
-    })();
-    return () => { mounted = false; };
-  }, [partnerId]);
 
   const partnersById = useMemo(() => {
     const map: Record<string, Partner> = {};
@@ -210,14 +170,6 @@ const Companies = () => {
     [riskGrades],
   );
 
-  // Garantir que o responsibleUserId atual esteja nas options (mesmo que temporariamente)
-  const displayResponsibleOptions = useMemo(() => {
-    if (!responsibleUserId) return responsibleOptions;
-    const hasCurrentValue = responsibleOptions.some(opt => opt.id === responsibleUserId);
-    if (hasCurrentValue) return responsibleOptions;
-    // Se o valor atual não está nas options, adiciona temporariamente
-    return [{ id: responsibleUserId, label: "Carregando..." }, ...responsibleOptions];
-  }, [responsibleOptions, responsibleUserId]);
 
   const totalCompanies = useMemo(() => companies.length, [companies]);
 
@@ -225,7 +177,6 @@ const Companies = () => {
     setPartnerId(undefined);
     setName("");
     setCnpj("");
-    setResponsibleUserId(undefined);
     setAssessmentTypeId(undefined);
     setCnae("");
     setRiskGradeId(undefined);
@@ -250,7 +201,6 @@ const Companies = () => {
     setPartnerId(c.partner_id);
     setName(c.name ?? "");
     setCnpj(c.cnpj ?? "");
-    setResponsibleUserId(c.responsible_user_id);
     setAssessmentTypeId(c.assessment_type_id);
     setCnae(c.cnae ?? "");
     setRiskGradeId(c.risk_grade_id);
@@ -281,7 +231,7 @@ const Companies = () => {
       partner_id: partnerId,
       name: name.trim(),
       cnpj: formattedDoc || null,
-      responsible_user_id: responsibleUserId || null,
+      responsible_user_id: null,
       assessment_type_id: assessmentTypeId || null,
       cnae: cnae.trim() || null,
       risk_grade_id: riskGradeId || null,
@@ -391,42 +341,21 @@ const Companies = () => {
             </DialogHeader>
 
             <div className="space-y-5 py-1">
-              {/* Parceiro e Responsável */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">Parceiro</div>
-                  <Select value={partnerId} onValueChange={(v) => { setPartnerId(v); setResponsibleUserId(undefined); }}>
-                    <SelectTrigger className="h-10 focus-brand-glow">
-                      <SelectValue placeholder="Selecione um parceiro" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {activePartners.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">Selecionar Responsável</div>
-                  <Select
-                    value={responsibleUserId || ""}
-                    onValueChange={(val) => setResponsibleUserId(val || undefined)}
-                    disabled={!partnerId || displayResponsibleOptions.length === 0}
-                  >
-                    <SelectTrigger className="h-10 focus-brand-glow">
-                      <SelectValue placeholder={!partnerId ? "Selecione um parceiro primeiro" : (displayResponsibleOptions.length ? "Selecione o responsável" : "Nenhum responsável disponível")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {displayResponsibleOptions.map((u) => (
-                        <SelectItem key={u.id} value={u.id}>
-                          {u.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              {/* Parceiro */}
+              <div className="space-y-2">
+                <div className="text-sm font-medium">Parceiro</div>
+                <Select value={partnerId} onValueChange={setPartnerId}>
+                  <SelectTrigger className="h-10 focus-brand-glow">
+                    <SelectValue placeholder="Selecione um parceiro" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activePartners.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Nome e CNPJ */}
