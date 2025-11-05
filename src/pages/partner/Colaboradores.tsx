@@ -571,17 +571,10 @@ const Colaboradores = () => {
       showError("Limite de colaboradores ativos do seu plano foi atingido.");
       return;
     }
-    // Limpa e preenche com dados de exemplo
+    // Limpa o formulário
     resetForm();
-    setFirstName("João");
-    setLastName("Silva");
-    setEmail("joao.silva@empresa.com");
-    setCpfCnpj(formatCPF("12345678909"));
-    setRegistrationNumber("MAT-001");
-    setPhone(maskPhone("82999999999"));
-    setDateOfBirth(dateToInputValue(new Date(1990, 4, 20))); // 20/05/1990
-    setAdmissionDate(dateToInputValue(new Date()));
     setStatus("active");
+    setAdmissionDate(dateToInputValue(new Date())); // Data de admissão padrão: hoje
     // Seleciona primeiro departamento e cargo compatível, se disponíveis
     const firstDept = departments[0]?.id;
     if (firstDept) {
