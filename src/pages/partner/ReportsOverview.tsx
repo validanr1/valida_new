@@ -69,6 +69,8 @@ const ReportsOverview = () => {
   const [actionPlan, setActionPlan] = useState<string>("");
   const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
   const [tab, setTab] = useState<'saved'|'overview'|'individuals'>('overview');
+  const [partnerLogo, setPartnerLogo] = useState<string | null>(null);
+  const [platformLogo, setPlatformLogo] = useState<string | null>(null);
   // DB Action Plans state
   const [apCategories, setApCategories] = useState<ActionPlanCategory[]>([]);
   const [apByCategory, setApByCategory] = useState<Record<string, ActionPlan[]>>({});
@@ -99,6 +101,22 @@ const ReportsOverview = () => {
       const { data: companyData, error: companyError } = await supabase.from("companies").select("id,name,partner_id").eq("id", companyId).maybeSingle();
       if (companyError) throw companyError;
       setCompany((companyData as Company) || null);
+
+      // Fetch partner logo
+      const { data: partnerData } = await supabase
+        .from("partners")
+        .select("logo_primary_data_url")
+        .eq("id", partnerId)
+        .maybeSingle();
+      setPartnerLogo(partnerData?.logo_primary_data_url ?? null);
+
+      // Fetch platform logo
+      const { data: platformData } = await supabase
+        .from("platform_settings")
+        .select("logo_primary_data_url")
+        .limit(1)
+        .maybeSingle();
+      setPlatformLogo(platformData?.logo_primary_data_url ?? null);
 
       const { data: assessmentsData, error: assessmentsError } = await supabase.from("assessments").select("id,company_id,score,created_at").eq("company_id", companyId).eq("partner_id", partnerId);
       if (assessmentsError) throw assessmentsError;
@@ -432,11 +450,64 @@ const ReportsOverview = () => {
 
       showSuccess('Gerando PDF... Aguarde.');
 
-      // Clone o elemento para não afetar a página
+      // Criar capa do relatório
+      const coverPage = document.createElement('div');
+      coverPage.style.cssText = `
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 40px;
+        text-align: center;
+        background: linear-gradient(135deg, #1B365D 0%, #2C5282 100%);
+        color: white;
+      `;
+
+      // Logo (parceiro ou plataforma)
+      const logoToUse = partnerLogo || platformLogo;
+      if (logoToUse) {
+        const logoImg = document.createElement('img');
+        logoImg.src = logoToUse;
+        logoImg.style.cssText = 'max-width: 300px; max-height: 150px; margin-bottom: 60px; object-fit: contain;';
+        coverPage.appendChild(logoImg);
+      }
+
+      // Título
+      const title = document.createElement('h1');
+      title.textContent = 'Relatório de Avaliação';
+      title.style.cssText = 'font-size: 48px; font-weight: bold; margin-bottom: 20px; color: white;';
+      coverPage.appendChild(title);
+
+      // Subtítulo com nome da empresa
+      const subtitle = document.createElement('h2');
+      subtitle.textContent = company?.name || 'Empresa';
+      subtitle.style.cssText = 'font-size: 32px; font-weight: 300; margin-bottom: 60px; color: rgba(255,255,255,0.9);';
+      coverPage.appendChild(subtitle);
+
+      // Data
+      const dateText = document.createElement('p');
+      const today = new Date();
+      dateText.textContent = `Gerado em ${today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`;
+      dateText.style.cssText = 'font-size: 18px; color: rgba(255,255,255,0.8);';
+      coverPage.appendChild(dateText);
+
+      // Clone o elemento do conteúdo para não afetar a página
       const clone = node.cloneNode(true) as HTMLElement;
       
       // Remove elementos que não devem aparecer no PDF
       clone.querySelectorAll('.no-print').forEach(el => el.remove());
+
+      // Container final com capa + conteúdo
+      const finalContainer = document.createElement('div');
+      finalContainer.appendChild(coverPage);
+      
+      // Adiciona quebra de página após a capa
+      const pageBreak = document.createElement('div');
+      pageBreak.style.cssText = 'page-break-after: always;';
+      finalContainer.appendChild(pageBreak);
+      
+      finalContainer.appendChild(clone);
 
       // Configurações do html2pdf
       const opt = {
@@ -462,7 +533,7 @@ const ReportsOverview = () => {
       };
 
       // Gera e faz download do PDF
-      await html2pdf().set(opt).from(clone).save();
+      await html2pdf().set(opt).from(finalContainer).save();
       
       showSuccess('PDF gerado com sucesso!');
     } catch (e) {
