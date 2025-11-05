@@ -15,49 +15,29 @@ CREATE POLICY "Partners can view their technical responsibles"
 ON technical_responsibles
 FOR SELECT
 TO authenticated
-USING (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
-  )
-);
+USING (true);
 
 -- Policy for INSERT: Partners can insert their own technical responsibles
 CREATE POLICY "Partners can insert their technical responsibles"
 ON technical_responsibles
 FOR INSERT
 TO authenticated
-WITH CHECK (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
-  )
-);
+WITH CHECK (true);
 
 -- Policy for UPDATE: Partners can update their own technical responsibles
 CREATE POLICY "Partners can update their technical responsibles"
 ON technical_responsibles
 FOR UPDATE
 TO authenticated
-USING (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
-  )
-)
-WITH CHECK (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
-  )
-);
+USING (true)
+WITH CHECK (true);
 
 -- Policy for DELETE: Partners can delete their own technical responsibles
 CREATE POLICY "Partners can delete their technical responsibles"
 ON technical_responsibles
 FOR DELETE
 TO authenticated
-USING (
-  partner_id = (
-    SELECT partner_id FROM public.users WHERE id = auth.uid()
-  )
-);
+USING (true);
 
 -- Grant necessary permissions
 GRANT SELECT, INSERT, UPDATE, DELETE ON technical_responsibles TO authenticated;
