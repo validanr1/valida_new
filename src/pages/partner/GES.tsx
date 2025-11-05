@@ -110,7 +110,10 @@ const GES = () => {
   };
 
   const saveItem = async () => {
-    if (!company?.partner_id || !assessmentType?.id) return;
+    if (!company?.partner_id || !assessmentType?.id) {
+      showError("Dados da empresa não encontrados.");
+      return;
+    }
     if (!name.trim()) {
       showError("Informe o nome.");
       return;
@@ -124,11 +127,14 @@ const GES = () => {
       status,
       order: Number(order) || null,
     };
+    console.log("[GES] Salvando item:", payload);
     const { data, error } = await supabase.from("assessment_type_items").upsert(payload).select("id,name,status,order").single();
     if (error) {
-      showError("Não foi possível salvar o item.");
+      console.error("[GES] Erro ao salvar:", error);
+      showError(`Não foi possível salvar: ${error.message}`);
       return;
     }
+    console.log("[GES] Item salvo:", data);
     const saved = data as Item;
     setItems((prev) => {
       const exists = prev.some((x) => x.id === saved.id);
