@@ -603,6 +603,7 @@ const Partners = () => {
         try {
           // Buscar nome do usuário responsável da tabela profiles
           let firstName = 'Parceiro';
+          let lastName = '';
           if (savedPartner.responsible_user_id) {
             const { data: profile, error: profileError } = await supabase
               .from('profiles')
@@ -615,15 +616,21 @@ const Partners = () => {
               if (profileData.first_name) {
                 firstName = profileData.first_name;
               }
+              if (profileData.last_name) {
+                lastName = profileData.last_name;
+              }
             }
           }
 
           const emailData = {
             first_name: firstName,
+            last_name: lastName,
             partner_name: savedPartner.name,
             platform_name: 'Valida NR1',
             dashboard_link: `${window.location.origin}/partner/dashboard`,
+            login_link: `${window.location.origin}/login`,
             support_whatsapp: '+55 11 98765-4321',
+            year: new Date().getFullYear().toString(),
           };
 
           if (status === 'active' && previousStatus === 'pending') {
