@@ -29,12 +29,12 @@ const TEMPLATE_TYPES = [
 
 // Variáveis disponíveis para cada tipo de template
 const TEMPLATE_VARIABLES: Record<string, string[]> = {
-  welcome: ['first_name', 'last_name', 'partner_name', 'platform_name', 'recipient_email', 'temp_password', 'activation_link', 'theme_primary', 'theme_secondary', 'logo_url'],
-  activation_complete: ['first_name', 'last_name', 'partner_name', 'platform_name', 'dashboard_link', 'theme_primary', 'theme_secondary', 'logo_url'],
-  suspension: ['first_name', 'last_name', 'partner_name', 'platform_name', 'reason', 'support_whatsapp', 'logo_url'],
-  reactivation: ['first_name', 'last_name', 'partner_name', 'platform_name', 'dashboard_link', 'logo_url'],
-  inactivation: ['first_name', 'last_name', 'partner_name', 'platform_name', 'reason', 'support_whatsapp', 'logo_url'],
-  reminder: ['first_name', 'last_name', 'platform_name', 'reason', 'dashboard_link', 'logo_url'],
+  welcome: ['first_name', 'last_name', 'partner_name', 'platform_name', 'recipient_email', 'temp_password', 'activation_link', 'theme_primary', 'theme_secondary', 'logo_url', 'support_email', 'support_whatsapp'],
+  activation_complete: ['first_name', 'last_name', 'partner_name', 'platform_name', 'dashboard_link', 'theme_primary', 'theme_secondary', 'logo_url', 'support_email', 'support_whatsapp'],
+  suspension: ['first_name', 'last_name', 'partner_name', 'platform_name', 'reason', 'support_email', 'support_whatsapp', 'logo_url'],
+  reactivation: ['first_name', 'last_name', 'partner_name', 'platform_name', 'dashboard_link', 'logo_url', 'support_email', 'support_whatsapp'],
+  inactivation: ['first_name', 'last_name', 'partner_name', 'platform_name', 'reason', 'support_email', 'support_whatsapp', 'logo_url'],
+  reminder: ['first_name', 'last_name', 'platform_name', 'reason', 'dashboard_link', 'logo_url', 'support_email', 'support_whatsapp'],
 };
 
 const EmailTemplates = () => {
@@ -183,6 +183,7 @@ const EmailTemplates = () => {
       theme_secondary: '#764ba2',
       logo_url: 'https://via.placeholder.com/150x50/667eea/ffffff?text=Logo',
       reason: 'Pagamento em atraso',
+      support_email: 'suporte@validanr1.com.br',
       support_whatsapp: '+55 11 98765-4321',
     };
 
@@ -232,6 +233,7 @@ const EmailTemplates = () => {
         theme_secondary: '#764ba2',
         logo_url: 'https://via.placeholder.com/150x50/667eea/ffffff?text=Logo',
         reason: 'Pagamento em atraso',
+        support_email: 'suporte@validanr1.com.br',
         support_whatsapp: '+55 11 98765-4321',
         dashboard_link: 'https://validanr1.com.br/dashboard',
       };
