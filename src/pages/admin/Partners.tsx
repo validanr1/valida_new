@@ -739,9 +739,26 @@ const Partners = () => {
 
       // Enviar email de suspensão
       try {
-        const nameParts = (partner.responsible_name || 'Parceiro').split(' ');
-        const firstName = nameParts[0] || 'Parceiro';
-        const lastName = nameParts.slice(1).join(' ') || '';
+        // Buscar nome do responsável via Edge Function
+        let firstName = 'Parceiro';
+        let lastName = '';
+        
+        try {
+          const { data: nameData, error: nameErr } = await supabase.functions.invoke('admin-partners', {
+            body: { action: 'get_responsible_name', partner_id: partner.id },
+          });
+          
+          if (!nameErr && nameData) {
+            firstName = (nameData as any)?.first_name || 'Parceiro';
+            lastName = (nameData as any)?.last_name || '';
+          }
+        } catch (nameErr) {
+          console.warn('Erro ao buscar nome do responsável, usando fallback:', nameErr);
+          // Fallback: usar responsible_name se existir
+          const nameParts = (partner.responsible_name || 'Parceiro').split(' ');
+          firstName = nameParts[0] || 'Parceiro';
+          lastName = nameParts.slice(1).join(' ') || '';
+        }
         
         await supabase.functions.invoke('send-email', {
           body: {
