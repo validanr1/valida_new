@@ -54,6 +54,31 @@ function replaceVariables(template: string, data: Record<string, any>): string {
   return result;
 }
 
+// Buscar configurações da plataforma
+async function getPlatformSettings() {
+  const { data: settings, error } = await supabase
+    .from('platform_settings')
+    .select('platform_name, support_email, support_whatsapp, logo_primary_url, logo_negative_url')
+    .single();
+  
+  if (error) {
+    console.warn('[getPlatformSettings] Error fetching settings:', error.message);
+    return {
+      platform_name: 'Valida NR1',
+      support_email: 'suporte@validanr1.com.br',
+      support_whatsapp: '+55 11 98765-4321',
+      logo_url: '',
+    };
+  }
+  
+  return {
+    platform_name: settings.platform_name || 'Valida NR1',
+    support_email: settings.support_email || 'suporte@validanr1.com.br',
+    support_whatsapp: settings.support_whatsapp || '+55 11 98765-4321',
+    logo_url: settings.logo_primary_url || settings.logo_negative_url || '',
+  };
+}
+
 // Buscar template do banco de dados
 async function getEmailTemplate(action: string, data: Record<string, any>) {
   const templateType = ACTION_TO_TYPE_MAP[action];
@@ -564,8 +589,19 @@ async function sendEmail(emailData: EmailData) {
   console.log('[send-email] Action:', emailData.action);
   console.log('[send-email] Data received:', JSON.stringify(emailData.data, null, 2));
 
+  // Buscar configurações da plataforma
+  const platformSettings = await getPlatformSettings();
+  console.log('[send-email] Platform settings:', platformSettings);
+
+  // Mesclar dados do email com configurações da plataforma
+  const mergedData = {
+    ...platformSettings,
+    ...emailData.data,
+  };
+  console.log('[send-email] Merged data:', JSON.stringify(mergedData, null, 2));
+
   // Buscar template do banco de dados
-  const { subject, html } = await getEmailTemplate(emailData.action, emailData.data);
+  const { subject, html } = await getEmailTemplate(emailData.action, mergedData);
 
   // Log do HTML final para debug
   console.log('[send-email] Subject after replace:', subject);
