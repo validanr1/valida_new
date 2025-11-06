@@ -743,22 +743,46 @@ const Partners = () => {
         let firstName = 'Parceiro';
         let lastName = '';
         
+        console.log('[Partners] Buscando nome do responsável para:', partner.id);
+        
         try {
           const { data: nameData, error: nameErr } = await supabase.functions.invoke('admin-partners', {
             body: { action: 'get_responsible_name', partner_id: partner.id },
           });
           
-          if (!nameErr && nameData) {
-            firstName = (nameData as any)?.first_name || 'Parceiro';
+          console.log('[Partners] Resposta get_responsible_name:', { nameData, nameErr });
+          
+          if (!nameErr && nameData && (nameData as any)?.ok) {
+            firstName = (nameData as any)?.first_name || '';
             lastName = (nameData as any)?.last_name || '';
+            console.log('[Partners] Nome encontrado via Edge Function:', { firstName, lastName });
           }
         } catch (nameErr) {
-          console.warn('Erro ao buscar nome do responsável, usando fallback:', nameErr);
-          // Fallback: usar responsible_name se existir
-          const nameParts = (partner.responsible_name || 'Parceiro').split(' ');
-          firstName = nameParts[0] || 'Parceiro';
-          lastName = nameParts.slice(1).join(' ') || '';
+          console.warn('[Partners] Erro ao buscar nome do responsável:', nameErr);
         }
+        
+        // Fallback 1: usar responsible_name se existir e nome não foi encontrado
+        if (!firstName || firstName === 'Parceiro') {
+          if (partner.responsible_name) {
+            const nameParts = partner.responsible_name.split(' ');
+            firstName = nameParts[0] || 'Parceiro';
+            lastName = nameParts.slice(1).join(' ') || '';
+            console.log('[Partners] Nome via responsible_name:', { firstName, lastName });
+          }
+        }
+        
+        // Fallback 2: derivar do email se ainda não tem nome
+        if (!firstName || firstName === 'Parceiro') {
+          if (partner.responsible_email) {
+            const emailPart = partner.responsible_email.split('@')[0];
+            const parts = emailPart.split(/[._-]/);
+            firstName = parts[0] ? parts[0].charAt(0).toUpperCase() + parts[0].slice(1) : 'Parceiro';
+            lastName = parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1) : '';
+            console.log('[Partners] Nome derivado do email:', { firstName, lastName });
+          }
+        }
+        
+        console.log('[Partners] Nome final para email:', { firstName, lastName });
         
         await supabase.functions.invoke('send-email', {
           body: {
