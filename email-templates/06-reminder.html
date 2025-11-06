@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lembrete Importante - Valida NR1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      color: #333333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    .header {
+      background: linear-gradient(135deg, #008E8C 0%, #003E6B 100%);
+      text-align: center;
+      padding: 40px 20px 30px;
+    }
+    .header img {
+      max-width: 200px;
+      margin-bottom: 15px;
+    }
+    .header h1 {
+      color: #ffffff;
+      font-size: 26px;
+      margin: 0;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    .text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #555555;
+      margin-bottom: 20px;
+    }
+    .reminder-box {
+      background-color: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      border-radius: 6px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+    .reminder-box h3 {
+      margin-top: 0;
+      color: #1e40af;
+      font-size: 18px;
+    }
+    .cta {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .cta a {
+      background: linear-gradient(135deg, #008E8C 0%, #003E6B 100%);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      display: inline-block;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: 0.2s ease;
+    }
+    .cta a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    }
+    .footer {
+      background-color: #f0f3f6;
+      text-align: center;
+      padding: 25px 15px;
+      font-size: 13px;
+      color: #6b6b6b;
+    }
+    .footer a {
+      color: #008E8C;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://ymuzggvvslpxaabozmck.supabase.co/storage/v1/object/public/system-assets/logo_negativo_white.png" alt="Valida NR1 Logo">
+      <h1>🔔 Lembrete Importante</h1>
+    </div>
+    <div class="content">
+      <div class="greeting">Olá, {{first_name}} {{last_name}} 👋</div>
+
+      <div class="text">
+        Este é um lembrete sobre sua conta na plataforma <strong>Valida NR1</strong>.
+      </div>
+
+      <div class="reminder-box">
+        <h3>📌 Mensagem do Lembrete</h3>
+        <p style="margin: 0;">{{reason}}</p>
+      </div>
+
+      <div class="text">
+        Para acessar sua conta e verificar mais detalhes, clique no botão abaixo:
+      </div>
+
+      <div class="cta">
+        <a href="{{dashboard_link}}">Acessar Plataforma</a>
+      </div>
+
+      <div class="text" style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 6px; margin-top: 25px;">
+        ⏰ <strong>Atenção:</strong> Não ignore este lembrete. Ele pode conter informações importantes sobre sua conta.
+      </div>
+
+      <div class="text" style="margin-top: 35px; font-size: 14px; color: #666;">
+        Se tiver dúvidas, nossa equipe está à disposição para ajudar!<br><br>
+        <em>Este é um e-mail automático. Por favor, não responda diretamente.</em>
+      </div>
+    </div>
+    <div class="footer">
+      <img src="https://ymuzggvvslpxaabozmck.supabase.co/storage/v1/object/public/system-assets/primary_logo.png" style="max-width: 200px; width: 100%; height: auto; margin-bottom: 15px;"/>
+      <div><strong>Valida NR1</strong> — Avaliação de Riscos Psicossociais</div>
+      <div style="margin-top: 10px;">
+        <a href="#">Suporte</a> |
+        <a href="#">Política de Privacidade</a> |
+        <a href="#">Termos de Uso</a>
+      </div>
+      <div style="margin-top: 10px;">© 2024 Valida NR1. Todos os direitos reservados.</div>
+    </div>
+  </div>
+</body>
+</html>

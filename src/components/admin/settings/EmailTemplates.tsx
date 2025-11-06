@@ -27,6 +27,16 @@ const TEMPLATE_TYPES = [
   { value: 'reminder', label: 'Lembrete' },
 ];
 
+// Variáveis disponíveis para cada tipo de template
+const TEMPLATE_VARIABLES: Record<string, string[]> = {
+  welcome: ['first_name', 'last_name', 'partner_name', 'platform_name', 'recipient_email', 'temp_password', 'activation_link', 'theme_primary', 'theme_secondary', 'logo_url'],
+  activation_complete: ['first_name', 'last_name', 'partner_name', 'platform_name', 'dashboard_link', 'theme_primary', 'theme_secondary', 'logo_url'],
+  suspension: ['first_name', 'last_name', 'partner_name', 'platform_name', 'reason', 'support_whatsapp', 'logo_url'],
+  reactivation: ['first_name', 'last_name', 'partner_name', 'platform_name', 'dashboard_link', 'logo_url'],
+  inactivation: ['first_name', 'last_name', 'partner_name', 'platform_name', 'reason', 'support_whatsapp', 'logo_url'],
+  reminder: ['first_name', 'last_name', 'platform_name', 'reason', 'dashboard_link', 'logo_url'],
+};
+
 const EmailTemplates = () => {
   const [templates, setTemplates] = useState<Record<string, EmailTemplate>>({});
   const [loading, setLoading] = useState(true);
@@ -51,14 +61,14 @@ const EmailTemplates = () => {
 
       const templatesMap: Record<string, EmailTemplate> = {};
       
-      // Inicializar templates vazios para todos os tipos
+      // Inicializar templates vazios para todos os tipos com variáveis corretas
       TEMPLATE_TYPES.forEach(type => {
         templatesMap[type.value] = {
           id: crypto.randomUUID(),
           type: type.value,
           subject: '',
           body_html: '',
-          variables: [],
+          variables: TEMPLATE_VARIABLES[type.value] || [],
           is_active: true,
         };
       });
