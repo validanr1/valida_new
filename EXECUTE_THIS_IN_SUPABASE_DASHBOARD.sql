@@ -229,7 +229,7 @@ CREATE POLICY "Admins can view all tickets"
       SELECT 1 FROM public.role_profiles rp
       JOIN public.profiles p ON p.role_profile_id = rp.id
       WHERE p.id = auth.uid()
-      AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
+      AND rp.name IN ('Administrador (Super)', 'Administrador (Manager)', 'Administrador (Viewer)')
     )
   );
 
@@ -251,7 +251,7 @@ CREATE POLICY "Admins can update tickets"
       SELECT 1 FROM public.role_profiles rp
       JOIN public.profiles p ON p.role_profile_id = rp.id
       WHERE p.id = auth.uid()
-      AND rp.key IN ('AdminSuper', 'AdminManager')
+      AND rp.name IN ('Administrador (Super)', 'Administrador (Manager)')
     )
   );
 
@@ -269,14 +269,14 @@ CREATE POLICY "Users can view comments on their tickets"
           SELECT 1 FROM public.role_profiles rp
           JOIN public.profiles p ON p.role_profile_id = rp.id
           WHERE p.id = auth.uid()
-          AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
+          AND rp.name IN ('Administrador (Super)', 'Administrador (Manager)', 'Administrador (Viewer)')
         )
       )
       AND (NOT is_internal OR EXISTS (
         SELECT 1 FROM public.role_profiles rp
         JOIN public.profiles p ON p.role_profile_id = rp.id
         WHERE p.id = auth.uid()
-        AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
+        AND rp.name IN ('Administrador (Super)', 'Administrador (Manager)', 'Administrador (Viewer)')
       ))
     )
   );
@@ -294,7 +294,7 @@ CREATE POLICY "Users can create comments on their tickets"
           SELECT 1 FROM public.role_profiles rp
           JOIN public.profiles p ON p.role_profile_id = rp.id
           WHERE p.id = auth.uid()
-          AND rp.key IN ('AdminSuper', 'AdminManager')
+          AND rp.name IN ('Administrador (Super)', 'Administrador (Manager)')
         )
       )
     )
@@ -309,7 +309,7 @@ CREATE POLICY "Admins can manage tasks"
       SELECT 1 FROM public.role_profiles rp
       JOIN public.profiles p ON p.role_profile_id = rp.id
       WHERE p.id = auth.uid()
-      AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
+      AND rp.name IN ('Administrador (Super)', 'Administrador (Manager)', 'Administrador (Viewer)')
     )
   );
 
@@ -321,7 +321,7 @@ CREATE POLICY "Admins can manage task comments"
       SELECT 1 FROM public.role_profiles rp
       JOIN public.profiles p ON p.role_profile_id = rp.id
       WHERE p.id = auth.uid()
-      AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
+      AND rp.name IN ('Administrador (Super)', 'Administrador (Manager)', 'Administrador (Viewer)')
     )
   );
 
