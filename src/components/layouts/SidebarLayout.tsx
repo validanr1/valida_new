@@ -14,6 +14,8 @@ import {
   DollarSign,
   Wallet,
   Star,
+  MessageSquare,
+  ListTodo,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import {
@@ -204,6 +206,8 @@ const SidebarLayout = () => {
   const isSubscriptions = location.pathname.startsWith("/admin/assinaturas");
   const isBilling = location.pathname.startsWith("/admin/faturamento");
   const isPlatformRatings = location.pathname.startsWith("/admin/platform-ratings");
+  const isSupport = location.pathname.startsWith("/admin/suporte");
+  const isTasks = location.pathname.startsWith("/admin/tarefas");
   // const isLeads = location.pathname.startsWith("/admin/leads");
 
   useEffect(() => {
@@ -223,8 +227,10 @@ const SidebarLayout = () => {
     else if (isBilling) pageName = "Faturamento";
     else if (isPlatformRatings) pageName = "Reviews";
     else if (isActionPlansAdmin) pageName = "Planos de Ação (Globais)";
+    else if (isSupport) pageName = "Suporte";
+    else if (isTasks) pageName = "Tarefas";
     document.title = `${pageName} — ${platformName}`;
-  }, [location.pathname, platformSettings?.platformName, isAdminDashboard, isPartners, isPlans, isCompanies, isAssessments, isDenuncias, isSettings, isUserManagement, isProfilePage, isSubscriptions, isBilling, isPlatformRatings, isActionPlansAdmin]);
+  }, [location.pathname, platformSettings?.platformName, isAdminDashboard, isPartners, isPlans, isCompanies, isAssessments, isDenuncias, isSettings, isUserManagement, isProfilePage, isSubscriptions, isBilling, isPlatformRatings, isActionPlansAdmin, isSupport, isTasks]);
 
   const onLogout = async () => {
     console.log("[SidebarLayout] onLogout called. Initiating signOut.");
@@ -303,6 +309,8 @@ const SidebarLayout = () => {
             <Item active={isAssessments} to="/admin/avaliacoes" icon={<FileText size={18} />} requiredPermission="admin:assessments:view" hasPermission={hasPermission}>Avaliações NR1</Item>
             <Item active={isDenuncias} to="/admin/denuncias" icon={<AlertTriangle size={18} />} requiredPermission="admin:reports:view" hasPermission={hasPermission}>Denúncias</Item>
             <Item active={isActionPlansAdmin} to="/admin/planos-acao" icon={<FileText size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Planos de Ação</Item>
+            <Item active={isSupport} to="/admin/suporte" icon={<MessageSquare size={18} />} requiredPermission="admin:dashboard:view" hasPermission={hasPermission}>Suporte</Item>
+            <Item active={isTasks} to="/admin/tarefas" icon={<ListTodo size={18} />} requiredPermission="admin:dashboard:view" hasPermission={hasPermission}>Tarefas</Item>
           </nav>
 
           <SectionTitle>Configurações</SectionTitle>

@@ -61,6 +61,8 @@ import Activation from "./pages/partner/Activation";
 import Suspended from "./pages/partner/Suspended";
 import UiKit from "./pages/UiKit";
 import ActionPlansAdmin from "./pages/admin/ActionPlansAdmin";
+import Support from "./pages/admin/Support";
+import Tasks from "./pages/admin/Tasks";
 
 
 const queryClient = new QueryClient();
@@ -141,6 +143,8 @@ const AppContent = () => {
           <Route path="/admin/platform-ratings" element={<AdminRoute requiredPermissions={["admin:platform_ratings:read"]}><PlatformRatings /></AdminRoute>} key="admin-platform-ratings" /> {/* Nova rota */}
           <Route path="/admin/leads" element={<AdminRoute requiredPermissions={["admin:leads:read"]}><Leads /></AdminRoute>} key="admin-leads" />
           <Route path="/admin/planos-acao" element={<AdminRoute requiredPermissions={["admin:settings:read"]}><ActionPlansAdmin /></AdminRoute>} key="admin-action-plans" />
+          <Route path="/admin/suporte" element={<AdminRoute requiredPermissions={["admin:dashboard:view"]}><Support /></AdminRoute>} key="admin-support" />
+          <Route path="/admin/tarefas" element={<AdminRoute requiredPermissions={["admin:dashboard:view"]}><Tasks /></AdminRoute>} key="admin-tasks" />
           {/* Redirect legacy user-management route */}
           <Route path="/admin/user-management" element={<Navigate to="/admin/usuarios" replace />} />
         </Route>
