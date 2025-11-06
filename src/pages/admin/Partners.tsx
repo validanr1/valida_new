@@ -641,11 +641,8 @@ const Partners = () => {
             first_name: firstName,
             last_name: lastName,
             partner_name: savedPartner.name,
-            platform_name: 'Valida NR1',
             dashboard_link: `${window.location.origin}/partner/dashboard`,
             login_link: `${window.location.origin}/login`,
-            support_whatsapp: '+55 11 98765-4321',
-            year: new Date().getFullYear().toString(),
           };
 
           if (status === 'active' && previousStatus === 'pending') {
@@ -742,16 +739,19 @@ const Partners = () => {
 
       // Enviar email de suspensão
       try {
+        const nameParts = (partner.responsible_name || 'Parceiro').split(' ');
+        const firstName = nameParts[0] || 'Parceiro';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
         await supabase.functions.invoke('send-email', {
           body: {
             action: 'send_suspension',
             recipient_email: partner.responsible_email || '',
             data: {
-              first_name: partner.responsible_name?.split(' ')[0] || 'Parceiro',
+              first_name: firstName,
+              last_name: lastName,
               partner_name: partner.name,
-              platform_name: 'Valida NR1',
               reason: 'Suspensão administrativa',
-              support_whatsapp: '+55 11 98765-4321',
             }
           }
         });
