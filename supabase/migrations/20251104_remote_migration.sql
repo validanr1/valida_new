@@ -1,0 +1,2 @@
+-- Migration already applied on remote database
+-- This file exists only to match the remote migration history
