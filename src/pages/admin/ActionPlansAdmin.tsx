@@ -42,6 +42,10 @@ const ActionPlansAdmin: React.FC = () => {
   const [formShow, setFormShow] = useState(true);
   const [formDescription, setFormDescription] = useState("");
 
+  // Delete confirmation modal state
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<PlanRow | null>(null);
+
   const loadAll = async () => {
     setLoading(true);
     try {
@@ -209,16 +213,24 @@ const ActionPlansAdmin: React.FC = () => {
     }
   };
 
-  const onDeleteGlobalPlan = async (row: PlanRow) => {
+  const openDelete = (row: PlanRow) => {
+    setDeleteTarget(row);
+    setDeleteOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     setSaving(true);
     try {
       const { error } = await (supabase as any)
         .from("action_plans")
         .delete()
-        .eq("id", row.id)
+        .eq("id", deleteTarget.id)
         .eq("is_global", true);
       if (error) throw error;
-      setRows((prev)=> prev.filter((x)=> x.id!==row.id));
+      setRows((prev)=> prev.filter((x)=> x.id!==deleteTarget.id));
+      setDeleteOpen(false);
+      setDeleteTarget(null);
       showSuccess("Plano global excluído.");
     } catch (e: any) {
       console.error("[ActionPlansAdmin] delete plan error:", e);
@@ -350,7 +362,7 @@ const ActionPlansAdmin: React.FC = () => {
                   <TableCell>
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="sm" onClick={()=> openEdit(r)}>Editar</Button>
-                      <Button variant="destructive" size="sm" onClick={()=> onDeleteGlobalPlan(r)}>Excluir</Button>
+                      <Button variant="destructive" size="sm" onClick={()=> openDelete(r)}>Excluir</Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -364,8 +376,33 @@ const ActionPlansAdmin: React.FC = () => {
           </TableBody>
         </Table>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar Exclusão</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              Tem certeza que deseja excluir o plano de ação <strong>"{deleteTarget?.title || "sem título"}"</strong>?
+            </p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Esta ação não pode ser desfeita.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)} disabled={saving}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={saving}>
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
+};
 
 export default ActionPlansAdmin;
