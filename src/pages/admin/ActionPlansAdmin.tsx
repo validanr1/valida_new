@@ -228,12 +228,21 @@ const ActionPlansAdmin: React.FC = () => {
     }
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
+      console.log("[ActionPlansAdmin] Tentando deletar plano:", deleteTarget.id);
+      const { error, data, count } = await (supabase as any)
         .from("action_plans")
         .delete()
         .eq("id", deleteTarget.id)
-        .eq("is_global", true);
-      if (error) throw error;
+        .eq("is_global", true)
+        .select();
+      
+      console.log("[ActionPlansAdmin] Resultado da exclusão:", { error, data, count });
+      
+      if (error) {
+        console.error("[ActionPlansAdmin] Erro ao deletar:", error);
+        throw error;
+      }
+      
       setRows((prev)=> prev.filter((x)=> x.id!==deleteTarget.id));
       setDeleteOpen(false);
       setDeleteTarget(null);
@@ -241,7 +250,7 @@ const ActionPlansAdmin: React.FC = () => {
       showSuccess("Plano global excluído.");
     } catch (e: any) {
       console.error("[ActionPlansAdmin] delete plan error:", e);
-      showError(e?.message || "Falha ao excluir plano.");
+      showError(`Erro ao excluir: ${e?.message || "Falha desconhecida"}. Verifique o console para mais detalhes.`);
     } finally {
       setSaving(false);
     }
