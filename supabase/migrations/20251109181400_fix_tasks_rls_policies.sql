@@ -8,9 +8,10 @@ CREATE POLICY "Admins can view all tasks"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
     )
   );
 
@@ -19,9 +20,10 @@ CREATE POLICY "Admins can insert tasks"
   TO authenticated
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager')
     )
   );
 
@@ -30,16 +32,18 @@ CREATE POLICY "Admins can update tasks"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager')
     )
   )
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager')
     )
   );
 
@@ -48,9 +52,10 @@ CREATE POLICY "Admins can delete tasks"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key = 'AdminSuper'
     )
   );
 
@@ -60,9 +65,10 @@ CREATE POLICY "Admins can view task comments"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
     )
   );
 
@@ -71,9 +77,10 @@ CREATE POLICY "Admins can insert task comments"
   TO authenticated
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager')
     )
   );
 
@@ -82,16 +89,18 @@ CREATE POLICY "Admins can update task comments"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager')
     )
   )
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key IN ('AdminSuper', 'AdminManager')
     )
   );
 
@@ -100,8 +109,9 @@ CREATE POLICY "Admins can delete task comments"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'SuperAdmin'
+      SELECT 1 FROM public.role_profiles rp
+      JOIN public.profiles p ON p.role_profile_id = rp.id
+      WHERE p.id = auth.uid()
+      AND rp.key = 'AdminSuper'
     )
   );
