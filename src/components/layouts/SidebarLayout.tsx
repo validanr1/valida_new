@@ -110,6 +110,11 @@ const SidebarLayout = () => {
     applyTheme(theme);
   }, [theme]);
 
+  // Atualizar título imediatamente ao montar o layout (antes de carregar configurações)
+  useEffect(() => {
+    document.title = "Painel — Valida NR1";
+  }, []);
+
   useEffect(() => {
     console.log("[SidebarLayout] useEffect: Fetching platform settings.");
     let mounted = true;
@@ -210,6 +215,7 @@ const SidebarLayout = () => {
   const isTasks = location.pathname.startsWith("/admin/tarefas");
   // const isLeads = location.pathname.startsWith("/admin/leads");
 
+  // Atualizar título da página imediatamente ao montar e quando a rota mudar
   useEffect(() => {
     const platformName = platformSettings?.platformName || "Valida NR1";
     let pageName = "Admin";
@@ -226,7 +232,6 @@ const SidebarLayout = () => {
     else if (isSubscriptions) pageName = "Assinaturas";
     else if (isBilling) pageName = "Faturamento";
     else if (isPlatformRatings) pageName = "Reviews";
-    else if (isActionPlansAdmin) pageName = "Planos de Ação (Globais)";
     else if (isSupport) pageName = "Suporte";
     else if (isTasks) pageName = "Tarefas";
     document.title = `${pageName} — ${platformName}`;
