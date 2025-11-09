@@ -1,27 +1,156 @@
 -- ============================================
--- EXECUTAR ESTE SQL NO SUPABASE DASHBOARD
--- ============================================
--- Acesse: https://supabase.com/dashboard/project/SEU_PROJETO/sql/new
--- Cole este código e clique em "Run"
--- ============================================
+-- COPIE E EXECUTE ESTE SQL NO SUPABASE DASHBOARD
+-- https://supabase.com/dashboard/project/ymuzggvvslpxaabozmck/sql
 
--- Add DELETE policy for action_plans table
-BEGIN;
+-- Remover políticas existentes
+DROP POLICY IF EXISTS "Admins can manage tasks" ON public.tasks;
+DROP POLICY IF EXISTS "Admins can manage task comments" ON public.task_comments;
 
--- DELETE policy for global action plans (any authenticated user can delete global plans)
-DROP POLICY IF EXISTS delete_global_action_plans ON public.action_plans;
-CREATE POLICY delete_global_action_plans
-  ON public.action_plans FOR DELETE TO authenticated
-  USING (is_global = true);
+-- Criar política para visualizar tarefas
+CREATE POLICY "Admins can view all tasks" 
+  ON public.tasks 
+  FOR SELECT 
+  TO authenticated 
+  USING (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
+    )
+  );
 
--- DELETE policy for partner-owned action plans
-DROP POLICY IF EXISTS delete_partner_own ON public.action_plans;
-CREATE POLICY delete_partner_own
-  ON public.action_plans FOR DELETE TO authenticated
-  USING (is_global = false AND partner_id = NULLIF(auth.jwt() ->> 'partner_id','')::uuid);
+-- Criar política para inserir tarefas
+CREATE POLICY "Admins can insert tasks" 
+  ON public.tasks 
+  FOR INSERT 
+  TO authenticated 
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager')
+    )
+  );
 
-COMMIT;
+-- Criar política para atualizar tarefas
+CREATE POLICY "Admins can update tasks" 
+  ON public.tasks 
+  FOR UPDATE 
+  TO authenticated 
+  USING (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager')
+    )
+  ) 
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager')
+    )
+  );
 
--- ============================================
--- APÓS EXECUTAR, A EXCLUSÃO FUNCIONARÁ!
--- ============================================
+-- Criar política para excluir tarefas
+CREATE POLICY "Admins can delete tasks" 
+  ON public.tasks 
+  FOR DELETE 
+  TO authenticated 
+  USING (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key = 'AdminSuper'
+    )
+  );
+
+-- Criar política para visualizar comentários de tarefas
+CREATE POLICY "Admins can view task comments" 
+  ON public.task_comments 
+  FOR SELECT 
+  TO authenticated 
+  USING (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager', 'AdminViewer')
+    )
+  );
+
+-- Criar política para inserir comentários de tarefas
+CREATE POLICY "Admins can insert task comments" 
+  ON public.task_comments 
+  FOR INSERT 
+  TO authenticated 
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager')
+    )
+  );
+
+-- Criar política para atualizar comentários de tarefas
+CREATE POLICY "Admins can update task comments" 
+  ON public.task_comments 
+  FOR UPDATE 
+  TO authenticated 
+  USING (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager')
+    )
+  ) 
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key IN ('AdminSuper', 'AdminManager')
+    )
+  );
+
+-- Criar política para excluir comentários de tarefas
+CREATE POLICY "Admins can delete task comments" 
+  ON public.task_comments 
+  FOR DELETE 
+  TO authenticated 
+  USING (
+    EXISTS (
+      SELECT 1 
+      FROM public.role_profiles rp 
+      JOIN public.profiles p 
+      ON p.role_profile_id = rp.id 
+      WHERE p.id = auth.uid() 
+      AND rp.key = 'AdminSuper'
+    )
+  );
+===========================================
