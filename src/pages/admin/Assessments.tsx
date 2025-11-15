@@ -298,7 +298,6 @@ const Assessments = () => {
               <TableHead className="text-white first:rounded-tl-xl">Data</TableHead>
               <TableHead className="text-white">Parceiro</TableHead>
               <TableHead className="text-white">Empresa</TableHead>
-              <TableHead className="text-white">Funcionário</TableHead>
               <TableHead className="text-white">Setor</TableHead>
               <TableHead className="text-white">Cargo</TableHead>
               <TableHead className="text-white">Status</TableHead>
@@ -310,13 +309,11 @@ const Assessments = () => {
             {filtered.map((a) => {
               const p = a.partner_id ? partnersById[a.partner_id] : undefined;
               const c = a.company_id ? companiesById[a.company_id] : undefined;
-              const e = a.employee_id ? employeesById[a.employee_id] : undefined;
               return (
                 <TableRow key={a.id}>
                   <TableCell>{fmtDate(a.created_at)}</TableCell>
                   <TableCell>{p?.name ?? "—"}</TableCell>
                   <TableCell>{c?.name ?? "—"}</TableCell>
-                  <TableCell>{empName(e) || e?.email || "—"}</TableCell>
                   <TableCell>{a.department ?? "—"}</TableCell>
                   <TableCell>{a.role ?? "—"}</TableCell>
                   <TableCell>{statusToPt(a.status)}</TableCell>
@@ -332,7 +329,7 @@ const Assessments = () => {
 
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={9} className="text-center text-sm text-muted-foreground">
+                <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
                   Nenhuma avaliação encontrada.
                 </TableCell>
               </TableRow>

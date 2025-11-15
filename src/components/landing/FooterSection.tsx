@@ -60,9 +60,9 @@ const FooterSection = () => {
         <div className="footer-bottom">
           <p className="footer-copyright">© {new Date().getFullYear()} Valida NR01+. Todos os direitos reservados.</p>
           <div className="footer-legal">
-            <a href="#">Termos de Uso</a>
-            <a href="#">Política de Privacidade</a>
-            <a href="#">LGPD</a>
+            <a href="/termos-de-uso">Termos de Uso</a>
+            <a href="/politica-de-privacidade">Política de Privacidade</a>
+            <a href="/lgpd">LGPD</a>
           </div>
         </div>
       </div>

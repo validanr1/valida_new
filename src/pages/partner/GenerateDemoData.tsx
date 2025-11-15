@@ -34,7 +34,7 @@ interface Answer {
 const GenerateDemoData = () => {
   const navigate = useNavigate();
   const { session } = useSession();
-  const partnerId = session?.partner_id;
+  const partnerId = (session as any)?.partnerId;
   const companyId = session?.company_id; // Use the currently selected company
 
   const [loading, setLoading] = useState(true);

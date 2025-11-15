@@ -52,24 +52,56 @@ const RecentActivity = ({ partnerId }: RecentActivityProps) => {
 
       let finalItems: AuditLog[] = (auditData as AuditLog[]) ?? [];
 
-      // 2) Fallback: se não houver logs, mostrar uma métrica alternativa (últimos usuários criados)
-      if (!finalItems || finalItems.length === 0) {
-        const { data: recentUsers, error: recentUsersError } = await supabase
-          .from("profiles")
-          .select("id, first_name, last_name, created_at")
-          .order("created_at", { ascending: false })
-          .limit(4);
-        if (recentUsersError) {
-          console.error("Error fetching recent users for fallback:", recentUsersError.message);
-        }
-        const fallback: AuditLog[] = (recentUsers ?? []).map((u) => ({
-          id: u.id,
-          action: "Novo usuário",
-          entity: "Usuário",
-          created_at: u.created_at,
-          user_id: u.id,
+      // 2) Fallback: se não houver logs, mostrar eventos relevantes do parceiro
+      if ((!finalItems || finalItems.length === 0) && partnerId) {
+        const results: AuditLog[] = [];
+        const [ass, rep, comps] = await Promise.all([
+          supabase
+            .from("assessments")
+            .select("id,created_at")
+            .eq("partner_id", partnerId)
+            .order("created_at", { ascending: false })
+            .limit(2),
+          supabase
+            .from("reports")
+            .select("id,created_at")
+            .eq("partner_id", partnerId)
+            .order("created_at", { ascending: false })
+            .limit(2),
+          supabase
+            .from("companies")
+            .select("id,created_at")
+            .eq("partner_id", partnerId)
+            .order("created_at", { ascending: false })
+            .limit(2),
+        ]);
+
+        const assessments = (ass.data ?? []).map((a: any) => ({
+          id: a.id,
+          action: "Nova avaliação",
+          entity: "Avaliação",
+          created_at: a.created_at,
         }));
-        finalItems = fallback;
+        const reports = (rep.data ?? []).map((r: any) => ({
+          id: r.id,
+          action: "Nova denúncia",
+          entity: "Denúncia",
+          created_at: r.created_at,
+        }));
+        const companies = (comps.data ?? []).map((c: any) => ({
+          id: c.id,
+          action: "Nova empresa",
+          entity: "Empresa",
+          created_at: c.created_at,
+        }));
+
+        const merged = [...assessments, ...reports, ...companies];
+        merged.sort((a, b) => {
+          const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return tb - ta;
+        });
+        finalItems = merged.slice(0, 4);
       }
 
       if (mounted) {

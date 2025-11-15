@@ -21,6 +21,11 @@ export type PlatformSettings = {
   emailThemePrimary?: string;     // Cor primária dos e-mails
   emailThemeSecondary?: string;   // Cor secundária dos e-mails
   emailLogoUrl?: string;          // URL do logo para e-mails
+  dpoName?: string;
+  dpoEmail?: string;
+  dpoPhone?: string;
+  cookieBannerEnabled?: boolean;
+  cookieBannerText?: string;
 };
 
 const SETTINGS_ID = '00000000-0000-0000-0000-000000000001'; // Fixed ID for the single settings row
@@ -42,6 +47,11 @@ const DEFAULTS: PlatformSettings = {
   smtpEncryption: "tls",
   emailProvider: "resend", // Default para o novo campo
   leadsNotifyEmail: "",
+  dpoName: undefined,
+  dpoEmail: undefined,
+  dpoPhone: undefined,
+  cookieBannerEnabled: false,
+  cookieBannerText: undefined,
 };
 
 export async function getSettings(): Promise<PlatformSettings> {
@@ -90,6 +100,11 @@ export async function getSettings(): Promise<PlatformSettings> {
     smtpEncryption: (data.smtp_encryption as "none" | "tls" | "ssl") ?? DEFAULTS.smtpEncryption,
     emailProvider: (data.email_provider as "resend" | "smtp") ?? DEFAULTS.emailProvider, // Novo campo
     leadsNotifyEmail: data.leads_notify_email ?? undefined,
+    dpoName: data.dpo_name ?? undefined,
+    dpoEmail: data.dpo_email ?? undefined,
+    dpoPhone: data.dpo_phone ?? undefined,
+    cookieBannerEnabled: data.cookie_banner_enabled ?? DEFAULTS.cookieBannerEnabled,
+    cookieBannerText: data.cookie_banner_text ?? undefined,
   };
   console.log("getSettings: Configurações mapeadas:", mappedSettings);
   return mappedSettings;
@@ -120,6 +135,11 @@ export async function saveSettings(next: PlatformSettings): Promise<void> {
     smtp_encryption: next.smtpEncryption ?? null,
     email_provider: next.emailProvider, // Novo campo
     leads_notify_email: next.leadsNotifyEmail ?? null,
+    dpo_name: next.dpoName ?? null,
+    dpo_email: next.dpoEmail ?? null,
+    dpo_phone: next.dpoPhone ?? null,
+    cookie_banner_enabled: next.cookieBannerEnabled ?? null,
+    cookie_banner_text: next.cookieBannerText ?? null,
     updated_at: new Date().toISOString(),
   };
 

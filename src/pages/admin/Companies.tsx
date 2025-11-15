@@ -7,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
@@ -119,6 +118,12 @@ const Companies = () => {
   const [stateUF, setStateUF] = useState("");
   const [loadingCnpj, setLoadingCnpj] = useState(false);
 
+  const [filterText, setFilterText] = useState("");
+  const [filterCity, setFilterCity] = useState("");
+  const [filterPartnerId, setFilterPartnerId] = useState<string | undefined>(undefined);
+  const [filterAssessmentTypeId, setFilterAssessmentTypeId] = useState<string | undefined>(undefined);
+  const [filterRiskGradeId, setFilterRiskGradeId] = useState<string | undefined>(undefined);
+
   // Delete state
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Company | null>(null);
@@ -172,6 +177,24 @@ const Companies = () => {
 
 
   const totalCompanies = useMemo(() => companies.length, [companies]);
+
+  const filteredCompanies = useMemo(() => {
+    const text = filterText.trim().toLowerCase();
+    const digits = onlyDigits(filterText);
+    const cityText = filterCity.trim().toLowerCase();
+    return companies.filter((c) => {
+      const byText = !text
+        || (c.name || "").toLowerCase().includes(text)
+        || (!!digits && onlyDigits(c.cnpj || "").includes(digits));
+      const byCity = !cityText
+        || (c.city || "").toLowerCase().includes(cityText)
+        || (c.address?.city || "").toLowerCase().includes(cityText);
+      const byPartner = !filterPartnerId || c.partner_id === filterPartnerId;
+      const byAssessment = !filterAssessmentTypeId || c.assessment_type_id === filterAssessmentTypeId;
+      const byRisk = !filterRiskGradeId || c.risk_grade_id === filterRiskGradeId;
+      return byText && byCity && byPartner && byAssessment && byRisk;
+    });
+  }, [companies, filterText, filterCity, filterPartnerId, filterAssessmentTypeId, filterRiskGradeId]);
 
   const resetForm = () => {
     setPartnerId(undefined);
@@ -334,6 +357,9 @@ const Companies = () => {
             Gerencie as empresas cadastradas pelos parceiros. Total: {totalCompanies}
           </p>
         </div>
+        <div className="flex gap-2">
+          <Button onClick={openCreate}>Nova empresa</Button>
+        </div>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
           <DialogContent className="sm:max-w-[720px]">
             <DialogHeader>
@@ -488,6 +514,80 @@ const Companies = () => {
           </DialogContent>
         </Dialog>
       </div>
+      <Card className="p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="grid w-full gap-3 sm:grid-cols-[1fr_1fr_220px_220px_180px]">
+            <Input
+              placeholder="Pesquisar por nome ou CNPJ"
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              className="h-10"
+            />
+            <Input
+              placeholder="Cidade"
+              value={filterCity}
+              onChange={(e) => setFilterCity(e.target.value)}
+              className="h-10"
+            />
+            <Select
+              value={filterPartnerId ?? "all"}
+              onValueChange={(v) => setFilterPartnerId(v === "all" ? undefined : v)}
+            >
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder="Todos os parceiros" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os parceiros</SelectItem>
+                {activePartners.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={filterAssessmentTypeId ?? "all"}
+              onValueChange={(v) => setFilterAssessmentTypeId(v === "all" ? undefined : v)}
+            >
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder="Todos os tipos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os tipos</SelectItem>
+                {activeAssessmentTypes.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>{t.name ?? t.id}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={filterRiskGradeId ?? "all"}
+              onValueChange={(v) => setFilterRiskGradeId(v === "all" ? undefined : v)}
+            >
+              <SelectTrigger className="h-10">
+                <SelectValue placeholder="Todos os graus" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os graus</SelectItem>
+                {activeRiskGrades.map((g) => (
+                  <SelectItem key={g.id} value={g.id}>{g.name ?? g.id}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex shrink-0 gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setFilterText("");
+                setFilterCity("");
+                setFilterPartnerId(undefined);
+                setFilterAssessmentTypeId(undefined);
+                setFilterRiskGradeId(undefined);
+              }}
+            >
+              Limpar
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Tabela */}
       <Card className="p-0 overflow-hidden">
@@ -503,7 +603,7 @@ const Companies = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {companies.map((c) => { // Changed from sortedCompanies to companies
+              {filteredCompanies.map((c) => {
                 const partner = partnersById[c.partner_id];
                 return (
                   <TableRow key={c.id}>
@@ -529,10 +629,10 @@ const Companies = () => {
                   </TableRow>
                 );
               })}
-              {companies.length === 0 && ( // Changed from sortedCompanies to companies
+              {filteredCompanies.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
-                    Nenhuma empresa cadastrada.
+                    Nenhuma empresa encontrada.
                   </TableCell>
                 </TableRow>
               )}

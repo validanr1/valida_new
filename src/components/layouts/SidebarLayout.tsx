@@ -32,6 +32,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import { signOut } from "@/services/auth"; // Corrigido: import signOut
 import LoadingSpinner from "@/components/LoadingSpinner";
+import TasksWagnerPopup from "@/components/admin/TasksWagnerPopup";
 
 type UserProfile = { id: string; name: string; email: string; avatar_url?: string };
 
@@ -206,6 +207,7 @@ const SidebarLayout = () => {
   const isAssessments = location.pathname.startsWith("/admin/avaliacoes");
   const isDenuncias = location.pathname.startsWith("/admin/denuncias");
   const isSettings = location.pathname.startsWith("/admin/configuracoes");
+  const isLegal = location.pathname.startsWith("/admin/juridico");
   const isUserManagement = location.pathname.startsWith("/admin/usuarios");
   const isProfilePage = location.pathname.startsWith("/admin/perfil");
   const isSubscriptions = location.pathname.startsWith("/admin/assinaturas");
@@ -318,10 +320,11 @@ const SidebarLayout = () => {
             <Item active={isTasks} to="/admin/tarefas" icon={<ListTodo size={18} />} requiredPermission="admin:dashboard:view" hasPermission={hasPermission}>Tarefas</Item>
           </nav>
 
-          <SectionTitle>Configurações</SectionTitle>
-          <nav className="flex flex-col gap-2 px-3">
-            <Item active={isSettings} to="/admin/configuracoes" icon={<Settings size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Configurações</Item>
-          </nav>
+        <SectionTitle>Configurações</SectionTitle>
+        <nav className="flex flex-col gap-2 px-3">
+          <Item active={isSettings} to="/admin/configuracoes" icon={<Settings size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Configurações</Item>
+          <Item active={isLegal} to="/admin/juridico" icon={<FileText size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Jurídico / LGPD</Item>
+        </nav>
         </div>
 
         <div className="px-3 pb-4">
@@ -380,9 +383,10 @@ const SidebarLayout = () => {
         </div>
       </aside>
 
-      <main className="flex-1 bg-background overflow-auto">
+      <main className="flex-1 bg-background overflow-auto p-6 md:p-8">
         <Outlet />
       </main>
+      <TasksWagnerPopup />
     </div>
   );
 };

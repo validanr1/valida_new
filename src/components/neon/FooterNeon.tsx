@@ -10,7 +10,7 @@ const FooterNeon = () => {
         <nav className="flex items-center gap-5">
           <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
           <a href="#cta" className="hover:text-white transition-colors">Começar</a>
-          <a href="#" className="hover:text-white transition-colors">Privacidade</a>
+          <a href="/politica-de-privacidade" className="hover:text-white transition-colors">Privacidade</a>
         </nav>
       </div>
     </footer>

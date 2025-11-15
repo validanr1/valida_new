@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
+import Reveal from "@/components/utils/Reveal";
 import { Button } from "@/components/ui/button";
 import { Building2, Users, ClipboardList, AlertTriangle, FileText, Star, BarChart3 } from "lucide-react"; // Adicionado FileText e Star
 import { Link } from "react-router-dom";
-import RecentActivity from "@/components/shared/RecentActivity";
 import { supabase } from "@/integrations/supabase/client";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import TrendAnalysisChart from "@/components/partner/charts/TrendAnalysisChart";
-import EvolutionCompaniesResponses from "@/components/partner/charts/EvolutionCompaniesResponses";
+import AssessmentsScoreTrend from "@/components/partner/charts/AssessmentsScoreTrend";
+import DashboardChartsGrid from "@/components/partner/charts/DashboardChartsGrid";
 import PlatformRatingDialog from "@/components/partner/PlatformRatingDialog"; // Importar o novo componente
+import OperationalSummary from "@/components/partner/OperationalSummary";
+import MiniTrends from "@/components/partner/charts/MiniTrends";
 
 type Company = { id: string; name: string; partner_id: string; created_at?: string };
 type Employee = { id: string; company_id: string };
@@ -154,63 +157,75 @@ const Dashboard = () => {
       </div>
 
       {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Reveal>
+        <Card className="p-6 rounded-2xl shadow-md border">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-lg bg-muted">
-              <Building2 size={18} />
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-muted">
+              <Building2 size={22} />
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Total de Empresas</div>
-              <div className="text-2xl font-bold">{companies.length}</div>
+              <div className="text-3xl font-bold">{companies.length}</div>
+              <div className="text-xs text-muted-foreground">últimos 30 dias</div>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        </Reveal>
+        <Reveal delayMs={60}>
+        <Card className="p-6 rounded-2xl shadow-md border">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-lg bg-muted">
-              <Users size={18} />
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-muted">
+              <Users size={22} />
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Colaboradores</div>
-              <div className="text-2xl font-bold">{employeeCount}</div>
+              <div className="text-3xl font-bold">{employeeCount}</div>
+              <div className="text-xs text-muted-foreground">últimos 30 dias</div>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        </Reveal>
+        <Reveal delayMs={120}>
+        <Card className="p-6 rounded-2xl shadow-md border">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-lg bg-muted">
-              <FileText size={18} /> {/* Ícone para Avaliações */}
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-muted">
+              <FileText size={22} />
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Avaliações Recebidas</div>
-              <div className="text-2xl font-bold">{assessmentsCount}</div>
+              <div className="text-3xl font-bold">{assessmentsCount}</div>
+              <div className="text-xs text-muted-foreground">últimos 30 dias</div>
             </div>
           </div>
         </Card>
-        <Card className="p-4">
+        </Reveal>
+        <Reveal delayMs={180}>
+        <Card className="p-6 rounded-2xl shadow-md border">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-lg bg-red-100 text-red-700">
-              <AlertTriangle size={18} />
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-red-100 text-red-700">
+              <AlertTriangle size={22} />
             </div>
             <div>
               <div className="text-sm text-muted-foreground">Denúncias Recebidas</div>
-              <div className="text-2xl font-bold">{reportsCount}</div>
+              <div className="text-3xl font-bold">{reportsCount}</div>
+              <div className="text-xs text-muted-foreground">últimos 30 dias</div>
             </div>
           </div>
         </Card>
+        </Reveal>
       </div>
 
-      {/* Gráficos: Tendências e Evolução */}
+      {/* Grade de gráficos coloridos 2 por linha */}
+      <Reveal>
+        <DashboardChartsGrid />
+      </Reveal>
+
+      {/* Linha: Empresas Recentes (esquerda) e Resumo Operacional (direita) */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <TrendAnalysisChart />
-        <EvolutionCompaniesResponses />
-      </div>
-
-      {/* Linha: Empresas Recentes, Atividade, Ações Rápidas */}
-      <div className="grid gap-4 lg:grid-cols-3">
         {/* Empresas Recentes */}
-        <Card className="p-4">
+        <Reveal direction="left">
+        <Card className="p-6 rounded-2xl shadow-md">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-sm font-medium">Empresas Recentes</h3>
             <Link to="/partner/empresas" className="text-xs text-blue-600 hover:underline">
@@ -229,20 +244,26 @@ const Dashboard = () => {
               </div>
             ))}
             {recentCompanies.length === 0 && (
-              <div className="rounded-lg border p-4 text-sm text-muted-foreground">
-                Nenhuma empresa cadastrada ainda.
-              </div>
-            )}
+                <div className="rounded-lg border p-4 text-sm text-muted-foreground">
+                  Nenhuma empresa cadastrada ainda.
+                </div>
+              )}
           </div>
         </Card>
+        </Reveal>
 
-        {/* Atividade Recente (reuso) */}
-        <div className="lg:col-span-1">
-          <RecentActivity partnerId={partnerId} />
-        </div>
+        {/* Resumo Operacional */}
+        <Reveal direction="right">
+          <div className="lg:col-span-1">
+            <OperationalSummary />
+          </div>
+        </Reveal>
 
-        {/* Ações Rápidas */}
-        <Card className="p-4">
+      </div>
+
+      {/* Ações Rápidas */}
+      <Reveal>
+        <Card className="p-6 rounded-2xl shadow-sm">
           <h3 className="mb-3 text-sm font-medium">Ações Rápidas</h3>
           <div className="flex flex-wrap items-center gap-2">
             <Link to="/partner/empresas">
@@ -262,7 +283,7 @@ const Dashboard = () => {
             </Link>
           </div>
         </Card>
-      </div>
+      </Reveal>
 
       <PlatformRatingDialog
         open={isRatingDialogOpen}

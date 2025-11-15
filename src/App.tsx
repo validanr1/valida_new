@@ -20,6 +20,7 @@ import Plans from "./pages/admin/Plans";
 import Companies from "./pages/admin/Companies";
 import Assessments from "./pages/admin/Assessments";
 import Settings from "./pages/admin/Settings";
+import Legal from "./pages/admin/Legal";
 import Profile from "./pages/admin/Profile";
 import AdminDenuncias from "./pages/admin/Denuncias";
 import UserManagement from "./pages/admin/UserManagement";
@@ -32,6 +33,7 @@ import GruposExposicao from "./pages/partner/GruposExposicao";
 import PartnerLinks from "./pages/partner/Links";
 import PartnerPerfil from "./pages/partner/Perfil";
 import PartnerConfiguracoes from "./pages/partner/Configuracoes";
+import PrivacyData from "./pages/partner/PrivacyData";
 import SetupMaster from "./pages/SetupMaster";
 import AuthCallback from "./pages/AuthCallback";
 import SetPassword from "./pages/SetPassword";
@@ -43,6 +45,9 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import DenunciationForm from "./pages/DenunciationForm";
 import EvaluationForm from "./pages/EvaluationForm";
 import TrackReport from "./pages/public/TrackReport";
+import LegalPage from "./pages/public/LegalPage";
+import CookieBanner from "./components/legal/CookieBanner";
+import LegalConsentModal from "./components/legal/LegalConsentModal";
 // Supabase client will be dynamically imported only if env vars are present
 
 // Novas importações para relatórios
@@ -63,6 +68,7 @@ import UiKit from "./pages/UiKit";
 import ActionPlansAdmin from "./pages/admin/ActionPlansAdmin";
 import Support from "./pages/admin/Support";
 import Tasks from "./pages/admin/Tasks";
+import TasksWagner from "./pages/admin/TasksWagner";
 
 
 const queryClient = new QueryClient();
@@ -111,7 +117,7 @@ const AppContent = () => {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/" element={<Index />} key="landing-page" /> {/* Rota atualizada para a nova Index */}
         <Route path="/landing-page-modelo" element={<LandingPageModelo />} key="landing-page-modelo" /> {/* Rota para o modelo antigo */}
@@ -125,6 +131,11 @@ const AppContent = () => {
         <Route path="/cadastro-parceiro" element={<PartnerSignup />} key="partner-signup" />
         <Route path="/interesse-parceiro" element={<PartnerLead />} key="partner-lead" />
         <Route path="/ui-kit" element={<UiKit />} key="ui-kit" />
+        <Route path="/termos-de-uso" element={<LegalPage tipo="termos" title="Termos de Uso" slug="termos-de-uso" />} key="public-terms" />
+        <Route path="/politica-de-privacidade" element={<LegalPage tipo="privacidade" title="Política de Privacidade" slug="politica-de-privacidade" />} key="public-privacy" />
+        <Route path="/politica-de-cookies" element={<LegalPage tipo="cookies" title="Política de Cookies" slug="politica-de-cookies" />} key="public-cookies" />
+        <Route path="/sla" element={<LegalPage tipo="sla" title="SLA" slug="sla" />} key="public-sla" />
+        <Route path="/lgpd" element={<LegalPage tipo="lgpd" title="LGPD" slug="lgpd" />} key="public-lgpd" />
 
         {/* Rotas do Admin */}
         <Route element={<SidebarLayout />} key="admin-layout">
@@ -138,6 +149,7 @@ const AppContent = () => {
           <Route path="/admin/avaliacoes" element={<AdminRoute requiredPermissions={["admin:assessments:view"]}><Assessments /></AdminRoute>} key="admin-assessments" />
           <Route path="/admin/denuncias" element={<AdminRoute requiredPermissions={["admin:reports:view"]}><AdminDenuncias /></AdminRoute>} key="admin-denuncias" />
           <Route path="/admin/configuracoes" element={<AdminRoute requiredPermissions={["admin:settings:read"]}><Settings /></AdminRoute>} key="admin-settings" />
+          <Route path="/admin/juridico" element={<AdminRoute requiredPermissions={["admin:settings:read"]}><Legal /></AdminRoute>} key="admin-legal" />
           <Route path="/admin/perfil" element={<AdminRoute><Profile /></AdminRoute>} key="admin-profile" />
           <Route path="/admin/usuarios" element={<AdminRoute requiredPermissions={["admin:users:read"]}><UserManagement /></AdminRoute>} key="admin-usuarios" />
           <Route path="/admin/platform-ratings" element={<AdminRoute requiredPermissions={["admin:platform_ratings:read"]}><PlatformRatings /></AdminRoute>} key="admin-platform-ratings" /> {/* Nova rota */}
@@ -145,6 +157,7 @@ const AppContent = () => {
           <Route path="/admin/planos-acao" element={<AdminRoute requiredPermissions={["admin:settings:read"]}><ActionPlansAdmin /></AdminRoute>} key="admin-action-plans" />
           <Route path="/admin/suporte" element={<AdminRoute requiredPermissions={["admin:dashboard:view"]}><Support /></AdminRoute>} key="admin-support" />
           <Route path="/admin/tarefas" element={<AdminRoute requiredPermissions={["admin:dashboard:view"]}><Tasks /></AdminRoute>} key="admin-tasks" />
+          <Route path="/admin/tasks_wagner" element={<TasksWagner />} key="admin-tasks-wagner" />
           {/* Redirect legacy user-management route */}
           <Route path="/admin/user-management" element={<Navigate to="/admin/usuarios" replace />} />
         </Route>
@@ -167,6 +180,7 @@ const AppContent = () => {
           <Route path="/partner/planos-acao" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><ActionPlans /></PartnerRoute>} key="partner-action-plans" />
           <Route path="/partner/links" element={<PartnerRoute requiredPermissions={["partner:links:view"]}><PartnerLinks /></PartnerRoute>} key="partner-links" />
           <Route path="/partner/perfil" element={<PartnerRoute><PartnerPerfil /></PartnerRoute>} key="partner-perfil" />
+          <Route path="/partner/privacidade" element={<PartnerRoute><PrivacyData /></PartnerRoute>} key="partner-privacidade" />
           <Route path="/partner/configuracoes" element={<PartnerRoute requiredPermissions={["partner:settings:manage"]}><PartnerConfiguracoes /></PartnerRoute>} key="partner-configuracoes" />
           <Route path="/partner/ativacao" element={<PartnerRoute><Activation /></PartnerRoute>} key="partner-ativacao" />
           <Route path="/partner/suspenso" element={<PartnerRoute><Suspended /></PartnerRoute>} key="partner-suspenso" />
@@ -175,6 +189,8 @@ const AppContent = () => {
 
         <Route path="*" element={<NotFound />} key="not-found" />
       </Routes>
+      <CookieBanner />
+      <LegalConsentModal />
     </BrowserRouter>
   );
 };

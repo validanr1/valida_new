@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSettings, saveSettings, type PlatformSettings } from "@/services/settings";
+import { supabase } from "@/integrations/supabase/client";
 import { showError, showSuccess } from "@/utils/toast";
 import AccessProfiles from "@/components/admin/settings/AccessProfiles";
 import Questionnaires from "@/components/admin/settings/Questionnaires";
@@ -36,6 +37,12 @@ const Settings = () => {
   const [logoNegativePreview, setLogoNegativePreview] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [termsHtml, setTermsHtml] = useState("");
+  const [privacyHtml, setPrivacyHtml] = useState("");
+  const [cookiesHtml, setCookiesHtml] = useState("");
+  const [lgpdHtml, setLgpdHtml] = useState("");
+  const [legalLoading, setLegalLoading] = useState(false);
+  const [legalSaving, setLegalSaving] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -57,6 +64,23 @@ const Settings = () => {
       }
     };
     loadInitialSettings();
+    (async () => {
+      setLegalLoading(true);
+      try {
+        const b = supabase.storage.from("legal");
+        const dTerms = await b.download("terms.html");
+        if (!dTerms.error && dTerms.data) setTermsHtml(await dTerms.data.text());
+        const dPrivacy = await b.download("privacy.html");
+        if (!dPrivacy.error && dPrivacy.data) setPrivacyHtml(await dPrivacy.data.text());
+        const dCookies = await b.download("cookies.html");
+        if (!dCookies.error && dCookies.data) setCookiesHtml(await dCookies.data.text());
+        const dLgpd = await b.download("lgpd.html");
+        if (!dLgpd.error && dLgpd.data) setLgpdHtml(await dLgpd.data.text());
+      } catch (_) {
+      } finally {
+        setLegalLoading(false);
+      }
+    })();
     return () => { mounted = false; };
   }, [session?.user?.id]);
 
@@ -128,7 +152,7 @@ const Settings = () => {
 
       <Card className="p-4">
         <Tabs defaultValue="geral">
-          <TabsList className="w-full grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-8">
+          <TabsList className="w-full grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-9">
             <TabsTrigger value="geral" className="w-full">Geral</TabsTrigger>
             <TabsTrigger value="usuarios" className="w-full">Usuários</TabsTrigger>
             <TabsTrigger value="emails" className="w-full">E-mails</TabsTrigger>
@@ -137,6 +161,7 @@ const Settings = () => {
             <TabsTrigger value="tipos-avaliacao" className="w-full">Tipos de Avaliação</TabsTrigger>
             <TabsTrigger value="graus-risco" className="w-full">Graus de Risco</TabsTrigger>
             <TabsTrigger value="niveis" className="w-full">Níveis</TabsTrigger>
+            <TabsTrigger value="juridico" className="w-full">Jurídico</TabsTrigger>
           </TabsList>
 
           <TabsContent value="geral" className="space-y-6 pt-4">
@@ -491,6 +516,53 @@ const Settings = () => {
               nameLabel="Nome do Nível"
               emptyMessage="Nenhum nível cadastrado."
             />
+          </TabsContent>
+
+          <TabsContent value="juridico" className="pt-4 space-y-6">
+            <Card className="p-6 space-y-4">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Termos de Uso (HTML)</div>
+                  <Textarea rows={10} value={termsHtml} onChange={(e) => setTermsHtml(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Política de Privacidade (HTML)</div>
+                  <Textarea rows={10} value={privacyHtml} onChange={(e) => setPrivacyHtml(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Política de Cookies (HTML)</div>
+                  <Textarea rows={10} value={cookiesHtml} onChange={(e) => setCookiesHtml(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">LGPD (Aviso/Política em HTML)</div>
+                  <Textarea rows={10} value={lgpdHtml} onChange={(e) => setLgpdHtml(e.target.value)} />
+                </div>
+              </div>
+              <div className="pt-2 flex gap-2">
+                <Button
+                  onClick={async () => {
+                    setLegalSaving(true);
+                    try {
+                      const b = supabase.storage.from("legal");
+                      const uploads = [] as Promise<any>[];
+                      uploads.push(b.upload("terms.html", new Blob([termsHtml], { type: "text/html" }), { upsert: true }));
+                      uploads.push(b.upload("privacy.html", new Blob([privacyHtml], { type: "text/html" }), { upsert: true }));
+                      uploads.push(b.upload("cookies.html", new Blob([cookiesHtml], { type: "text/html" }), { upsert: true }));
+                      uploads.push(b.upload("lgpd.html", new Blob([lgpdHtml], { type: "text/html" }), { upsert: true }));
+                      await Promise.all(uploads);
+                      showSuccess("Políticas salvas.");
+                    } catch (e) {
+                      showError("Falha ao salvar políticas.");
+                    } finally {
+                      setLegalSaving(false);
+                    }
+                  }}
+                  disabled={legalSaving || legalLoading}
+                >
+                  {legalSaving ? "Salvando..." : "Salvar Políticas"}
+                </Button>
+              </div>
+            </Card>
           </TabsContent>
         </Tabs>
       </Card>

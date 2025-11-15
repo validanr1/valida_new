@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { setCurrentCompany } from "@/services/auth"; // Importa a função agora exportada
 import { showSuccess } from "@/utils/toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -91,21 +92,28 @@ const CompanySelect = () => {
   };
 
   return (
-    <Select value={selectedValue} onValueChange={onChange} disabled={loadingCompanies || companies.length === 0}>
-      <SelectTrigger className="w-56">
-        <SelectValue placeholder="Selecionar empresa" />
-      </SelectTrigger>
-      <SelectContent>
-        {companies.map((c) => (
-          <SelectItem key={c.id} value={c.id}>
-            {c.name}
-          </SelectItem>
-        ))}
-        {companies.length === 0 && (
-          <SelectItem value="no-company" disabled>Nenhuma empresa disponível</SelectItem>
-        )}
-      </SelectContent>
-    </Select>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div>
+          <Select value={selectedValue} onValueChange={onChange} disabled={loadingCompanies || companies.length === 0}>
+            <SelectTrigger className="w-56">
+              <SelectValue placeholder="Selecionar empresa" />
+            </SelectTrigger>
+            <SelectContent>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+              {companies.length === 0 && (
+                <SelectItem value="no-company" disabled>Nenhuma empresa disponível</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">Selecione a empresa para filtrar o painel</TooltipContent>
+    </Tooltip>
   );
 };
 
