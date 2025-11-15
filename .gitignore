@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary files and reports
+temp-files/
+*.pdf
+Relatorio_*
