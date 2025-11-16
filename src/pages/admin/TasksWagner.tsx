@@ -24,10 +24,10 @@ type TWTask = {
 };
 
 const TasksWagner = () => {
-    // Atalho de teclado Ctrl+N para nova tarefa
+    // Atalho de teclado Ctrl+0 para nova tarefa
     useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
+        if ((e.ctrlKey || e.metaKey) && (e.key === "0" || e.code === "Digit0")) {
           e.preventDefault();
           openCreate();
         }
