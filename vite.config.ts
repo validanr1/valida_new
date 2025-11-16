@@ -9,13 +9,28 @@ export default defineConfig(() => ({
     port: 35000,
     strictPort: true,
     watch: {
-      usePolling: true, // Adiciona polling para HMR
+      usePolling: true,
     },
   },
   plugins: [dyadComponentTagger(), react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    target: "esnext",
+    minify: "esbuild",
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          supabase: ["@supabase/supabase-js"],
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu"],
+        },
+      },
     },
   },
 }));
