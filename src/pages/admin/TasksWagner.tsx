@@ -24,6 +24,17 @@ type TWTask = {
 };
 
 const TasksWagner = () => {
+    // Atalho de teclado Ctrl+N para nova tarefa
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "n") {
+          e.preventDefault();
+          openCreate();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
   const { session } = useSession();
   const email = session?.user?.email ?? "";
   const isAdmin = session?.roleContext === "SuperAdmin";
