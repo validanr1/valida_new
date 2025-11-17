@@ -96,10 +96,22 @@ const Denuncias = () => {
   // Load comments when modal opens
   useEffect(() => {
     if (detailsOpen && selected) {
-      setNewStatus(selected.status || "open");
+      // Converte status do banco de dados (português) para o formato do frontend (inglês)
+      const dbStatus = selected.status || "aberta";
+      const frontendStatus = dbStatus === "aberta" ? "open" : 
+                           dbStatus === "em_andamento" ? "in_progress" :
+                           dbStatus === "resolvida" ? "resolved" :
+                           dbStatus === "rejeitada" ? "rejected" : "open";
+      setNewStatus(frontendStatus);
       loadComments(selected.id);
     }
   }, [detailsOpen, selected]);
+
+  // Update treated status when status changes
+  useEffect(() => {
+    // Force re-render of treated badge when status changes
+    // The treatedBadge function will automatically use the newStatus
+  }, [newStatus]);
 
   const loadComments = async (reportId: string) => {
     const { data } = await supabase
@@ -114,7 +126,13 @@ const Denuncias = () => {
     if (!selected) return;
     setIsSaving(true);
     
-    const updates: any = { status: newStatus };
+    // Converte status do frontend (inglês) para o banco de dados (português)
+    const dbStatus = newStatus === "open" ? "aberta" :
+                    newStatus === "in_progress" ? "em_andamento" :
+                    newStatus === "resolved" ? "resolvida" :
+                    newStatus === "rejected" ? "rejeitada" : "aberta";
+    
+    const updates: any = { status: dbStatus };
     if (newStatus === "resolved") {
       updates.tratada = true; // Campo em português
     }
@@ -175,17 +193,48 @@ const Denuncias = () => {
 
   const fmtStatusPtBR = (s?: string) => {
     if (!s) return "—";
+    // Mapeamento para valores do frontend (inglês) e banco de dados (português)
     const map: Record<string, string> = {
+      // Valores do frontend
       open: "Aberta",
       in_progress: "Em andamento",
       resolved: "Resolvida",
       rejected: "Rejeitada",
+      // Valores do banco de dados (português)
+      aberta: "Aberta",
+      em_andamento: "Em andamento",
+      resolvida: "Resolvida",
+      rejeitada: "Rejeitada",
     };
     return map[s] ?? s.charAt(0).toUpperCase() + s.slice(1);
   };
 
   const treatedBadge = (r: Report) => {
-    const t = r.treated ?? (r.status ? r.status === "resolved" : false);
+    // Use o status atual selecionado no dropdown, com fallback para o status original
+    const currentStatus = newStatus || r.status || "open";
+    // Se o status atual for "resolved" ou "resolvida", mostra "Sim", senão usa o valor original ou "Não"
+    const isResolved = currentStatus === "resolved" || currentStatus === "resolvida";
+    const t = isResolved ? true : (r.treated ?? false);
+    return (
+      <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs ${t ? "bg-emerald-100 border-emerald-200 text-emerald-700" : "bg-red-100 border-red-200 text-red-700"}`}>
+        {t ? "Sim" : "Não"}
+      </span>
+    );
+  };
+
+  const treatedBadgeTable = (r: Report) => {
+    // Para a tabela, use o status do registro diretamente
+    const currentStatus = r.status || "open";
+    // Traduza o status português para inglês se necessário
+    let normalizedStatus = currentStatus;
+    if (currentStatus === "resolvida") normalizedStatus = "resolved";
+    else if (currentStatus === "aberta") normalizedStatus = "open";
+    else if (currentStatus === "em_andamento") normalizedStatus = "in_progress";
+    else if (currentStatus === "rejeitada") normalizedStatus = "rejected";
+    
+    // Se o status for "resolved", mostra "Sim", senão usa o valor original ou "Não"
+    const isResolved = normalizedStatus === "resolved";
+    const t = isResolved ? true : (r.treated ?? false);
     return (
       <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs ${t ? "bg-emerald-100 border-emerald-200 text-emerald-700" : "bg-red-100 border-red-200 text-red-700"}`}>
         {t ? "Sim" : "Não"}
@@ -226,7 +275,7 @@ const Denuncias = () => {
                   <TableCell>{c?.name ?? "—"}</TableCell>
                   <TableCell>{r.title ?? "—"}</TableCell>
                   <TableCell>{fmtStatusPtBR(r.status)}</TableCell>
-                  <TableCell>{treatedBadge(r)}</TableCell>
+                  <TableCell>{treatedBadgeTable(r)}</TableCell>
                   <TableCell>
                     {Array.isArray((r as any).attachments) && (r as any).attachments.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
@@ -334,8 +383,8 @@ const Denuncias = () => {
               {/* Status e Tratamento */}
               <Card className="p-4">
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  {selected.status === "resolved" ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : 
-                   selected.status === "rejected" ? <XCircle className="h-4 w-4 text-red-600" /> :
+                  {(newStatus || selected.status) === "resolved" || (newStatus || selected.status) === "resolvida" ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : 
+                   (newStatus || selected.status) === "rejected" || (newStatus || selected.status) === "rejeitada" ? <XCircle className="h-4 w-4 text-red-600" /> :
                    <AlertCircle className="h-4 w-4 text-yellow-600" />}
                   Status e Tratamento
                 </h3>

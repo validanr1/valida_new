@@ -394,6 +394,9 @@ const Configuracoes = () => {
                   <div className="text-xs text-muted-foreground">
                     Usado no ambiente do parceiro e na tela de login.
                   </div>
+                  <div className="text-xs text-blue-600 font-medium">
+                    Tamanho recomendado: 400x400 pixels (máx. 2MB)
+                  </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="h-16 w-28 overflow-hidden rounded-md bg-muted grid place-items-center">
@@ -428,6 +431,9 @@ const Configuracoes = () => {
                   <div className="text-sm font-medium">Logo Negativo</div>
                   <div className="text-xs text-muted-foreground">
                     Usado em fundos escuros (ex: sidebar do admin).
+                  </div>
+                  <div className="text-xs text-blue-600 font-medium">
+                    Tamanho recomendado: 400x400 pixels (máx. 2MB)
                   </div>
                 </div>
                 <div className="flex items-center gap-4">

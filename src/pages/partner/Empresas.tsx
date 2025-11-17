@@ -28,6 +28,7 @@ type Company = {
   cnpj?: string;
   responsible_name?: string;
   responsible_email?: string;
+  responsible_position?: string; // Cargo do responsável
   assessment_type_id?: string;
   cnae?: string;
   risk_grade_id?: string;
@@ -41,6 +42,7 @@ type Company = {
     state?: string;
   };
   created_at?: string; // Adicionado created_at
+  assessment_quota?: number; // Cota de avaliações para esta empresa
 };
 
 type AssessmentType = { id: string; name?: string; status?: "active" | "inactive" };
@@ -96,17 +98,20 @@ const Empresas = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [assessmentTypes, setAssessmentTypes] = useState<AssessmentType[]>([]);
   const [riskGrades, setRiskGrades] = useState<RiskGrade[]>([]);
+  const [companyAssessmentStats, setCompanyAssessmentStats] = useState<Record<string, { used: number; remaining: number }>>({});
 
   // modal
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | undefined>(undefined);
   const [isSaving, setIsSaving] = useState(false);
+  const [assessmentQuota, setAssessmentQuota] = useState<string>(""); // Cota de avaliações
 
   // form
   const [name, setName] = useState("");
   const [cnpj, setCnpj] = useState("");
   const [responsibleName, setResponsibleName] = useState("");
   const [responsibleEmail, setResponsibleEmail] = useState("");
+  const [responsiblePosition, setResponsiblePosition] = useState("");
   const [assessmentTypeId, setAssessmentTypeId] = useState<string | undefined>(undefined);
   const [cnae, setCnae] = useState("");
   const [riskGradeId, setRiskGradeId] = useState<string | undefined>(undefined);
@@ -144,6 +149,10 @@ const Empresas = () => {
         .order("created_at", { ascending: false });
       if (!mounted) return;
       setCompanies(data ?? []);
+      // Carregar estatísticas de avaliações das empresas
+      if (data && data.length > 0) {
+        await loadCompanyAssessmentStats();
+      }
     })();
     return () => { mounted = false; };
   }, [partnerId]);
@@ -193,12 +202,40 @@ const Empresas = () => {
     return () => { mounted = false; };
   }, []);
 
+  const loadCompanyAssessmentStats = async () => {
+    if (!partnerId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('get_company_assessment_stats', { partner_id_param: partnerId });
+      
+      if (error) {
+        console.error('Erro ao carregar estatísticas de avaliações:', error);
+        return;
+      }
+      
+      if (data) {
+        const stats: Record<string, { used: number; remaining: number }> = {};
+        data.forEach((stat) => {
+          stats[stat.company_id] = {
+            used: stat.used_assessments,
+            remaining: stat.remaining_assessments
+          };
+        });
+        setCompanyAssessmentStats(stats);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error);
+    }
+  };
+
   const resetForm = () => {
     setEditingId(undefined);
     setName("");
     setCnpj("");
     setResponsibleName("");
     setResponsibleEmail("");
+    setResponsiblePosition("");
     setAssessmentTypeId(undefined);
     setCnae("");
     setRiskGradeId(undefined);
@@ -208,6 +245,7 @@ const Empresas = () => {
     setNeighborhood("");
     setCity("");
     setStateUF("");
+    setAssessmentQuota(""); // Reset cota de avaliações
   };
 
   const openCreate = () => {
@@ -229,6 +267,7 @@ const Empresas = () => {
     setCnpj(c.cnpj ?? "");
     setResponsibleName(c.responsible_name ?? "");
     setResponsibleEmail(c.responsible_email ?? "");
+    setResponsiblePosition(c.responsible_position ?? "");
     setAssessmentTypeId(c.assessment_type_id);
     setCnae(c.cnae ?? "");
     setRiskGradeId(c.risk_grade_id);
@@ -238,6 +277,7 @@ const Empresas = () => {
     setNeighborhood(c.address?.neighborhood ?? "");
     setCity(c.address?.city ?? c.city ?? "");
     setStateUF(c.address?.state ?? "");
+    setAssessmentQuota(c.assessment_quota?.toString() ?? ""); // Carregar cota de avaliações
     setOpen(true);
   };
 
@@ -264,10 +304,12 @@ const Empresas = () => {
       cnpj: formattedDoc,
       responsible_name: responsibleName.trim() || null,
       responsible_email: responsibleEmail.trim().toLowerCase() || null,
+      // responsible_position: responsiblePosition.trim() || null, // TODO: Descomentar após aplicar migração
       assessment_type_id: assessmentTypeId,
       cnae: cnae.trim() || null,
       risk_grade_id: riskGradeId,
       city: (city || null),
+      assessment_quota: assessmentQuota ? parseInt(assessmentQuota) : 0, // Cota de avaliações
       address: {
         zip: formatCEP(zip) || null,
         street: street.trim() || null,
@@ -475,8 +517,28 @@ const Empresas = () => {
             </Button>
           );
         })()}
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-          <DialogContent className="sm:max-w-[720px] z-[100]">
+      </div>
+
+      {/* Resumo de Cotas de Avaliações */}
+      {companies.length > 0 && (
+        <Card className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-zinc-900">Distribuição de Avaliações</h3>
+              <p className="text-xs text-zinc-600">
+                Total de cotas alocadas: {companies.reduce((sum, c) => sum + (c.assessment_quota || 0), 0)} / 
+                Limite do plano: {currentAssignment?.plans?.limits?.active_assessments || 0}
+              </p>
+            </div>
+            <div className="text-xs text-zinc-500">
+              {companies.filter(c => (c.assessment_quota || 0) > 0).length} empresas com cota definida
+            </div>
+          </div>
+        </Card>
+      )}
+      
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
+          <DialogContent className="sm:max-w-[720px] z-[100] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingId ? "Editar Empresa" : "Nova Empresa"}</DialogTitle>
             </DialogHeader>
@@ -515,23 +577,34 @@ const Empresas = () => {
               </div>
 
               {/* Responsável (agora campos de texto) */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Nome do Responsável</label>
-                  <Input
-                    placeholder="Ex.: Maria Silva"
-                    value={responsibleName}
-                    onChange={(e) => setResponsibleName(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
-                  />
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Nome do Responsável</label>
+                    <Input
+                      placeholder="Ex.: Maria Silva"
+                      value={responsibleName}
+                      onChange={(e) => setResponsibleName(e.target.value)}
+                      className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">E-mail do Responsável</label>
+                    <Input
+                      type="email"
+                      placeholder="email@empresa.com"
+                      value={responsibleEmail}
+                      onChange={(e) => setResponsibleEmail(e.target.value)}
+                      className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">E-mail do Responsável</label>
+                  <label className="text-sm font-medium">Cargo do Responsável</label>
                   <Input
-                    type="email"
-                    placeholder="email@empresa.com"
-                    value={responsibleEmail}
-                    onChange={(e) => setResponsibleEmail(e.target.value)}
+                    placeholder="Ex.: Gerente de Segurança, Coordenador de RH"
+                    value={responsiblePosition}
+                    onChange={(e) => setResponsiblePosition(e.target.value)}
                     className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
                   />
                 </div>
@@ -576,6 +649,26 @@ const Empresas = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              {/* Cota de Avaliações */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Cota de Avaliações</label>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={assessmentQuota}
+                    onChange={(e) => setAssessmentQuota(e.target.value.replace(/\D/g, ""))}
+                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                  />
+                  <div className="text-xs text-muted-foreground self-center">
+                    0 = sem limite
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Número máximo de avaliações ativas permitidas para esta empresa
                 </div>
               </div>
 
@@ -632,7 +725,6 @@ const Empresas = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
 
       {/* Grid de cards */}
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -644,10 +736,13 @@ const Empresas = () => {
             cnpj={c.cnpj}
             responsibleName={c.responsible_name}
             responsibleEmail={c.responsible_email}
+            responsiblePosition={c.responsible_position}
             cnae={c.cnae}
             riskGradeName={c.risk_grade_id ? (risksById[c.risk_grade_id]?.name ?? c.risk_grade_id) : undefined}
             templateAcronym={typeAcronym(c.assessment_type_id)}
             templateName={c.assessment_type_id ? (assessmentTypesById[c.assessment_type_id]?.name ?? c.assessment_type_id) : undefined}
+            assessmentQuota={c.assessment_quota}
+            usedAssessments={companyAssessmentStats[c.id]?.used || 0}
             onEdit={() => openEdit(c)}
             onDelete={() => onDelete(c)}
           />

@@ -7,10 +7,13 @@ type Props = {
   cnpj?: string;
   responsibleName?: string;
   responsibleEmail?: string;
+  responsiblePosition?: string; // Cargo do responsável
   cnae?: string;
   riskGradeName?: string;
   templateAcronym?: string;
   templateName?: string;
+  assessmentQuota?: number; // Cota de avaliações
+  usedAssessments?: number; // Avaliações usadas
   onEdit: () => void;
   onDelete: () => void;
 };
@@ -30,10 +33,13 @@ const CompanyCard = ({
   cnpj,
   responsibleName,
   responsibleEmail,
+  responsiblePosition,
   cnae,
   riskGradeName,
   templateAcronym,
   templateName,
+  assessmentQuota,
+  usedAssessments,
   onEdit,
   onDelete,
 }: Props) => {
@@ -59,6 +65,28 @@ const CompanyCard = ({
               </span>
             ) : <span />}
           </div>
+          
+          {/* Informações do Responsável */}
+          {(responsibleName || responsibleEmail || responsiblePosition) && (
+            <div className="mt-3 text-sm text-zinc-600">
+              <div className="font-medium text-zinc-700">Responsável:</div>
+              {responsibleName && <div>{responsibleName}</div>}
+              {responsiblePosition && <div className="text-xs text-zinc-500">{responsiblePosition}</div>}
+              {responsibleEmail && <div className="text-xs text-zinc-500">{responsibleEmail}</div>}
+            </div>
+          )}
+          
+          {/* Cota de Avaliações */}
+          {typeof assessmentQuota === 'number' && assessmentQuota > 0 && (
+            <div className="mt-2 text-xs text-zinc-600">
+              <span className="font-medium">Avaliações:</span> {usedAssessments || 0} / {assessmentQuota}
+              {usedAssessments >= assessmentQuota && (
+                <span className="ml-2 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                  Cota atingida
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

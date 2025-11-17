@@ -57,6 +57,82 @@ serve(async (req) => {
       throw new Error(`Missing required fields: ${missingFields}`);
     }
 
+    // Validate assessment quotas before inserting
+    console.log("submit-assessment: Validating assessment quotas...");
+    
+    // Get company assessment quota and current usage
+    const { data: companyData, error: companyError } = await supabaseAdmin
+      .from("companies")
+      .select("assessment_quota, name")
+      .eq("id", company_id)
+      .single();
+    
+    if (companyError) {
+      console.error("submit-assessment: Error fetching company data:", companyError);
+      throw new Error(`Error fetching company data: ${companyError.message}`);
+    }
+
+    // Count current active assessments for this company
+    const { count: companyAssessmentCount, error: countError } = await supabaseAdmin
+      .from("assessments")
+      .select("*", { count: "exact", head: true })
+      .eq("company_id", company_id)
+      .eq("status", "active");
+
+    if (countError) {
+      console.error("submit-assessment: Error counting company assessments:", countError);
+      throw new Error(`Error counting company assessments: ${countError.message}`);
+    }
+
+    const currentCompanyCount = companyAssessmentCount || 0;
+    const companyQuota = companyData.assessment_quota || 0;
+    
+    console.log(`submit-assessment: Company ${companyData.name} - Quota: ${companyQuota}, Used: ${currentCompanyCount}`);
+    
+    // Check if company has reached its quota
+    if (companyQuota > 0 && currentCompanyCount >= companyQuota) {
+      console.error(`submit-assessment: Company ${companyData.name} has reached assessment quota (${companyQuota})`);
+      throw new Error(`A empresa ${companyData.name} atingiu sua cota de avaliações (${companyQuota}). Contate o administrador do parceiro para aumentar a cota.`);
+    }
+
+    // Get partner total assessment limit
+    const { data: partnerData, error: partnerError } = await supabaseAdmin
+      .from("plan_assignments")
+      .select("plans(limits)")
+      .eq("partner_id", partner_id)
+      .single();
+
+    if (partnerError) {
+      console.error("submit-assessment: Error fetching partner plan data:", partnerError);
+      // Don't block assessment creation if we can't verify partner limits
+      console.warn("submit-assessment: Continuing without partner limit validation due to error");
+    } else {
+      const partnerAssessmentLimit = partnerData?.plans?.limits?.active_assessments || 0;
+      
+      // Get current partner assessment count
+      const { data: usageData, error: usageError } = await supabaseAdmin
+        .from("usage_counters")
+        .select("active_assessments_count")
+        .eq("partner_id", partner_id)
+        .single();
+
+      if (usageError) {
+        console.error("submit-assessment: Error fetching usage counters:", usageError);
+        // Don't block if we can't get current usage
+        console.warn("submit-assessment: Continuing without partner usage validation due to error");
+      } else {
+        const currentPartnerCount = usageData?.active_assessments_count || 0;
+        
+        console.log(`submit-assessment: Partner ${partner_id} - Limit: ${partnerAssessmentLimit}, Used: ${currentPartnerCount}`);
+        
+        // Check if partner has reached total limit
+        if (partnerAssessmentLimit > 0 && currentPartnerCount >= partnerAssessmentLimit) {
+          console.error(`submit-assessment: Partner ${partner_id} has reached total assessment limit (${partnerAssessmentLimit})`);
+          throw new Error(`O parceiro atingiu o limite total de avaliações do plano (${partnerAssessmentLimit}).`);
+        }
+      }
+    }
+
     // 1. Insert into assessments table
     const assessmentInsertPayload = {
       partner_id,

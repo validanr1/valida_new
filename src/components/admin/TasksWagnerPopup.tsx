@@ -26,8 +26,7 @@ const TasksWagnerPopup = () => {
         .select("id,title,description,status,updated_at")
         .eq("status", "completed")
         .eq("acknowledged", false)
-        .order("updated_at", { ascending: false })
-        .limit(6);
+        .order("updated_at", { ascending: false });
       const rows = (data as TWItem[]) ?? [];
       if (mounted) {
         setItems(rows);
@@ -57,7 +56,7 @@ const TasksWagnerPopup = () => {
         <DialogHeader>
           <DialogTitle>Tarefas Concluídas</DialogTitle>
         </DialogHeader>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-[60vh] overflow-y-auto">
           {items.map((t) => (
             <Card key={t.id} className="p-3">
               <div className="flex items-start justify-between gap-3">
