@@ -470,7 +470,7 @@ const Configuracoes = () => {
                 <Input
                   value={platformName}
                   onChange={(e) => setPlatformName(e.target.value)}
-                  className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                  className="h-10 rounded-xl"
                 />
               </div>
               <div className="space-y-2">
@@ -479,7 +479,7 @@ const Configuracoes = () => {
                   placeholder="(11) 98765-4321"
                   value={supportWhatsapp}
                   onChange={(e) => setSupportWhatsapp(formatPhoneBR(e.target.value))}
-                  className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                  className="h-10 rounded-xl"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
@@ -488,7 +488,7 @@ const Configuracoes = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                  className="rounded-xl"
                 />
               </div>
             </div>

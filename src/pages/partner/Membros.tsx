@@ -189,20 +189,20 @@ const Membros = () => {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
                 <label className="text-sm font-medium">E-mail</label>
-                <Input value={email} onChange={(e) => setEmail(e.target.value)} className="h-10 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow" />
+                <Input value={email} onChange={(e) => setEmail(e.target.value)} className="h-10 rounded-xl" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Nome</label>
-                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="h-10 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow" />
+                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="h-10 rounded-xl" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Sobrenome</label>
-                <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="h-10 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow" />
+                <Input value={lastName} onChange={(e) => setLastName(e.target.value)} className="h-10 rounded-xl" />
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <label className="text-sm font-medium">Perfil de Acesso</label>
                 <Select value={selectedRoleProfileId || ""} onValueChange={(v) => setSelectedRoleProfileId(v)}>
-                  <SelectTrigger className="h-10 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow">
+                  <SelectTrigger className="h-10 rounded-xl">
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>

@@ -553,7 +553,7 @@ const Empresas = () => {
                     placeholder="Ex.: EMPRESA DE LIMPEZA URBANA"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                 </div>
                 <div className="space-y-2">
@@ -567,7 +567,7 @@ const Empresas = () => {
                       placeholder="00.000.000/0000-00 ou 000.000.000-00"
                       value={cnpj}
                       onChange={(e) => setCnpj(formatDoc(e.target.value))}
-                      className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                      className="h-10 rounded-xl"
                     />
                     <Button type="button" variant="secondary" onClick={lookupCNPJ} disabled={loadingCnpj}>
                       {loadingCnpj ? "Buscando..." : "Buscar"}
@@ -585,7 +585,7 @@ const Empresas = () => {
                       placeholder="Ex.: Maria Silva"
                       value={responsibleName}
                       onChange={(e) => setResponsibleName(e.target.value)}
-                      className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                      className="h-10 rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
@@ -595,7 +595,7 @@ const Empresas = () => {
                       placeholder="email@empresa.com"
                       value={responsibleEmail}
                       onChange={(e) => setResponsibleEmail(e.target.value)}
-                      className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                      className="h-10 rounded-xl"
                     />
                   </div>
                 </div>
@@ -605,7 +605,7 @@ const Empresas = () => {
                     placeholder="Ex.: Gerente de Segurança, Coordenador de RH"
                     value={responsiblePosition}
                     onChange={(e) => setResponsiblePosition(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                 </div>
               </div>
@@ -615,7 +615,7 @@ const Empresas = () => {
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Tipo de Avaliação</div>
                   <Select value={assessmentTypeId} onValueChange={setAssessmentTypeId}>
-                    <SelectTrigger className="h-10 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow">
+                    <SelectTrigger className="h-10 rounded-xl">
                       <SelectValue placeholder={assessmentTypes.length ? "Selecione um tipo" : "Nenhum tipo ativo"} />
                     </SelectTrigger>
                     <SelectContent className="z-[200]">
@@ -633,14 +633,14 @@ const Empresas = () => {
                     placeholder="Ex.: 8121-4/00 - Limpeza em prédios e domicílios"
                     value={cnae}
                     onChange={(e) => setCnae(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Grau de Risco</div>
                   <Select value={riskGradeId} onValueChange={setRiskGradeId}>
-                    <SelectTrigger className="h-10 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow">
+                    <SelectTrigger className="h-10 rounded-xl">
                       <SelectValue placeholder={riskGrades.length ? "Selecione o grau" : "Nenhum grau ativo"} />
                     </SelectTrigger>
                     <SelectContent className="z-[200]">
@@ -661,7 +661,7 @@ const Empresas = () => {
                     placeholder="0"
                     value={assessmentQuota}
                     onChange={(e) => setAssessmentQuota(e.target.value.replace(/\D/g, ""))}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                   <div className="text-xs text-muted-foreground self-center">
                     0 = sem limite
@@ -680,19 +680,19 @@ const Empresas = () => {
                     placeholder="CEP"
                     value={zip}
                     onChange={(e) => setZip(formatCEP(e.target.value))}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                   <Input
                     placeholder="Logradouro"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                   <Input
                     placeholder="Número"
                     value={number}
                     onChange={(e) => setNumber(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                 </div>
                 <div className="grid gap-3 sm:grid-cols-[1fr_220px_120px]">
@@ -700,19 +700,19 @@ const Empresas = () => {
                     placeholder="Bairro"
                     value={neighborhood}
                     onChange={(e) => setNeighborhood(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                   <Input
                     placeholder="Cidade"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                   <Input
                     placeholder="UF"
                     value={stateUF}
                     onChange={(e) => setStateUF(e.target.value.toUpperCase().slice(0, 2))}
-                    className="h-10 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-brand-glow"
+                    className="h-10 rounded-xl"
                   />
                 </div>
               </div>
