@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/integrations/supabase/SupabaseProvider';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -661,14 +663,29 @@ const ReportsOverview = () => {
               loading={loading}
             />
             <div className="mt-3 grid gap-2">
-              <label className="text-sm font-medium">Título do Relatório</label>
-              <input
-                className="border rounded-md px-3 py-2 text-sm"
-                placeholder={`Relatório Geral - ${company.name} (${new Date().toLocaleDateString()})`}
-                value={reportTitleInput}
-                onChange={(e)=> setReportTitleInput(e.target.value)}
-              />
-            </div>
+            <label className="text-sm font-medium">Título do Relatório</label>
+            <input
+              className="border rounded-md px-3 py-2 text-sm"
+              placeholder={`Relatório Geral - ${company.name} (${new Date().toLocaleDateString()})`}
+              value={reportTitleInput}
+              onChange={(e)=> setReportTitleInput(e.target.value)}
+            />
+          </div>
+          
+          {/* Botão para novo relatório dinâmico */}
+          <div className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/partner/reports/dinamico-v2')}
+              className="w-full"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Relatório Dinâmico V2
+            </Button>
+            <p className="text-xs text-muted-foreground mt-1">
+              Crie relatórios personalizados com conteúdo dinâmico
+            </p>
+          </div>
           </div>
 
           <div className="avoid-break">

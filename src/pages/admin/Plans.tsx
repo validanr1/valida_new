@@ -48,6 +48,7 @@ type Plan = {
     companies?: number;
     active_employees?: number;
   } | null;
+  complaint_limit?: number | null;
   price_per_assessment?: number | null;
   total_price?: number | null;
   badge?: string | null;
@@ -76,6 +77,7 @@ const Plans = () => {
   const [limitAssessments, setLimitAssessments] = useState<string>("");
   const [limitCompanies, setLimitCompanies] = useState<string>("");
   const [limitEmployees, setLimitEmployees] = useState<string>("");
+  const [complaintLimit, setComplaintLimit] = useState<string>("");
   const [pricePerAssessment, setPricePerAssessment] = useState<string>("");
   const [totalPrice, setTotalPrice] = useState<string>("");
   const [badge, setBadge] = useState<string>("");
@@ -103,6 +105,7 @@ const Plans = () => {
     setLimitAssessments("");
     setLimitCompanies("");
     setLimitEmployees("");
+    setComplaintLimit("");
     setPricePerAssessment("");
     setTotalPrice("");
     setBadge("");
@@ -130,6 +133,9 @@ const Plans = () => {
     );
     setLimitEmployees(
       typeof pl.limits?.active_employees === "number" ? String(pl.limits.active_employees) : ""
+    );
+    setComplaintLimit(
+      typeof pl.complaint_limit === "number" ? String(pl.complaint_limit) : ""
     );
     setPricePerAssessment(
       typeof pl.price_per_assessment === "number" ? String(pl.price_per_assessment) : ""
@@ -161,6 +167,7 @@ const Plans = () => {
         companies: parseNum(limitCompanies) ?? undefined,
         active_employees: parseNum(limitEmployees) ?? undefined,
       },
+      complaint_limit: parseNum(complaintLimit) ?? 0,
       price_per_assessment: parseNum(pricePerAssessment) ?? undefined,
       total_price: parseNum(totalPrice) ?? undefined,
       badge: badge.trim() || null,
@@ -349,6 +356,22 @@ const Plans = () => {
                 </div>
               </div>
 
+              <div className="grid gap-4 sm:grid-cols-1">
+                <div className="space-y-2">
+                  <label htmlFor="lim-denuncias" className="text-sm font-medium">Limite de Denúncias</label>
+                  <Input
+                    id="lim-denuncias"
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="Ex.: 50 (0 = ilimitado)"
+                    value={complaintLimit}
+                    onChange={(e) => setComplaintLimit(e.target.value)}
+                    className="h-10"
+                  />
+                  <p className="text-xs text-muted-foreground">0 = denúncias ilimitadas</p>
+                </div>
+              </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label htmlFor="badge" className="text-sm font-medium">Badge (opcional)</label>
@@ -392,6 +415,7 @@ const Plans = () => {
                 <TableHead className="text-white">Lim. Avaliações</TableHead>
                 <TableHead className="text-white">Lim. Empresas</TableHead>
                 <TableHead className="text-white">Lim. Funcionários</TableHead>
+                <TableHead className="text-white">Lim. Denúncias</TableHead>
                 <TableHead className="text-white">Preço/Aval.</TableHead>
                 <TableHead className="text-white">Preço Total</TableHead>
                 <TableHead className="text-white">Badge</TableHead>
@@ -423,20 +447,21 @@ const Plans = () => {
                       <span className={statusClasses}>{st === "inactive" ? "Inativo" : "Ativo"}</span>
                     </TableCell>
                     <TableCell>{periodLabel[p.period ?? "monthly"]}</TableCell>
-                    <TableCell>{numOrDash(p.limits?.active_assessments ?? undefined)}</TableCell>
-                    <TableCell>{numOrDash(p.limits?.companies ?? undefined)}</TableCell>
-                    <TableCell>{numOrDash(p.limits?.active_employees ?? undefined)}</TableCell>
-                    <TableCell>{currency(p.price_per_assessment ?? null)}</TableCell>
-                    <TableCell>{currency(p.total_price ?? null)}</TableCell>
-                    <TableCell>{p.badge ?? "—"}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => openEdit(p)}>
-                        Editar
-                      </Button>
-                      <Button variant="destructive" size="sm" onClick={() => openDelete(p)}>
-                        Excluir
-                      </Button>
-                    </TableCell>
+                <TableCell>{numOrDash(p.limits?.active_assessments ?? undefined)}</TableCell>
+                <TableCell>{numOrDash(p.limits?.companies ?? undefined)}</TableCell>
+                <TableCell>{numOrDash(p.limits?.active_employees ?? undefined)}</TableCell>
+                <TableCell>{numOrDash(p.complaint_limit ?? undefined)}</TableCell>
+                <TableCell>{currency(p.price_per_assessment ?? null)}</TableCell>
+                <TableCell>{currency(p.total_price ?? null)}</TableCell>
+                <TableCell>{p.badge ?? "—"}</TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button variant="outline" size="sm" onClick={() => openEdit(p)}>
+                    Editar
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => openDelete(p)}>
+                    Excluir
+                  </Button>
+                </TableCell>
                   </TableRow>
                 );
               })}

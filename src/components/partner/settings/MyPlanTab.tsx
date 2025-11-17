@@ -26,6 +26,7 @@ type Plan = {
     companies?: number;
     active_employees?: number;
   } | null;
+  complaint_limit?: number | null;
   price_per_assessment?: number | null;
   total_price?: number | null;
   badge?: string | null;
@@ -45,6 +46,7 @@ type UsageCounter = {
   companies_count?: number;
   active_employees_count?: number;
   active_assessments_count?: number;
+  complaints_count?: number;
 };
 
 type Invoice = {
@@ -117,6 +119,7 @@ const MyPlanTab = () => {
           { data: assignmentData, error: assignmentError },
           { count: employeesCount, error: employeesError },
           { count: assessmentsCount, error: assessmentsError },
+          { count: complaintsCount, error: complaintsError },
           { data: invoicesData, error: invoicesError },
           { data: plansData, error: plansError },
         ] = await Promise.all([
@@ -139,6 +142,11 @@ const MyPlanTab = () => {
             .from("assessments")
             .select("*", { count: "exact", head: true })
             .eq("partner_id", partnerId),
+          // Fetch complaints count
+          supabase
+            .from("denuncias")
+            .select("*", { count: "exact", head: true })
+            .eq("partner_id", partnerId),
           // Fetch invoices
           supabase
             .from("invoices")
@@ -152,6 +160,7 @@ const MyPlanTab = () => {
         if (assignmentError) console.error("Error fetching current assignment:", assignmentError);
         if (employeesError) console.error("Error fetching employees count:", employeesError);
         if (assessmentsError) console.error("Error fetching assessments count:", assessmentsError);
+        if (complaintsError) console.error("Error fetching complaints count:", complaintsError);
         if (invoicesError) console.error("Error fetching invoices:", invoicesError);
         if (plansError) console.error("Error fetching plans:", plansError);
 
@@ -161,6 +170,7 @@ const MyPlanTab = () => {
           companies_count: companyIds.length,
           active_employees_count: employeesCount ?? 0,
           active_assessments_count: assessmentsCount ?? 0,
+          complaints_count: complaintsCount ?? 0,
         };
 
         // Ensure we have the plan details; if not, fetch by plan_id
@@ -276,6 +286,13 @@ const MyPlanTab = () => {
     } else {
       features.push(`Funcionários Ilimitados`);
     }
+    if (plan.complaint_limit !== undefined && plan.complaint_limit !== null) {
+      if (plan.complaint_limit === 0) {
+        features.push(`Denúncias Ilimitadas`);
+      } else {
+        features.push(`${plan.complaint_limit} Denúncias`);
+      }
+    }
     if (plan.description) {
       features.push(plan.description);
     }
@@ -379,6 +396,22 @@ const MyPlanTab = () => {
               value={getProgressValue(
                 usage?.active_employees_count,
                 currentPlanLimits?.active_employees,
+              )}
+              className="h-2"
+            />
+          </div>
+          <div>
+            <div className="flex justify-between text-sm text-muted-foreground mb-1">
+              <span>Denúncias Recebidas</span>
+              <span>
+                {usage?.complaints_count ?? 0} /{" "}
+                {currentPlan?.complaint_limit === undefined || currentPlan?.complaint_limit === null || currentPlan?.complaint_limit === 0 ? "∞" : currentPlan.complaint_limit}
+              </span>
+            </div>
+            <Progress
+              value={getProgressValue(
+                usage?.complaints_count,
+                currentPlan?.complaint_limit || undefined,
               )}
               className="h-2"
             />

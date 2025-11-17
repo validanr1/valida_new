@@ -59,6 +59,7 @@ import PlatformRatings from "./pages/admin/PlatformRatings"; // Nova importaçã
 import Leads from "./pages/admin/Leads";
 import ReportTemplate2Viewer from "./pages/partner/ReportTemplate2Viewer"; // Nova importação
 import NewTemplateReport from "./pages/partner/NewTemplateReport";
+import DynamicReportV2 from "./pages/partner/DynamicReportV2";
 import ActionPlans from "./pages/partner/ActionPlans";
 import PartnerSignup from "./pages/public/PartnerSignup";
 import PartnerLead from "./pages/public/PartnerLead";
@@ -177,6 +178,7 @@ const AppContent = () => {
           <Route path="/partner/reports/individual/:assessmentId" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><IndividualReport /></PartnerRoute>} key="partner-individual-report" /> {/* Nova rota para o relatório individual */}
           <Route path="/partner/reports/template2-viewer" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><ReportTemplate2Viewer /></PartnerRoute>} key="partner-report-template2-viewer" /> {/* Nova rota para o segundo modelo de relatório */}
           <Route path="/partner/reports/versao-completa" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><NewTemplateReport /></PartnerRoute>} key="partner-report-versao-completa" />
+          <Route path="/partner/reports/dinamico-v2" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><DynamicReportV2 /></PartnerRoute>} key="partner-report-dinamico-v2" />
           <Route path="/partner/planos-acao" element={<PartnerRoute requiredPermissions={["partner:assessments:view"]}><ActionPlans /></PartnerRoute>} key="partner-action-plans" />
           <Route path="/partner/links" element={<PartnerRoute requiredPermissions={["partner:links:view"]}><PartnerLinks /></PartnerRoute>} key="partner-links" />
           <Route path="/partner/perfil" element={<PartnerRoute><PartnerPerfil /></PartnerRoute>} key="partner-perfil" />

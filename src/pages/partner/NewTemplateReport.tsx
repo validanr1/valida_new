@@ -75,6 +75,42 @@ const NewTemplateReport = () => {
 
   const [templateText, setTemplateText] = useState<string>(defaultTemplate);
   const [renderedText, setRenderedText] = useState<string>("");
+  const [showEditor, setShowEditor] = useState<boolean>(false);
+  const [tocItems, setTocItems] = useState<string[]>([
+    "Identificação da Empresa",
+    "Responsáveis Técnicos",
+    "Escopo do Trabalho",
+    "Fontes Técnicas – Organizacionais",
+    "Fontes Jurídicas",
+    "Metodologia de Avaliação",
+    "Identificação dos riscos psicossociais",
+    "Estratégias de Avaliação",
+    "Análise do Resultado",
+    "Resultado das Avaliações",
+    "Conclusão",
+    "Considerações Finais",
+    "Anexo I – Resultado das Avaliações",
+    "Anexo II – Análise e Inventário",
+    "Anexo III – Plano de Ação e Monitoramento",
+  ]);
+  const [tocText, setTocText] = useState<string>("");
+  useEffect(() => { setTocText(tocItems.join("\n")); }, []);
+  type ReportSection = { key: string; title: string; body: string };
+  const [sections, setSections] = useState<ReportSection[]>([
+    { key: "escopo", title: "Escopo do Trabalho", body: "Este relatório integra as ações de avaliação das condições laborais, com ênfase na identificação e análise técnica dos fatores de riscos psicossociais presentes no ambiente de trabalho. Atende às diretrizes da NR-01, NR-17, Guia de Fatores Psicossociais (MTE), HSE-SIT e ISO 45003." },
+    { key: "fontesTecnicas", title: "Fontes Técnicas – Organizacionais", body: "Condições de Trabalho: iluminação, ruído, mobiliário, ferramentas, EPIs.\n\nOrganização do Trabalho: metas, ritmo, pausas, autonomia, comunicação, sobrecarga." },
+    { key: "fontesJuridicas", title: "Fontes Jurídicas", body: "NR-01 – Disposições Gerais (Portaria MTE nº 1.419/2024).\nNR-17 – Ergonomia (Portaria MTP nº 4.219/2022).\nISO 45003:2021 – Diretrizes internacionais para gestão de riscos psicossociais." },
+    { key: "metodologias", title: "Metodologia de Avaliação", body: "Metodologia SIT (HSE Stress Indicator Tool), com 35 questões, avaliando seis fatores: Demandas, Controle, Suporte, Relacionamentos, Papel, Mudanças. Classificação: Favorável, Neutro, Desfavorável." },
+    { key: "identificacaoRiscos", title: "Identificação dos Riscos Psicossociais", body: "Exemplos: sobrecarga de trabalho; baixa autonomia; assédio; metas inalcançáveis; comunicação deficiente; jornadas extensas; ambiente hostil; falta de apoio; insegurança no emprego." },
+    { key: "estrategias", title: "Estratégias de Avaliação", body: "Aplicação de questionário online, individual e anônimo, garantindo confidencialidade e integridade das respostas." },
+    { key: "analiseResultado", title: "Análise do Resultado", body: "Análise estatística das respostas e cruzamentos por categoria, interpretando variáveis psicossociais conforme normas técnicas e regulamentações legais." },
+    { key: "conclusao", title: "Conclusão", body: "No momento da avaliação, os colaboradores não estão expostos a riscos psicossociais relevantes segundo NR-01 e NR-17. Recomenda-se acompanhamento contínuo e revisão de práticas." },
+    { key: "consideracoes", title: "Considerações Finais", body: "Mudanças em processos, cargos ou condições de trabalho devem motivar reavaliação psicossocial conforme NR-01. Este relatório reflete as condições no momento da emissão." },
+  ]);
+  const getSection = (key: string) => sections.find(s => s.key === key) as ReportSection;
+  const updateSection = (key: string, patch: Partial<ReportSection>) => {
+    setSections(prev => prev.map(s => (s.key === key ? { ...s, ...patch } : s)));
+  };
   const [departmentNames, setDepartmentNames] = useState<string>("");
   const [assessmentDateRange, setAssessmentDateRange] = useState<string>("");
   // DB Action Plans state
@@ -435,11 +471,14 @@ const NewTemplateReport = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Novo Modelo de Relatório — {company?.name}</h1>
         <div className="space-x-2">
+          <Button variant="outline" onClick={() => setShowEditor((v) => !v)} className="no-print">{showEditor ? "Ocultar Editor" : "Editar Conteúdo"}</Button>
           <Button onClick={printToPdf}>Gerar PDF</Button>
         </div>
       </div>
 
       <div id="report-content" className="space-y-6">
+        
+
         {/* Logo do parceiro */}
         {partnerLogo && (
           <div className="flex justify-center mb-6">
@@ -455,21 +494,7 @@ const NewTemplateReport = () => {
         <Card className="p-4">
           <div className="text-lg font-semibold mb-2">Sumário</div>
           <ol className="list-decimal ml-5 space-y-1 text-sm">
-            <li>Identificação da Empresa</li>
-            <li>Responsáveis Técnicos</li>
-            <li>Escopo do Trabalho</li>
-            <li>Fontes Técnicas – Organizacionais</li>
-            <li>Fontes Jurídicas</li>
-            <li>Metodologia de Avaliação</li>
-            <li>Identificação dos riscos psicossociais</li>
-            <li>Estratégias de Avaliação</li>
-            <li>Análise do Resultado</li>
-            <li>Resultado das Avaliações</li>
-            <li>Conclusão</li>
-            <li>Considerações Finais</li>
-            <li>Anexo I – Resultado das Avaliações</li>
-            <li>Anexo II – Análise e Inventário</li>
-            <li>Anexo III – Plano de Ação e Monitoramento</li>
+            {tocItems.map((item, idx) => (<li key={idx}>{item}</li>))}
           </ol>
         </Card>
 
@@ -526,133 +551,56 @@ const NewTemplateReport = () => {
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">2. Escopo do Trabalho</div>
-          <div className="space-y-3 text-sm leading-relaxed text-slate-700">
-            <p>
-              Este relatório de fatores de riscos psicossociais relacionados ao trabalho integra as ações de avaliação das condições laborais dos colaboradores, com ênfase na identificação e análise técnica dos fatores de riscos psicossociais presentes no ambiente de trabalho. Seu objetivo é contribuir para a promoção da saúde mental, bem-estar e produtividade dos trabalhadores, bem como para o cumprimento da legislação vigente.
-            </p>
-            <p>
-              O relatório de fatores de riscos psicossociais relacionados ao trabalho em conformidade com as diretrizes da NR-01, atualizada pela Portaria MTE nº 1.419/2024 e vigente a partir de maio de 2026, que passou a integrar de forma formal os fatores psicossociais ao Gerenciamento de Riscos Ocupacionais (GRO). Também atende à NR-17, ao Guia de Informações sobre Fatores Psicossociais Relacionados ao Trabalho (MTE), às recomendações da HSE-SIT (Health and Safety Executive) e à norma internacional ISO 45003, assegurando alinhamento com as melhores práticas nacionais e internacionais em Saúde e Segurança do Trabalho.
-            </p>
-            <div className="font-semibold">Além de atender aos requisitos legais, este relatório oferece subsídios técnicos fundamentados para decisões estratégicas no âmbito do Programa de Gerenciamento de Riscos (PGR), como:</div>
-            <ul className="list-disc ml-6 space-y-1">
-              <li>Aprofundamento das análises por meio de Análise Ergonômica do Trabalho (AEP/AET), quando aplicável;</li>
-              <li>Priorização de medidas de prevenção e controle;</li>
-              <li>Definição de planos de ação alinhados ao PGR voltados à construção de ambientes de trabalho mais seguros, saudáveis e produtivos.</li>
-            </ul>
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("escopo").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("escopo").body}</div>
+        </Card>
+
+        {/* Conteúdo Narrativo Dinâmico */}
+        {renderedText && (
+          <Card className="p-4 avoid-break">
+            <div className="text-lg font-semibold mb-3">Conteúdo Narrativo</div>
+            <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{renderedText}</div>
+          </Card>
+        )}
+
+        <Card className="p-4 avoid-break">
+          <div className="text-lg font-semibold mb-3">{getSection("fontesTecnicas").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("fontesTecnicas").body}</div>
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">3. Fontes Técnicas – Organizacionais</div>
-          <div className="space-y-3 text-sm leading-relaxed text-slate-700">
-            <div className="font-semibold">Condições de Trabalho</div>
-            <p>
-              Aspectos relacionados ao ambiente físico e aos recursos disponíveis, incluindo iluminação inadequada, níveis de ruído excessivos, mobiliário e ferramentas desatualizados ou inadequados, e a falta ou inadequação de Equipamentos de Proteção Individual (EPIs).
-            </p>
-            <div className="font-semibold">Organização do Trabalho</div>
-            <p>
-              Fatores relacionados à estrutura e gestão do trabalho, como a imposição de metas irrealistas, ritmo de trabalho excessivo, ausência de pausas suficientes, falta de autonomia nas funções, falhas na comunicação interna e sobrecarga de tarefas.
-            </p>
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("fontesJuridicas").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("fontesJuridicas").body}</div>
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">5. Fontes Jurídicas</div>
-          <div className="space-y-3 text-sm leading-relaxed text-slate-700">
-            <div className="font-semibold">NR-01: Disposições Gerais</div>
-            <p>
-              Portaria MTE nº 1.419/2024, que estabelece as diretrizes gerais para o gerenciamento de riscos ocupacionais, incluindo a identificação e controle de riscos psicossociais no ambiente de trabalho.
-            </p>
-            <div className="font-semibold">NR-17: Ergonomia</div>
-            <p>
-              Portaria MTP nº 4.219/2022, que regula as condições ergonômicas no ambiente laboral, abrangendo aspectos relacionados ao conforto, segurança e saúde física e mental dos trabalhadores.
-            </p>
-            <div className="font-semibold">ISO 45003:2021</div>
-            <p>
-              Diretrizes internacionais para a gestão de riscos psicossociais na saúde e segurança ocupacional, oferecendo abordagens práticas para identificar, avaliar e mitigar fatores que afetam o bem-estar mental no trabalho.
-            </p>
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("metodologias").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("metodologias").body}</div>
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">6. Metodologias de Avaliação</div>
-          <div className="space-y-4 text-sm leading-relaxed text-slate-700">
-            <p>
-              Metodologia <span className="font-semibold">SIT - HSE Stress Indicator Tool</span>, integrada à PLATAFORMA. A ferramenta traz uma pesquisa para identificar e mensurar os riscos psicossociais, com trinta e cinco perguntas que abordam áreas principais de trabalho que, se não gerenciadas adequadamente, são conhecidas por serem causas potenciais de estresse no local de trabalho.
-            </p>
-
-            
-
-            <div className="space-y-2">
-              <div className="font-semibold">I. Coleta de Dados</div>
-              <div>Os Colaboradores respondem a um questionário que avaliam seis fatores críticos do ambiente de trabalho:</div>
-              <ul className="list-disc ml-6 space-y-1">
-                <li><span className="font-medium">Demandas</span>: carga de trabalho, padrões de trabalho e ambiente</li>
-                <li><span className="font-medium">Controle</span>: autonomia sobre como o trabalho é realizado</li>
-                <li><span className="font-medium">Suporte</span>: apoio da gestão e dos colegas</li>
-                <li><span className="font-medium">Relacionamentos</span>: prevenção de conflitos e assédio</li>
-                <li><span className="font-medium">Papel</span>: clareza nas funções e ausência de conflitos de responsabilidade</li>
-                <li><span className="font-medium">Mudanças</span>: gestão e comunicação sobre mudanças organizacionais</li>
-              </ul>
-            </div>
-
-            <div className="space-y-2">
-              <div className="font-semibold">II. Análise e Pontuação</div>
-              <div>A escala de pontuação é baseada em uma escala de 5 pontos, com as seguintes opções de resposta: Nunca, raramente, às vezes, frequentemente e sempre. As respostas são classificadas em três categorias principais:</div>
-              <ul className="list-disc ml-6 space-y-1">
-                <li><span className="font-medium">Favorável</span>: Indica boas condições de trabalho e aspectos positivos no ambiente organizacional. Respostas possíveis: Frequentemente e Sempre</li>
-                <li><span className="font-medium">Neutro</span>: Representa uma posição intermediária, sem uma inclinação clara para o positivo ou negativo. Resposta possível: Às vezes</li>
-                <li><span className="font-medium">Desfavorável</span>: Aponta possíveis problemas que podem afetar a saúde, segurança e bem-estar dos funcionários. Respostas possíveis: Nunca e Raramente.</li>
-              </ul>
-            </div>
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("identificacaoRiscos").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("identificacaoRiscos").body}</div>
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">7. Identificação dos Riscos Psicossociais</div>
-          <div className="space-y-2 text-sm leading-relaxed text-slate-700">
-            <div className="font-semibold">Fatores de Risco Psicossocial:</div>
-            <ul className="list-disc ml-6 space-y-1">
-              <li>Sobrecarga de trabalho</li>
-              <li>Ausência de autonomia ou participação nas decisões</li>
-              <li>Assédio moral ou sexual</li>
-              <li>Pressão por metas inalcançáveis</li>
-              <li>Comunicação deficiente ou inadequada</li>
-              <li>Jornadas de trabalho extensas ou irregulares</li>
-              <li>Ambiente organizacional hostil ou tóxico</li>
-              <li>Falta de apoio, reconhecimento ou valorização profissional</li>
-              <li>Insegurança quanto à estabilidade no emprego</li>
-            </ul>
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("estrategias").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("estrategias").body}</div>
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">8. Estratégias de Avaliação</div>
-          <div className="text-sm leading-relaxed text-slate-700">
-            Aplicação de questionário online, de forma individual e anônima, garantindo total confidencialidade e a integridade das respostas fornecidas.
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("analiseResultado").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("analiseResultado").body}</div>
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">9. Análise do Resultado</div>
-          <div className="text-sm leading-relaxed text-slate-700">
-            A análise foi realizada a partir das respostas coletadas, com cruzamentos estatísticos no Power BI, interpretando as variáveis psicossociais de acordo com as normas técnicas e regulamentações legais pertinentes.
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("conclusao").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("conclusao").body}</div>
         </Card>
 
         <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">10. Conclusão</div>
-          <div className="text-sm leading-relaxed text-slate-700">
-            Com base na análise, conclui-se que, no momento da avaliação, os colaboradores não estão expostos a riscos psicossociais relevantes, conforme critérios das NR-01 e NR-17. A empresa deverá acompanhar continuamente os indicadores de clima organizacional e saúde mental.
-          </div>
-        </Card>
-
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">11. Considerações Finais</div>
-          <div className="text-sm leading-relaxed text-slate-700">
-            Alterações em processos, cargos ou condições de trabalho devem motivar reavaliação psicossocial conforme a NR-01. Este relatório reflete as condições no momento da emissão.
-          </div>
+          <div className="text-lg font-semibold mb-3">{getSection("consideracoes").title}</div>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("consideracoes").body}</div>
         </Card>
 
         <div className="space-y-3 print-break avoid-break">

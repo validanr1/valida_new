@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import { Copy, ExternalLink } from "lucide-react";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import QrCode from "@/components/utils/QrCode";
 
 type FormLink = {
   id: string;
@@ -203,7 +204,7 @@ const Links = () => {
           </div>
         </div>
 
-        <div className={`space-y-2 rounded-lg border p-4 bg-background/80 ${!isEvalEnabled ? "opacity-50 pointer-events-none" : ""}`}>
+        <div className={`space-y-3 rounded-lg border p-4 bg-background/80 ${!isEvalEnabled ? "opacity-50 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Input
               value={linkEval || "Carregando link..."}
@@ -218,6 +219,12 @@ const Links = () => {
               Abrir <ExternalLink className="h-4 w-4" />
             </Button>
           </div>
+          {isEvalEnabled && linkEval && (
+            <div className="pt-1">
+              <div className="text-xs text-muted-foreground mb-1">QR Code</div>
+              <QrCode value={linkEval} size={140} />
+            </div>
+          )}
         </div>
       </Card>
 
@@ -233,7 +240,7 @@ const Links = () => {
             />
           </div>
         </div>
-        <div className={`space-y-2 rounded-lg border p-4 bg-background/80 ${!isDenomEnabled ? "opacity-50 pointer-events-none" : ""}`}>
+        <div className={`space-y-3 rounded-lg border p-4 bg-background/80 ${!isDenomEnabled ? "opacity-50 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Input
               value={linkDenom || "Carregando..."}
@@ -248,6 +255,12 @@ const Links = () => {
               Abrir <ExternalLink className="h-4 w-4" />
             </Button>
           </div>
+          {isDenomEnabled && linkDenom && (
+            <div className="pt-1">
+              <div className="text-xs text-muted-foreground mb-1">QR Code</div>
+              <QrCode value={linkDenom} size={140} />
+            </div>
+          )}
         </div>
       </Card>
 
@@ -258,7 +271,7 @@ const Links = () => {
             Página pública onde o denunciante pode acompanhar o status usando o protocolo
           </p>
         </div>
-        <div className="space-y-2 rounded-lg border p-4 bg-background/80">
+        <div className="space-y-3 rounded-lg border p-4 bg-background/80">
           <div className="flex items-center gap-2">
             <Input
               value={linkTrackReport}
@@ -275,6 +288,12 @@ const Links = () => {
           <p className="text-xs text-muted-foreground mt-2">
             💡 Compartilhe este link com os denunciantes para que possam acompanhar suas denúncias
           </p>
+          {linkTrackReport && (
+            <div className="pt-1">
+              <div className="text-xs text-muted-foreground mb-1">QR Code</div>
+              <QrCode value={linkTrackReport} size={140} />
+            </div>
+          )}
         </div>
       </Card>
     </div>
