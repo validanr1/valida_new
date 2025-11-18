@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Building2 } from "lucide-react";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import { supabase } from "@/integrations/supabase/client";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -107,6 +108,32 @@ const NewTemplateReport = () => {
     { key: "conclusao", title: "Conclusão", body: "No momento da avaliação, os colaboradores não estão expostos a riscos psicossociais relevantes segundo NR-01 e NR-17. Recomenda-se acompanhamento contínuo e revisão de práticas." },
     { key: "consideracoes", title: "Considerações Finais", body: "Mudanças em processos, cargos ou condições de trabalho devem motivar reavaliação psicossocial conforme NR-01. Este relatório reflete as condições no momento da emissão." },
   ]);
+  // Função auxiliar para criar cards de conteúdo modernos
+  const ModernContentCard = ({ title, content, icon, iconBg = "from-blue-100 to-indigo-100", iconColor = "text-blue-600", borderColor = "border-blue-200" }: { 
+    title: string; 
+    content: string; 
+    icon: string;
+    iconBg?: string;
+    iconColor?: string;
+    borderColor?: string;
+  }) => (
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+      <div className="flex items-center gap-4 mb-6">
+        <div className={`w-12 h-12 bg-gradient-to-br ${iconBg} rounded-xl flex items-center justify-center border ${borderColor}`}>
+          <div className={`w-6 h-6 ${iconColor}`}>
+            <svg fill="currentColor" viewBox="0 0 24 24">
+              <path d={icon} />
+            </svg>
+          </div>
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
+      </div>
+      <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100">
+        {content}
+      </div>
+    </div>
+  );
+
   const getSection = (key: string) => sections.find(s => s.key === key) as ReportSection;
   const updateSection = (key: string, patch: Partial<ReportSection>) => {
     setSections(prev => prev.map(s => (s.key === key ? { ...s, ...patch } : s)));
@@ -467,40 +494,106 @@ const NewTemplateReport = () => {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Novo Modelo de Relatório — {company?.name}</h1>
-        <div className="space-x-2">
-          <Button variant="outline" onClick={() => setShowEditor((v) => !v)} className="no-print">{showEditor ? "Ocultar Editor" : "Editar Conteúdo"}</Button>
-          <Button onClick={printToPdf}>Gerar PDF</Button>
-        </div>
-      </div>
-
-      <div id="report-content" className="space-y-6">
-        
-
-        {/* Logo do parceiro */}
-        {partnerLogo && (
-          <div className="flex justify-center mb-6">
-            <img src={partnerLogo} alt="Logo" className="max-w-[300px] max-h-[120px] object-contain" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Moderno */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                <Building2 className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                  Relatório Empresarial
+                </h1>
+                <p className="text-slate-600 text-sm font-medium">
+                  {company?.name} • Análise Completa
+                </p>
+              </div>
+            </div>
           </div>
-        )}
-
-        <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold tracking-tight">RELATÓRIO DE FATORES DE RISCOS PSICOSSOCIAIS RELACIONADOS AO TRABALHO</h1>
-          <div className="text-sm text-muted-foreground">NR-1, NR-17, Guia de Fatores Psicossociais, HSE-SIT, ISO 45003</div>
+          <div className="flex gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowEditor((v) => !v)} 
+              className="border-slate-200 hover:border-slate-300 hover:bg-white/50 backdrop-blur-sm transition-all duration-200 no-print"
+            >
+              {showEditor ? "Ocultar Editor" : "Editar Conteúdo"}
+            </Button>
+            <Button 
+              onClick={printToPdf}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              Gerar PDF
+            </Button>
+          </div>
         </div>
 
-        <Card className="p-4">
-          <div className="text-lg font-semibold mb-2">Sumário</div>
-          <ol className="list-decimal ml-5 space-y-1 text-sm">
-            {tocItems.map((item, idx) => (<li key={idx}>{item}</li>))}
-          </ol>
-        </Card>
+        <div id="report-content" className="space-y-8">
+          
+          {/* Logo do parceiro */}
+          {partnerLogo && (
+            <div className="flex justify-center mb-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8">
+                <img src={partnerLogo} alt="Logo" className="max-w-[300px] max-h-[120px] object-contain" />
+              </div>
+            </div>
+          )}
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">1. Identificação da Empresa</div>
-          <div className="grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+          <div className="space-y-8">
+          {/* Título Principal Moderno */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 text-center">
+            <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-4">
+              Relatório de Fatores de Riscos Psicossociais
+            </h1>
+            <div className="flex flex-wrap justify-center gap-3 text-sm">
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200 font-medium">NR-1</span>
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full border border-blue-200 font-medium">NR-17</span>
+              <span className="px-3 py-1 bg-violet-100 text-violet-800 rounded-full border border-violet-200 font-medium">Guia Psicossocial</span>
+              <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full border border-amber-200 font-medium">HSE-SIT</span>
+              <span className="px-3 py-1 bg-rose-100 text-rose-800 rounded-full border border-rose-200 font-medium">ISO 45003</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Sumário Moderno */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
+              <div className="w-6 h-6 text-blue-600">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">Sumário Executivo</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tocItems.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                  {idx + 1}
+                </div>
+                <span className="text-sm font-medium text-slate-700">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Identificação da Empresa - Card Moderno */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center border border-emerald-200">
+              <div className="w-6 h-6 text-emerald-600">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">Identificação da Empresa</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
             <div>
               <div className="text-muted-foreground">Razão Social</div>
               <div className="font-medium">{company?.name || "—"}</div>
@@ -526,188 +619,368 @@ const NewTemplateReport = () => {
               <div className="font-medium">{assessmentDateRange || "—"}</div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">1.1. Responsáveis técnicos pelas avaliações</div>
-          <div className="grid md:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-            <div>
-              <div className="text-muted-foreground">Nome</div>
-              <div className="font-medium">{primaryResponsible?.name || '—'}</div>
+        {/* Responsáveis Técnicos - Card Moderno */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center border border-violet-200">
+              <div className="w-6 h-6 text-violet-600">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+              </div>
             </div>
-            <div>
-              <div className="text-muted-foreground">Conselho</div>
-              <div className="font-medium">{primaryResponsible?.council || '—'}</div>
+            <h2 className="text-2xl font-bold text-slate-900">Responsáveis Técnicos</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Nome</div>
+              <div className="font-bold text-slate-900">{primaryResponsible?.name || '—'}</div>
             </div>
-            <div>
-              <div className="text-muted-foreground">Registro</div>
-              <div className="font-medium">{primaryResponsible?.registration || '—'}</div>
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Conselho</div>
+              <div className="font-bold text-slate-900">{primaryResponsible?.council || '—'}</div>
             </div>
-            <div>
-              <div className="text-muted-foreground">Contato</div>
-              <div className="font-medium">{[primaryResponsible?.contact_email, primaryResponsible?.contact_phone].filter(Boolean).join(' | ') || '—'}</div>
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Registro</div>
+              <div className="font-bold text-slate-900">{primaryResponsible?.registration || '—'}</div>
+            </div>
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Contato</div>
+              <div className="font-bold text-slate-900">{[primaryResponsible?.contact_email, primaryResponsible?.contact_phone].filter(Boolean).join(' | ') || '—'}</div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("escopo").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("escopo").body}</div>
-        </Card>
+        {/* Escopo - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("escopo").title}
+          content={getSection("escopo").body}
+          icon="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
 
-        {/* Conteúdo Narrativo Dinâmico */}
+        {/* Conteúdo Narrativo Dinâmico - Card Moderno */}
         {renderedText && (
-          <Card className="p-4 avoid-break">
-            <div className="text-lg font-semibold mb-3">Conteúdo Narrativo</div>
-            <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{renderedText}</div>
-          </Card>
+          <ModernContentCard 
+            title="Conteúdo Narrativo"
+            content={renderedText}
+            icon="M11 5h2v14h-2zm6 2h2v10h-2zm-12 4h2v6H5z"
+            iconBg="from-green-100 to-emerald-100"
+            iconColor="text-green-600"
+            borderColor="border-green-200"
+          />
         )}
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("fontesTecnicas").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("fontesTecnicas").body}</div>
-        </Card>
+        {/* Fontes Técnicas - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("fontesTecnicas").title}
+          content={getSection("fontesTecnicas").body}
+          icon="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"
+          iconBg="from-slate-100 to-gray-100"
+          iconColor="text-slate-600"
+          borderColor="border-slate-200"
+        />
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("fontesJuridicas").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("fontesJuridicas").body}</div>
-        </Card>
+        {/* Fontes Jurídicas - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("fontesJuridicas").title}
+          content={getSection("fontesJuridicas").body}
+          icon="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"
+          iconBg="from-red-100 to-rose-100"
+          iconColor="text-red-600"
+          borderColor="border-red-200"
+        />
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("metodologias").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("metodologias").body}</div>
-        </Card>
+        {/* Metodologias - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("metodologias").title}
+          content={getSection("metodologias").body}
+          icon="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"
+          iconBg="from-purple-100 to-violet-100"
+          iconColor="text-purple-600"
+          borderColor="border-purple-200"
+        />
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("identificacaoRiscos").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("identificacaoRiscos").body}</div>
-        </Card>
+        {/* Identificação de Riscos - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("identificacaoRiscos").title}
+          content={getSection("identificacaoRiscos").body}
+          icon="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+          iconBg="from-orange-100 to-amber-100"
+          iconColor="text-orange-600"
+          borderColor="border-orange-200"
+        />
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("estrategias").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("estrategias").body}</div>
-        </Card>
+        {/* Estratégias - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("estrategias").title}
+          content={getSection("estrategias").body}
+          icon="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+          iconBg="from-green-100 to-emerald-100"
+          iconColor="text-green-600"
+          borderColor="border-green-200"
+        />
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("analiseResultado").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("analiseResultado").body}</div>
-        </Card>
+        {/* Análise do Resultado - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("analiseResultado").title}
+          content={getSection("analiseResultado").body}
+          icon="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
+          iconBg="from-indigo-100 to-blue-100"
+          iconColor="text-indigo-600"
+          borderColor="border-indigo-200"
+        />
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("conclusao").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("conclusao").body}</div>
-        </Card>
+        {/* Conclusão - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("conclusao").title}
+          content={getSection("conclusao").body}
+          icon="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+          iconBg="from-teal-100 to-cyan-100"
+          iconColor="text-teal-600"
+          borderColor="border-teal-200"
+        />
 
-        <Card className="p-4 avoid-break">
-          <div className="text-lg font-semibold mb-3">{getSection("consideracoes").title}</div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{getSection("consideracoes").body}</div>
-        </Card>
+        {/* Considerações Finais - Card Moderno */}
+        <ModernContentCard 
+          title={getSection("consideracoes").title}
+          content={getSection("consideracoes").body}
+          icon="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+          iconBg="from-cyan-100 to-sky-100"
+          iconColor="text-cyan-600"
+          borderColor="border-cyan-200"
+        />
 
-        <div className="space-y-3 print-break avoid-break">
-          <h2 className="text-xl font-semibold">Indicadores por Categoria</h2>
-          <div className="grid gap-3 md:grid-cols-3">
+        {/* Indicadores por Categoria - Design Moderno */}
+        <div className="space-y-6 print-break avoid-break">
+          <h2 className="text-2xl font-bold text-slate-900">Indicadores por Categoria</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {processedCategories.map((c) => {
               const v = c.averageScore || 0;
-              const tone = v >= 75 ? "bg-emerald-600" : v >= 40 ? "bg-amber-500" : "bg-rose-600";
+              const tone = v >= 75 ? "from-emerald-500 to-teal-600" : v >= 40 ? "from-amber-500 to-orange-600" : "from-rose-500 to-red-600";
               const sub = v >= 75 ? "Adequado" : v >= 40 ? "Neutro" : "Crítico";
+              const iconColor = v >= 75 ? "text-emerald-200" : v >= 40 ? "text-amber-200" : "text-rose-200";
               return (
-                <div key={c.id} className={`rounded-xl text-white p-4 ${tone}`}>
-                  <div className="text-sm opacity-90">{c.name}</div>
-                  <div className="text-2xl font-bold">{fmtPercent(v)}</div>
-                  <div className="text-xs opacity-90">{sub}</div>
+                <div key={c.id} className={`bg-gradient-to-br ${tone} rounded-2xl text-white p-6 shadow-lg hover:shadow-xl transition-all duration-300 group`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
+                      <div className={`w-6 h-6 ${iconColor}`}>
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold">{fmtPercent(v)}</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-lg font-semibold">{c.name}</div>
+                    <div className="text-sm opacity-90 font-medium">{sub}</div>
+                  </div>
+                  {/* Barra de progresso animada */}
+                  <div className="mt-4">
+                    <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-white rounded-full transition-all duration-1000 ease-out relative"
+                        style={{ width: `${v}%` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        <div className="space-y-6 print-break">
+        {/* Detalhes por Categoria - Design Moderno */}
+        <div className="space-y-8 print-break">
           {processedCategories.map((c) => (
-            <Card key={c.id} className="p-4 avoid-break">
-              <div className="flex items-end justify-between">
-                <div>
-                  <div className="text-sm text-muted-foreground">Categoria</div>
-                  <div className="text-lg font-semibold">{c.name}</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-muted-foreground">Média</div>
-                  <div className="text-xl font-bold">{fmtPercent(c.averageScore)}</div>
-                </div>
-              </div>
-              <div className="mt-4 space-y-4">
-                {c.questions.map((q) => (
-                  <div key={q.id} className="border-b pb-3 last:border-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1 text-sm">
-                        <span className="font-medium">{(q.order ?? "-")}.</span> {q.text}
-                      </div>
-                      <div className="ml-4 text-sm font-semibold whitespace-nowrap">
-                        {fmtPercent(q.averageScore)}
+            <div key={c.id} className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden avoid-break">
+              <div className="p-8">
+                {/* Header da Categoria */}
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center border border-slate-200">
+                      <div className="w-7 h-7 text-slate-600">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
                       </div>
                     </div>
                     <div>
-                      <div className="h-4 w-full bg-muted rounded overflow-hidden flex">
-                        <div className="h-4 bg-emerald-500" style={{ width: `${q.responseDistribution.favorable.toFixed(0)}%` }} />
-                        <div className="h-4 bg-amber-400" style={{ width: `${q.responseDistribution.neutral.toFixed(0)}%` }} />
-                        <div className="h-4 bg-rose-500" style={{ width: `${q.responseDistribution.unfavorable.toFixed(0)}%` }} />
-                      </div>
-                      <div className="mt-1 text-xs text-muted-foreground">
-                        Fav {q.responseDistribution.favorable.toFixed(0)}% • Neut {q.responseDistribution.neutral.toFixed(0)}% • Desf {q.responseDistribution.unfavorable.toFixed(0)}%
-                      </div>
+                      <h2 className="text-2xl font-bold text-slate-900">{c.name}</h2>
+                      <p className="text-sm text-slate-500 font-medium">
+                        {c.questions.length} questão{c.questions.length !== 1 ? 'ões' : ''}
+                      </p>
                     </div>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <div className="text-sm text-slate-500 font-medium mb-1">Média da Categoria</div>
+                    <div className="text-3xl font-bold text-slate-900">{fmtPercent(c.averageScore)}</div>
+                  </div>
+                </div>
+
+                {/* Questões */}
+                <div className="space-y-6">
+                  {c.questions.map((q, index) => (
+                    <div key={q.id} className={`group transition-all duration-200 ${
+                      index > 0 ? 'pt-6 border-t border-slate-100' : ''
+                    }`}>
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg flex items-center justify-center border border-slate-200 flex-shrink-0 mt-1">
+                          <span className="text-sm font-bold text-slate-600">{(q.order ?? "-")}</span>
+                        </div>
+                        <div className="flex-1 space-y-4">
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-900 mb-3 leading-relaxed">
+                              {q.text}
+                            </h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                              <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                                  <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wide">Favorável</p>
+                                </div>
+                                <p className="text-lg font-bold text-emerald-800">{q.responseDistribution.favorable.toFixed(0)}%</p>
+                              </div>
+                              <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                                  <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide">Neutro</p>
+                                </div>
+                                <p className="text-lg font-bold text-amber-800">{q.responseDistribution.neutral.toFixed(0)}%</p>
+                              </div>
+                              <div className="bg-rose-50 rounded-xl p-4 border border-rose-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="w-3 h-3 bg-rose-500 rounded-full"></div>
+                                  <p className="text-xs font-semibold text-rose-600 uppercase tracking-wide">Desfavorável</p>
+                                </div>
+                                <p className="text-lg font-bold text-rose-800">{q.responseDistribution.unfavorable.toFixed(0)}%</p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Barra de Distribuição Moderna */}
+                          <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-semibold text-slate-600">Distribuição de Respostas</span>
+                              <span className="text-sm font-bold text-slate-700">Média: {fmtPercent(q.averageScore)}</span>
+                            </div>
+                            <div className="w-full h-4 bg-slate-200 rounded-full overflow-hidden flex">
+                              <div 
+                                className="h-full bg-emerald-500 rounded-l-full transition-all duration-700 ease-out"
+                                style={{ width: `${q.responseDistribution.favorable}%` }}
+                              />
+                              <div 
+                                className="h-full bg-amber-400 transition-all duration-700 ease-out"
+                                style={{ width: `${q.responseDistribution.neutral}%` }}
+                              />
+                              <div 
+                                className="h-full bg-rose-500 rounded-r-full transition-all duration-700 ease-out"
+                                style={{ width: `${q.responseDistribution.unfavorable}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
-        {/* Plano de Ação (only if overall score < 75) */}
+        {/* Plano de Ação Moderno (only if overall score < 75) */}
         {overallAverageScore !== null && overallAverageScore < 75 && apCategories.length > 0 && (
-          <div className="space-y-4 print-break">
-            <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Anexo III – Plano de Ação e Monitoramento</h3>
-              {apCategories.map((cat) => {
-                const items = apByCategory[cat.id] || [];
-                if (!items.length) return null;
-                const catAvg = processedCategories.find(c => c.id === cat.id)?.averageScore ?? null;
-                const risk = (() => {
-                  if (catAvg === null) return { label: 'Sem dados', color: 'text-slate-500' };
-                  if (catAvg < 40) return { label: 'Risco Elevado (Zona Vermelha)', color: 'text-red-600' };
-                  if (catAvg < 75) return { label: 'Risco Moderado (Zona Amarela)', color: 'text-amber-600' };
-                  return { label: 'Risco Baixo (Zona Verde)', color: 'text-green-600' };
-                })();
-                return (
-                  <div key={cat.id} className="mb-6 avoid-break">
-                    <div className="mb-3">
-                      <div className="font-semibold text-lg">{cat.name}</div>
-                      <div className="text-sm text-slate-700 mt-1">
-                        <span className="font-medium">Média:</span> {typeof catAvg==='number' ? catAvg.toFixed(1) : '—'}% • <span className={`font-medium ${risk.color}`}>{risk.label}</span>
+          <div className="space-y-6 print-break">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-14 h-14 bg-gradient-to-br from-red-100 to-rose-100 rounded-xl flex items-center justify-center border border-red-200">
+                  <div className="w-7 h-7 text-red-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900">Plano de Ação e Monitoramento</h3>
+                  <p className="text-sm text-slate-600 font-medium">Anexo III • Ações recomendadas para melhoria</p>
+                </div>
+              </div>
+              
+              <div className="space-y-8">
+                {apCategories.map((cat) => {
+                  const items = apByCategory[cat.id] || [];
+                  if (!items.length) return null;
+                  const catAvg = processedCategories.find(c => c.id === cat.id)?.averageScore ?? null;
+                  const risk = (() => {
+                    if (catAvg === null) return { label: 'Sem dados', color: 'text-slate-500', bg: 'bg-slate-100', border: 'border-slate-200' };
+                    if (catAvg < 40) return { label: 'Risco Elevado', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' };
+                    if (catAvg < 75) return { label: 'Risco Moderado', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' };
+                    return { label: 'Risco Baixo', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' };
+                  })();
+                  return (
+                    <div key={cat.id} className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <div className="text-xl font-bold text-slate-900">{cat.name}</div>
+                          <div className="text-sm text-slate-600 mt-1">
+                            <span className="font-medium">Média:</span> {typeof catAvg==='number' ? catAvg.toFixed(1) : '—'}% • 
+                            <span className={`font-semibold ${risk.color}`}>{risk.label}</span>
+                          </div>
+                        </div>
+                        <div className={`px-4 py-2 rounded-full text-sm font-semibold ${risk.bg} ${risk.color} ${risk.border} border`}>
+                          {risk.label}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {items.map((item, idx) => (
+                          <div key={item.id} className="bg-white rounded-lg p-4 border border-slate-200 hover:border-slate-300 transition-all duration-200">
+                            <div className="flex items-start gap-3">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center border border-blue-200 flex-shrink-0">
+                                <span className="text-sm font-bold text-blue-600">{idx + 1}</span>
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-semibold text-slate-900 mb-2">Ação {idx + 1}</div>
+                                <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{item.description}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <div className="space-y-3 text-sm text-slate-700">
-                      {items.map((item, idx) => (
-                        <div key={item.id} className="pl-4 border-l-2 border-slate-300">
-                          <div className="font-medium text-slate-900 mb-1">Ação {idx + 1}:</div>
-                          <div className="whitespace-pre-line leading-relaxed">{item.description}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </Card>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Nome da plataforma no final */}
-        <div className="mt-8 pt-6 border-t text-center text-muted-foreground">
-          <div className="text-[10px]">Relatório gerado por <span className="font-semibold">{platformName}</span></div>
-          <div className="text-[9px] mt-0.5">Sistema de Avaliação de Riscos Psicossociais</div>
+        {/* Footer Moderno */}
+        <div className="mt-12 pt-8 border-t border-slate-200 text-center">
+          <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-slate-200 p-6 inline-block">
+            <div className="text-sm font-semibold text-slate-700 mb-1">
+              Relatório gerado por <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{platformName}</span>
+            </div>
+            <div className="text-xs text-slate-500 font-medium">Sistema de Avaliação de Riscos Psicossociais</div>
+            <div className="mt-3 flex justify-center gap-2">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
   );
-};
+}
 
 export default NewTemplateReport;

@@ -205,102 +205,241 @@ const IndividualReport = () => {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Relatório Individual</h1>
-        <Button onClick={() => navigate(-1)}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Voltar para Avaliações
-        </Button>
-      </div>
-      <p className="text-muted-foreground">Detalhes da avaliação de {assessment.first_name || "colaborador anônimo"}.</p>
-
-      <Card className="p-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="flex items-center gap-3">
-          <User className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="text-sm text-muted-foreground">Nome</div>
-            <div className="font-medium">{assessment.first_name || "Anônimo"}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Calendar className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="text-sm text-muted-foreground">Data da Avaliação</div>
-            <div className="font-medium">{assessment.created_at ? new Date(assessment.created_at).toLocaleDateString() : '—'}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Shield className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="text-sm text-muted-foreground">Status</div>
-            <div className="font-medium">{statusToPt(assessment.status)}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Building2 className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="text-sm text-muted-foreground">Empresa</div>
-            <div className="font-medium">{company.name}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Briefcase className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="text-sm text-muted-foreground">Setor</div>
-            <div className="font-medium">{assessment.department || '—'}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Briefcase className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="text-sm text-muted-foreground">Cargo</div>
-            <div className="font-medium">{assessment.role || '—'}</div>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Shield className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="text-sm text-muted-foreground">Score Geral</div>
-            <div className={`text-xl font-bold ${scoreColorClass}`}>{assessment.score?.toFixed(1) || '—'}%</div>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Pontuação Geral</h2>
-        <div className="flex items-center gap-4">
-          <Progress value={assessment.score || 0} className="h-4 flex-1" indicatorClassName={progressColorClass} />
-          <span className={`text-lg font-medium ${scoreColorClass}`}>{assessment.score?.toFixed(1) || '—'}%</span>
-        </div>
-      </Card>
-
-      <ReportLegend />
-
-      {Object.entries(groupedResponses).map(([categoryName, responses]) => (
-        <Card key={categoryName} className="p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <Folder className="h-6 w-6 text-muted-foreground" />
-            <h2 className="text-xl font-bold">{categoryName}</h2>
-          </div>
-          {responses.map((res) => (
-            <div key={res.id} className="border-t pt-4">
-              <div className="flex items-center gap-3 mb-2">
-                <HelpCircle className="h-5 w-5 text-muted-foreground" />
-                <h3 className="font-semibold text-lg">{res.text}</h3>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-8">
+      {/* Header Moderno */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                <Shield className="h-6 w-6 text-white" />
               </div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Resposta:</span> <span className="font-medium">{res.answerLabel}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Pontuação:</span> <span className={`font-medium ${getScoreColor(res.scoredValue)}`}>{res.scoredValue.toFixed(1)}%</span>
-                </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                  Relatório de Avaliação
+                </h1>
+                <p className="text-slate-600 text-sm font-medium">
+                  {assessment.first_name || "Colaborador"} • {company.name}
+                </p>
               </div>
-              <ScoreBarChart score={res.scoredValue} />
             </div>
-          ))}
-        </Card>
-      ))}
+          </div>
+          <Button 
+            onClick={() => navigate(-1)} 
+            variant="outline" 
+            className="border-slate-200 hover:border-slate-300 hover:bg-white/50 backdrop-blur-sm transition-all duration-200"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> 
+            Voltar
+          </Button>
+        </div>
+
+        {/* Badges de Status Modernos */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full border border-slate-200 shadow-sm">
+            <div className={`w-2 h-2 rounded-full ${
+              assessment.status === 'completed' ? 'bg-emerald-500' :
+              assessment.status === 'in_progress' ? 'bg-amber-500' :
+              assessment.status === 'pending' ? 'bg-slate-400' : 'bg-red-500'
+            }`} />
+            <span className="text-sm font-medium text-slate-700">{statusToPt(assessment.status)}</span>
+          </div>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full border border-slate-200 shadow-sm">
+            <Calendar className="h-3 w-3 text-slate-500" />
+            <span className="text-sm font-medium text-slate-700">
+              {assessment.created_at ? new Date(assessment.created_at).toLocaleDateString('pt-BR') : 'Data não disponível'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Card de Informações Principais - Design Moderno */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="group">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                    <User className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-1">Colaborador</p>
+                    <p className="text-lg font-bold text-slate-900">{assessment.first_name || "Anônimo"}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                    <Building2 className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-1">Empresa</p>
+                    <p className="text-lg font-bold text-slate-900">{company.name}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                    <Briefcase className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">Departamento</p>
+                    <p className="text-lg font-bold text-slate-900">{assessment.department || 'Não informado'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group">
+                <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100">
+                  <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                    <Briefcase className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-1">Cargo</p>
+                    <p className="text-lg font-bold text-slate-900">{assessment.role || 'Não informado'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Card de Pontuação Geral - Design Moderno com Animação */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+          <div className="p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-slate-900">Pontuação Geral</h2>
+              <div className="flex items-center gap-3">
+                <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                  typeof assessment?.score === 'number' && assessment.score >= 80 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                  typeof assessment?.score === 'number' && assessment.score >= 60 ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                  'bg-red-100 text-red-800 border border-red-200'
+                }`}>
+                  {typeof assessment?.score === 'number' && assessment.score >= 80 ? 'Excelente' :
+                   typeof assessment?.score === 'number' && assessment.score >= 60 ? 'Bom' : 'A Melhorar'}
+                </div>
+                <div className={`text-3xl font-bold ${scoreColorClass}`}>
+                  {assessment.score?.toFixed(1) || '—'}%
+                </div>
+              </div>
+            </div>
+            
+            {/* Barra de Progresso Animada */}
+            <div className="relative">
+              <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${progressColorClass} relative overflow-hidden`}
+                  style={{ width: `${assessment.score || 0}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+                </div>
+              </div>
+              <div className="flex justify-between mt-2 text-xs text-slate-500">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Legend Moderna */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-6">
+          <ReportLegend />
+        </div>
+
+        {/* Categorias com Cards Modernos */}
+        <div className="grid gap-8">
+          {Object.entries(groupedResponses).map(([categoryName, responses]) => {
+            const categoryScore = responses.reduce((sum, res) => sum + res.scoredValue, 0) / responses.length;
+            return (
+              <div key={categoryName} className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <div className="p-8">
+                  {/* Header da Categoria */}
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center border border-slate-200">
+                        <Folder className="h-7 w-7 text-slate-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-slate-900">{categoryName}</h2>
+                        <p className="text-sm text-slate-500 font-medium">
+                          {responses.length} questão{responses.length !== 1 ? 'ões' : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                        categoryScore >= 80 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                        categoryScore >= 60 ? 'bg-amber-100 text-amber-800 border border-amber-200' :
+                        'bg-red-100 text-red-800 border border-red-200'
+                      }`}>
+                        Média: {categoryScore.toFixed(1)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Questões */}
+                  <div className="space-y-6">
+                    {responses.map((res, index) => (
+                      <div key={res.id} className={`group transition-all duration-200 ${
+                        index > 0 ? 'pt-6 border-t border-slate-100' : ''
+                      }`}>
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg flex items-center justify-center border border-slate-200 flex-shrink-0 mt-1">
+                            <HelpCircle className="h-5 w-5 text-slate-600" />
+                          </div>
+                          <div className="flex-1 space-y-4">
+                            <div>
+                              <h3 className="text-lg font-semibold text-slate-900 mb-3 leading-relaxed">
+                                {res.text}
+                              </h3>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Resposta</p>
+                                  <p className="text-base font-medium text-slate-900">{res.answerLabel}</p>
+                                </div>
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Pontuação</p>
+                                  <p className={`text-base font-bold ${getScoreColor(res.scoredValue)}`}>
+                                    {res.scoredValue.toFixed(1)}%
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Barra de Pontuação Moderna */}
+                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm font-semibold text-slate-600">Desempenho</span>
+                                <span className="text-sm font-bold text-slate-700">{res.scoredValue.toFixed(1)}%</span>
+                              </div>
+                              <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full rounded-full transition-all duration-700 ease-out ${getProgressColor(res.scoredValue)} relative`}
+                                  style={{ width: `${res.scoredValue}%` }}
+                                >
+                                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
