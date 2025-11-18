@@ -547,6 +547,20 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <div className="text-muted-foreground">Data da Avaliação</div>
               <div className="font-medium">{assessmentDateRange || "—"}</div>
             </div>
+            <div>
+              <div className="text-muted-foreground">Grau de Risco</div>
+              <div className="font-medium">
+                {overallAverageScore !== null ? (
+                  overallAverageScore < 40 ? (
+                    <span className="text-red-600 font-bold">ELEVADO (Zona Vermelha)</span>
+                  ) : overallAverageScore < 75 ? (
+                    <span className="text-yellow-500 font-bold">MODERADO (Zona Amarela)</span>
+                  ) : (
+                    <span className="text-emerald-600 font-bold">BAIXO (Zona Verde)</span>
+                  )
+                ) : "—"}
+              </div>
+            </div>
           </div>
         </div>
         )}
