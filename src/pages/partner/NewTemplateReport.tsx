@@ -67,7 +67,7 @@ Detalhamento por categoria:
 const NewTemplateReport = () => {
   const { session } = useSession();
   const companyId = (session as any)?.company_id ?? (session as any)?.companyId;
-  const partnerId = (session as any)?.partner_id ?? (session as any)?.partnerId;
+  const partnerId = (session as any)?.partnerId ?? (session as any)?.partner_id;
 
   const [loading, setLoading] = useState(true);
   const [company, setCompany] = useState<Company | null>(null);
