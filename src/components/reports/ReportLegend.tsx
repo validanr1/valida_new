@@ -20,7 +20,7 @@ export const REPORT_LEGEND = [
     min: 40, 
     max: 75,
     color: 'bg-yellow-400',
-    textColor: 'text-yellow-600',
+    textColor: 'text-yellow-500',
     borderColor: 'border-yellow-400',
     bgColor: 'bg-yellow-50',
   },
