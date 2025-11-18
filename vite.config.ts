@@ -18,9 +18,12 @@ export default defineConfig(() => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ["html2pdf.js"],
+  },
   build: {
     target: "esnext",
-    minify: "esbuild",
+    minify: "esbuild" as const,
     sourcemap: false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
