@@ -763,6 +763,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         </div>
         )}
 
+        </div> {/* Fecha report-content */}
       </div>
     </div>
   );
