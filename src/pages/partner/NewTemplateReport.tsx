@@ -576,7 +576,10 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                 </svg>
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">Responsáveis Técnicos</h2>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Responsáveis Técnicos</h2>
+              <p className="text-sm text-slate-600 mt-1">FRPRT (Fatores De Riscos Psicossociais Relacionados ao Trabalho)</p>
+            </div>
           </div>
           <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
