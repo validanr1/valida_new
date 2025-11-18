@@ -12,14 +12,14 @@ interface CategoryIndicatorProps {
 
 const getBgClasses = (score: number) => {
   if (score < 40) return { bg: 'bg-red-500', text: 'text-white' };
-  if (score < 75) return { bg: 'bg-yellow-500', text: 'text-white' };
+  if (score < 75) return { bg: 'bg-yellow-400', text: 'text-white' };
   return { bg: 'bg-emerald-500', text: 'text-white' };
 };
 
 const getScoreLabelDetails = (score: number) => {
   const legendItem = REPORT_LEGEND.find(item => score < item.max);
   if (legendItem?.label === 'Zona Vermelha') return { text: 'Desfavorável', color: 'text-red-500', emoji: '🔴' };
-  if (legendItem?.label === 'Zona Amarela') return { text: 'Neutro', color: 'text-yellow-500', emoji: '🟡' };
+  if (legendItem?.label === 'Zona Amarela') return { text: 'Neutro', color: 'text-yellow-400', emoji: '🟡' };
   if (legendItem?.label === 'Zona Verde') return { text: 'Favorável', color: 'text-emerald-500', emoji: '🟢' };
   // Fallback for score === 100
   if (score === 100) return { text: 'Favorável', color: 'text-emerald-500', emoji: '🟢' };

@@ -672,20 +672,7 @@ const ReportsOverview = () => {
             />
           </div>
           
-          {/* Botão para novo relatório dinâmico */}
-          <div className="mt-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/partner/reports/dinamico-v2')}
-              className="w-full"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              Relatório Dinâmico V2
-            </Button>
-            <p className="text-xs text-muted-foreground mt-1">
-              Crie relatórios personalizados com conteúdo dinâmico
-            </p>
-          </div>
+          {/* ...botão Relatório Dinâmico V2 removido... */}
           </div>
 
           <div className="avoid-break">

@@ -44,13 +44,13 @@ interface ProcessedQuestionResponse {
 
 const getScoreColor = (score: number) => {
   if (score < 40) return "text-red-500";
-  if (score < 75) return "text-yellow-500";
+  if (score < 75) return "text-yellow-400";
   return "text-emerald-500";
 };
 
 const getProgressColor = (score: number) => {
   if (score < 40) return "bg-red-500";
-  if (score < 75) return "bg-yellow-500";
+  if (score < 75) return "bg-yellow-400";
   return "bg-emerald-500";
 };
 

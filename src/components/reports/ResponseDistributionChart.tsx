@@ -15,7 +15,7 @@ const ResponseDistributionChart = ({ distribution }: ResponseDistributionChartPr
   // Ordem corrigida para corresponder à exibição visual (verde, amarelo, vermelho)
   const segments = [
     { value: favorable, color: 'bg-emerald-500', label: 'Favorável' },
-    { value: neutral, color: 'bg-yellow-500', label: 'Neutro' },
+    { value: neutral, color: 'bg-yellow-400', label: 'Neutro' },
     { value: unfavorable, color: 'bg-red-500', label: 'Desfavorável' },
   ];
 
