@@ -494,7 +494,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <div className="space-y-3">
                 <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
                   <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">I</div>
-                  <span className="text-slate-800 font-medium">Anexo I – Resultado das Avaliações (Dashboard Power BI)</span>
+                  <span className="text-slate-800 font-medium">Anexo I – Resultado das Avaliações</span>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
                   <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">II</div>
