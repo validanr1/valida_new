@@ -87,7 +87,6 @@ const NewTemplateReport = () => {
     "Identificação dos riscos psicossociais",
     "Estratégias de Avaliação",
     "Análise do Resultado",
-    "Resultado das Avaliações",
     "Conclusão",
     "Considerações Finais",
     "Anexo I – Resultado das Avaliações",
@@ -477,21 +476,15 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <span className="text-slate-800 font-medium">Análise do Resultado</span>
             </div>
 
-            {/* Seção 9 - Resultado das Avaliações */}
+            {/* Seção 9 - Conclusão */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
               <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">9</div>
-              <span className="text-slate-800 font-medium">Resultado das Avaliações</span>
-            </div>
-
-            {/* Seção 10 - Conclusão */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">10</div>
               <span className="text-slate-800 font-medium">Conclusão</span>
             </div>
 
-            {/* Seção 11 - Considerações Finais */}
+            {/* Seção 10 - Considerações Finais */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">11</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">10</div>
               <span className="text-slate-800 font-medium">Considerações Finais</span>
             </div>
 
