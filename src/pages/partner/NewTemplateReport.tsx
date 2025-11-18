@@ -171,7 +171,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
       try {
         const { data: companyData } = await supabase
           .from("companies")
-          .select("id, name, partner_id, cnpj, cnae, address, departments")
+          .select("id, name, partner_id, cnpj, cnae, address")
           .eq("id", companyId)
           .maybeSingle();
         setCompany(companyData as Company);
@@ -185,10 +185,10 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         const { data: partnerConfigData } = await supabase
           .from("partners")
-          .select("logo_url")
+          .select("logo_data_url")
           .eq("id", partnerId)
           .maybeSingle();
-        setPartnerLogo(partnerConfigData?.logo_url || null);
+        setPartnerLogo(partnerConfigData?.logo_data_url || null);
 
         let tr: TechnicalResponsible | null = null;
         {
@@ -216,7 +216,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         setDepartmentNames((deps || []).map((d: any) => d.name).join(", "));
 
         const { data: evalData } = await supabase
-          .from("evaluations")
+          .from("assessments")
           .select("created_at")
           .eq("company_id", companyId)
           .order("created_at", { ascending: true })
@@ -227,7 +227,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           setAssessmentDateRange(`${firstDate.toLocaleDateString('pt-BR')} a ${lastDate.toLocaleDateString('pt-BR')}`);
         }
 
-        const { data: evals } = await supabase.from("evaluations").select("id,created_at").eq("company_id", companyId);
+        const { data: evals } = await supabase.from("assessments").select("id,created_at").eq("company_id", companyId);
         const evaluationIds = (evals || []).map((e: any) => e.id);
         if (!evaluationIds.length) {
           setOverallAverageScore(null); setProcessedCategories([]); setLoading(false); return;
@@ -240,18 +240,18 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         const questionsMap = new Map((questionsData || []).map((q: any) => [q.id, q]));
 
         const { data: answersData } = await supabase
-          .from("answers")
-          .select("evaluation_id,question_id,score")
-          .in("evaluation_id", evaluationIds);
+          .from("assessment_responses")
+          .select("assessment_id,question_id,scored_value")
+          .in("assessment_id", evaluationIds);
 
         const scoresByQuestion = new Map<string, number[]>();
         (answersData || []).forEach((a: any) => {
           const arr = scoresByQuestion.get(a.question_id) || [];
-          arr.push(a.score);
+          arr.push(a.scored_value);
           scoresByQuestion.set(a.question_id, arr);
         });
 
-        const { data: categoriesData } = await supabase.from("categories").select("id,name,description");
+        const { data: categoriesData } = await supabase.from("question_categories").select("id,name,description");
         const categoriesMap = new Map((categoriesData || []).map((c: any) => [c.id, c]));
 
         const processed: ProcessedCategory[] = [];
@@ -261,9 +261,9 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           const q = questionsMap.get(questionId);
           if (!q) return;
           const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-          const favorable = scores.filter((s) => s >= 4).length;
-          const neutral = scores.filter((s) => s === 3).length;
-          const unfavorable = scores.filter((s) => s <= 2).length;
+          const favorable = scores.filter((s) => s >= 75).length;
+          const neutral = scores.filter((s) => s >= 40 && s < 75).length;
+          const unfavorable = scores.filter((s) => s < 40).length;
           const categoryId = q.category_id;
           if (categoryId) {
             const catArr = categoryScores.get(categoryId) || [];
