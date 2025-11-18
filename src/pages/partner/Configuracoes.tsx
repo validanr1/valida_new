@@ -58,6 +58,50 @@ const Configuracoes = () => {
     contact_email?: string | null;
     contact_phone?: string | null;
   };
+
+  const handleReportSectionChange = (section: keyof typeof reportSections) => {
+    setReportSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  const saveReportContent = async () => {
+    if (!partnerId) return;
+    
+    try {
+      const reportConfig = {
+        title: reportTitle,
+        subtitle: reportSubtitle,
+        introduction: reportIntroduction,
+        conclusion: reportConclusion,
+        sections: reportSections,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data, error } = await supabase
+        .from('partners')
+        .update({ 
+          report_config: reportConfig,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', partnerId)
+        .select('*')
+        .single();
+
+      if (error) throw error;
+      
+      showSuccess('Configurações do relatório salvas com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao salvar configurações do relatório:', error);
+      showError('Erro ao salvar configurações do relatório: ' + error.message);
+    }
+  };
+
+  const previewReport = () => {
+    // Abrir uma nova aba com preview do relatório
+    window.open('/partner/reports/versao-completa?preview=true', '_blank');
+  };
   type CompanyOpt = { id: string; name: string };
   const [companies, setCompanies] = useState<CompanyOpt[]>([]);
   const [trs, setTrs] = useState<TechnicalResponsible[]>([]);
@@ -77,6 +121,36 @@ const Configuracoes = () => {
   const [description, setDescription] = useState("");
   const [logoNegativePreview, setLogoNegativePreview] = useState<string | undefined>(undefined);
   const [supportWhatsapp, setSupportWhatsapp] = useState("");
+
+  // Report content states - Template NR1 completo
+  const [reportTitle, setReportTitle] = useState("RELATÓRIO DE FATORES DE RISCOS PSICOSSOCIAIS RELACIONADOS AO TRABALHO");
+  const [reportSubtitle, setReportSubtitle] = useState("NR-1, NR-17, Guia de Fatores Psicossociais, HSE-SIT, ISO 45003");
+  const [reportIntroduction, setReportIntroduction] = useState(`Este relatório de fatores de riscos psicossociais relacionados ao trabalho integra as ações de avaliação das condições laborais dos colaboradores, com ênfase na identificação e análise técnica dos fatores de riscos psicossociais presentes no ambiente de trabalho. Seu objetivo é contribuir para a promoção da saúde mental, bem-estar e produtividade dos trabalhadores, bem como para o cumprimento da legislação vigente.
+
+O relatório de fatores de riscos psicossociais relacionados ao trabalho em conformidade com as diretrizes da NR-01, atualizada pela Portaria MTE nº 1.419/2024 e vigente a partir de maio de 2026, que passou a integrar de forma formal os fatores psicossociais ao Gerenciamento de Riscos Ocupacionais (GRO). Também atende à NR-17, ao Guia de Informações sobre Fatores Psicossociais Relacionados ao Trabalho (MTE), às recomendações da HSE-SIT (Health and Safety Executive) e à norma internacional ISO 45003, assegurando alinhamento com as melhores práticas nacionais e internacionais em Saúde e Segurança do Trabalho.
+
+Além de atender aos requisitos legais, este relatório oferece subsídios técnicos fundamentados para decisões estratégicas no âmbito do Programa de Gerenciamento de Riscos (PGR), como:
+• Aprofundamento das análises por meio de Análise Ergonômica do Trabalho (AEP/AET), quando aplicável;
+• Priorização de medidas de prevenção e controle;
+• Definição de planos de ação alinhados ao PGR voltados à construção de ambientes de trabalho mais seguros, saudáveis e produtivos.`);
+  const [reportConclusion, setReportConclusion] = useState(`Com base na análise, conclui-se que, no momento da avaliação, os colaboradores não estão expostos a riscos psicossociais relevantes, conforme critérios das NR-01 e NR-17. A empresa deverá acompanhar continuamente os indicadores de clima organizacional e saúde mental.
+
+Alterações em processos, cargos ou condições de trabalho devem motivar reavaliação psicossocial conforme a NR-01. Este relatório reflete as condições no momento da emissão.`);
+  const [reportSections, setReportSections] = useState({
+    companyInfo: true,
+    technicalResponsibles: true,
+    workScope: true,
+    technicalSources: true,
+    legalSources: true,
+    evaluationMethodology: true,
+    riskIdentification: true,
+    evaluationStrategies: true,
+    resultAnalysis: true,
+    evaluationResults: true,
+    conclusion: true,
+    finalConsiderations: true,
+    annexes: true
+  });
 
   useEffect(() => {
     if (!partnerId) {
@@ -119,6 +193,18 @@ const Configuracoes = () => {
         setDescription(p?.description ?? "");
         setLogoNegativePreview(p?.logo_negative_data_url);
         setSupportWhatsapp(p?.support_whatsapp ?? "");
+        
+        // Load report configuration if exists
+        if (p?.report_config) {
+          const config = p.report_config;
+          setReportTitle(config.title || "Relatório de Conformidade Trabalhista");
+          setReportSubtitle(config.subtitle || "Análise completa da conformidade");
+          setReportIntroduction(config.introduction || "");
+          setReportConclusion(config.conclusion || "");
+          if (config.sections) {
+            setReportSections(config.sections);
+          }
+        }
       }
     })();
     // Load companies for selector
@@ -353,6 +439,7 @@ const Configuracoes = () => {
       <Tabs defaultValue="white-label"> {/* Changed default value */}
         <TabsList className="w-full">
           <TabsTrigger className="flex-1" value="white-label">White Label</TabsTrigger> {/* Renamed tab */}
+          <TabsTrigger className="flex-1" value="conteudo-relatorio">Conteúdo do Relatório</TabsTrigger>
           <TabsTrigger className="flex-1" value="meu-plano">Meu Plano</TabsTrigger>
           <TabsTrigger className="flex-1" value="planos-acao">Planos de Ação</TabsTrigger>
           <TabsTrigger className="flex-1" value="responsaveis">Responsáveis Técnicos</TabsTrigger>
@@ -495,6 +582,227 @@ const Configuracoes = () => {
 
             <div className="mt-4">
               <Button onClick={onSaveWhiteLabel}>Salvar Customização</Button>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="conteudo-relatorio" className="pt-4">
+          <Card className="p-6">
+            <h2 className="text-lg font-semibold mb-4">Conteúdo do Relatório</h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              Personalize o conteúdo e as seções do relatório empresarial que será gerado para suas empresas.
+            </p>
+            
+            <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Título do Relatório</label>
+                  <Input 
+                    value={reportTitle}
+                    onChange={(e) => setReportTitle(e.target.value)}
+                    placeholder="Relatório de Conformidade Trabalhista"
+                    className="h-10"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Subtítulo do Relatório</label>
+                  <Input 
+                    value={reportSubtitle}
+                    onChange={(e) => setReportSubtitle(e.target.value)}
+                    placeholder="Análise completa da conformidade"
+                    className="h-10"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Introdução do Relatório</label>
+                <Textarea 
+                  value={reportIntroduction}
+                  onChange={(e) => setReportIntroduction(e.target.value)}
+                  placeholder="Digite o texto de introdução que aparecerá no início do relatório..."
+                  rows={4}
+                  className="rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Conclusão do Relatório</label>
+                <Textarea 
+                  value={reportConclusion}
+                  onChange={(e) => setReportConclusion(e.target.value)}
+                  placeholder="Digite o texto de conclusão que aparecerá no final do relatório..."
+                  rows={4}
+                  className="rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-base font-semibold">Seções do Relatório NR1</h3>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">1. Identificação da Empresa</div>
+                      <div className="text-sm text-muted-foreground">Dados básicos da empresa avaliada</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.companyInfo}
+                      onChange={() => handleReportSectionChange('companyInfo')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">1.1 Responsáveis Técnicos</div>
+                      <div className="text-sm text-muted-foreground">Profissionais responsáveis pela avaliação</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.technicalResponsibles}
+                      onChange={() => handleReportSectionChange('technicalResponsibles')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">2. Escopo do Trabalho</div>
+                      <div className="text-sm text-muted-foreground">Objetivos e abrangência da avaliação</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.workScope}
+                      onChange={() => handleReportSectionChange('workScope')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">3. Fontes Técnicas</div>
+                      <div className="text-sm text-muted-foreground">Aspectos organizacionais e técnicos</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.technicalSources}
+                      onChange={() => handleReportSectionChange('technicalSources')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">4. Fontes Jurídicas</div>
+                      <div className="text-sm text-muted-foreground">Base legal e normas aplicáveis</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.legalSources}
+                      onChange={() => handleReportSectionChange('legalSources')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">5. Metodologias</div>
+                      <div className="text-sm text-muted-foreground">Métodos e técnicas utilizadas</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.evaluationMethodology}
+                      onChange={() => handleReportSectionChange('evaluationMethodology')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">6. Identificação de Riscos</div>
+                      <div className="text-sm text-muted-foreground">Fatores psicossociais identificados</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.riskIdentification}
+                      onChange={() => handleReportSectionChange('riskIdentification')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">7. Estratégias</div>
+                      <div className="text-sm text-muted-foreground">Abordagens de avaliação adotadas</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.evaluationStrategies}
+                      onChange={() => handleReportSectionChange('evaluationStrategies')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">8. Análise dos Resultados</div>
+                      <div className="text-sm text-muted-foreground">Interpretação dos dados coletados</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.resultAnalysis}
+                      onChange={() => handleReportSectionChange('resultAnalysis')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">9. Resultados</div>
+                      <div className="text-sm text-muted-foreground">Apresentação dos resultados</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.evaluationResults}
+                      onChange={() => handleReportSectionChange('evaluationResults')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">10. Conclusão</div>
+                      <div className="text-sm text-muted-foreground">Síntese e conclusões finais</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.conclusion}
+                      onChange={() => handleReportSectionChange('conclusion')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-medium">11. Considerações Finais</div>
+                      <div className="text-sm text-muted-foreground">Recomendações e próximos passos</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.finalConsiderations}
+                      onChange={() => handleReportSectionChange('finalConsiderations')}
+                      className="rounded" 
+                    />
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg md:col-span-2">
+                    <div>
+                      <div className="font-medium">Anexos I, II e III</div>
+                      <div className="text-sm text-muted-foreground">Dashboards, inventários e planos de ação</div>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={reportSections.annexes}
+                      onChange={() => handleReportSectionChange('annexes')}
+                      className="rounded" 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button onClick={saveReportContent}>Salvar Configurações</Button>
+                <Button variant="outline" onClick={previewReport}>Visualizar Preview</Button>
+              </div>
             </div>
           </Card>
         </TabsContent>
