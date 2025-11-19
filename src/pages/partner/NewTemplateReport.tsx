@@ -1239,6 +1239,65 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           </div>
         </div>
 
+        {/* Anexo III - Plano de Ação e Monitoramento */}
+        <div className="report-section mb-8 bg-white rounded-xl p-8 border border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo III – Plano de Ação e Monitoramento</h2>
+          
+          <div className="mb-6 text-slate-700 leading-relaxed">
+            <p>Este plano tem por objetivo monitorar e reduzir os riscos psicossociais mapeados, integrando ações ao <strong>PGR – Programa de Gerenciamento de Riscos, PCMSO – Programa de Controle Médico de Saúde Ocupacional, AEP – Análise Ergonômica Preliminar.</strong></p>
+          </div>
+
+          {/* Tabela de Plano de Ação */}
+          <div className="overflow-x-auto mb-6">
+            <table className="w-full border-collapse border border-slate-300">
+              <thead>
+                <tr className="bg-slate-100">
+                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Ação Recomendável</th>
+                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Responsável</th>
+                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Prazo</th>
+                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Indicador de Sucesso</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Redefinir metas e prazos excessivos</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Gestor de setor</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">60 dias</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Redução de queixas e turnover</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Criar canais de escuta ativa</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">RH</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">30 dias</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Número de sugestões recebidas/mês</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Realizar treinamentos sobre saúde mental</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">SESMT + Psicólogo</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Trimestral</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Frequência e avaliação de satisfação</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Incluir saúde mental nas consultas clínicas</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Médico do trabalho</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Imediato</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Registros de acolhimento e encaminhamentos</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Monitorar indicadores de absenteísmo</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">RH + SESMT</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Mensal</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Relatórios periódicos com tendências</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="text-slate-700 leading-relaxed">
+            <p><strong>OBS:</strong> Este plano deverá ser revisado conforme o ciclo de revisão do PGR da empresa, ou sempre que ocorrerem alterações significativas nas condições de trabalho, organização ou identificação de novos riscos, conforme previsto na NR-01.</p>
+          </div>
+        </div>
+
         </div> {/* Fecha report-content */}
       </div>
 
