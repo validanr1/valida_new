@@ -1018,15 +1018,24 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           {/* Legendas das Zonas de Risco */}
           <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="rounded-xl p-4 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444' }}>
-              <h4 className="text-sm font-bold mb-2" style={{ color: '#dc2626' }}>🔴 Zona Vermelha (0% a 39,99%)</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
+                <h4 className="text-sm font-bold" style={{ color: '#dc2626' }}>Zona Vermelha (0% a 39,99%)</h4>
+              </div>
               <p className="text-xs" style={{ color: '#b91c1c' }}>Risco elevado: ação corretiva imediata.</p>
             </div>
             <div className="rounded-xl p-4 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700' }}>
-              <h4 className="text-sm font-bold mb-2" style={{ color: '#ca8a04' }}>🟡 Zona Amarela (40% a 74,99%)</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ffd700' }}></div>
+                <h4 className="text-sm font-bold" style={{ color: '#ca8a04' }}>Zona Amarela (40% a 74,99%)</h4>
+              </div>
               <p className="text-xs" style={{ color: '#a16207' }}>Atenção: possível risco psicossocial; revisar práticas.</p>
             </div>
             <div className="rounded-xl p-4 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e' }}>
-              <h4 className="text-sm font-bold mb-2" style={{ color: '#16a34a' }}>🟢 Zona Verde (75% a 100%)</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
+                <h4 className="text-sm font-bold" style={{ color: '#16a34a' }}>Zona Verde (75% a 100%)</h4>
+              </div>
               <p className="text-xs" style={{ color: '#15803d' }}>Ambiente psicossocial satisfatório; manter boas práticas.</p>
             </div>
           </div>
@@ -1138,15 +1147,24 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                 {/* Legendas das Zonas de Risco após cada categoria */}
                 <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="rounded-xl p-4 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#dc2626' }}>🔴 Zona Vermelha (0% a 39,99%)</h4>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
+                      <h4 className="text-sm font-bold" style={{ color: '#dc2626' }}>Zona Vermelha (0% a 39,99%)</h4>
+                    </div>
                     <p className="text-xs" style={{ color: '#b91c1c' }}>Risco elevado: ação corretiva imediata.</p>
                   </div>
                   <div className="rounded-xl p-4 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#ca8a04' }}>🟡 Zona Amarela (40% a 74,99%)</h4>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ffd700' }}></div>
+                      <h4 className="text-sm font-bold" style={{ color: '#ca8a04' }}>Zona Amarela (40% a 74,99%)</h4>
+                    </div>
                     <p className="text-xs" style={{ color: '#a16207' }}>Atenção: possível risco psicossocial; revisar práticas.</p>
                   </div>
                   <div className="rounded-xl p-4 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e' }}>
-                    <h4 className="text-sm font-bold mb-2" style={{ color: '#16a34a' }}>🟢 Zona Verde (75% a 100%)</h4>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
+                      <h4 className="text-sm font-bold" style={{ color: '#16a34a' }}>Zona Verde (75% a 100%)</h4>
+                    </div>
                     <p className="text-xs" style={{ color: '#15803d' }}>Ambiente psicossocial satisfatório; manter boas práticas.</p>
                   </div>
                 </div>
