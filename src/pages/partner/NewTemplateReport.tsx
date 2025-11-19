@@ -934,6 +934,11 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                   const neutralPercent = total > 0 ? (neutral / total) * 100 : 0;
                   const unfavorablePercent = total > 0 ? (unfavorable / total) * 100 : 0;
                   
+                  // Calculate overall average as the average of category averages
+                  const overallAverage = processedCategories.length > 0
+                    ? processedCategories.reduce((sum, cat) => sum + cat.averageScore, 0) / processedCategories.length
+                    : 0;
+                  
                   return (
                     <>
                       <svg viewBox="0 0 200 200" className="transform -rotate-90">
@@ -979,7 +984,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <div className="text-3xl font-bold text-slate-900">{favorablePercent.toFixed(1)}%</div>
+                          <div className="text-3xl font-bold text-slate-900">{overallAverage.toFixed(1)}%</div>
                           <div className="text-sm text-slate-600">Média Geral</div>
                         </div>
                       </div>
