@@ -853,6 +853,318 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         </div>
         )}
 
+        {/* Anexo I - Resultado das Avaliações */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break mt-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
+              <div className="w-6 h-6 text-blue-600">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3,3H21V21H3V3M5,5V19H19V5H5M7,7H17V9H7V7M7,11H17V13H7V11M7,15H17V17H7V15Z"/>
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900">Anexo I – Resultado das Avaliações</h2>
+          </div>
+
+          {/* Visão Geral - Gráfico de Pizza */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral</h3>
+            <div className="flex items-center justify-center">
+              <div className="relative w-64 h-64">
+                <svg viewBox="0 0 200 200" className="transform -rotate-90">
+                  {/* Favorável - Verde (82.86%) */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#22c55e"
+                    strokeWidth="40"
+                    strokeDasharray={`${82.86 * 5.027} ${100 * 5.027}`}
+                    strokeDashoffset="0"
+                  />
+                  {/* Neutro - Amarelo (10%) */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#fbbf24"
+                    strokeWidth="40"
+                    strokeDasharray={`${10 * 5.027} ${100 * 5.027}`}
+                    strokeDashoffset={`-${82.86 * 5.027}`}
+                  />
+                  {/* Desfavorável - Vermelho (7.14%) */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="40"
+                    strokeDasharray={`${7.14 * 5.027} ${100 * 5.027}`}
+                    strokeDashoffset={`-${(82.86 + 10) * 5.027}`}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-slate-900">5</div>
+                    <div className="text-sm text-slate-600">(7.14%)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center gap-6 mt-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-green-500 rounded"></div>
+                <span className="text-sm text-slate-700">Favorável: 58 (82.86%)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+                <span className="text-sm text-slate-700">Neutro: 7 (10%)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span className="text-sm text-slate-700">Desfavorável: 5 (7.14%)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Visão Geral Fatores - Gráfico de Barras Horizontais */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral Fatores</h3>
+            <div className="space-y-3">
+              {[
+                { name: 'Demandas', favorable: 83, neutral: 3, unfavorable: 14 },
+                { name: 'Controle', favorable: 100, neutral: 0, unfavorable: 0 },
+                { name: 'Relacionamentos', favorable: 92, neutral: 0, unfavorable: 8 },
+                { name: 'Suporte', favorable: 83, neutral: 0, unfavorable: 17 },
+                { name: 'Mudanças', favorable: 67, neutral: 33, unfavorable: 0 },
+                { name: 'Papel', favorable: 100, neutral: 0, unfavorable: 0 }
+              ].map((factor, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-sm font-medium text-slate-700">{factor.name}</div>
+                  <div className="flex h-8 rounded overflow-hidden border border-slate-200">
+                    {factor.favorable > 0 && (
+                      <div 
+                        className="bg-green-500 flex items-center justify-center text-white text-xs font-medium"
+                        style={{ width: `${factor.favorable}%` }}
+                      >
+                        {factor.favorable}%
+                      </div>
+                    )}
+                    {factor.neutral > 0 && (
+                      <div 
+                        className="bg-yellow-400 flex items-center justify-center text-white text-xs font-medium"
+                        style={{ width: `${factor.neutral}%` }}
+                      >
+                        {factor.neutral}%
+                      </div>
+                    )}
+                    {factor.unfavorable > 0 && (
+                      <div 
+                        className="bg-red-500 flex items-center justify-center text-white text-xs font-medium"
+                        style={{ width: `${factor.unfavorable}%` }}
+                      >
+                        {factor.unfavorable}%
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Média Fatores - Gráfico de Barras Verticais */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Média Fatores</h3>
+            <div className="flex items-end justify-around h-64 border-b border-l border-slate-300 pb-2 pl-2">
+              {[
+                { name: 'Demandas', value: 4.31 },
+                { name: 'Relacionamentos', value: 4.08 },
+                { name: 'Papel', value: 3.83 },
+                { name: 'Suporte', value: 3.67 },
+                { name: 'Mudanças', value: 3.67 },
+                { name: 'Controle', value: 3.33 }
+              ].map((factor, idx) => {
+                const height = (factor.value / 5) * 100;
+                return (
+                  <div key={idx} className="flex flex-col items-center gap-2 flex-1 max-w-[100px]">
+                    <div className="text-xs font-bold text-slate-700">{factor.value}</div>
+                    <div 
+                      className="w-full bg-green-500 rounded-t transition-all"
+                      style={{ height: `${height}%` }}
+                    ></div>
+                    <div className="text-xs text-slate-600 text-center leading-tight">{factor.name}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Visão Fatores de Demandas */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Demandas</h3>
+            <div className="space-y-2">
+              {[
+                { q: 'Q1', text: 'Diferentes setores/áreas de trabalho', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q2', text: 'Tenho prazo suficiente de tempo', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q3', text: 'Preciso trabalhar com muita intensidade', favorable: 0, neutral: 50, unfavorable: 50 },
+                { q: 'Q4', text: 'Preciso deixar meu trabalho inacabado', favorable: 0, neutral: 50, unfavorable: 50 },
+                { q: 'Q5', text: 'Não consigo fazer pausas suficientes', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q6', text: 'Tenho pressão de tempo para trabalhar', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q7', text: 'Preciso trabalhar muito rápido', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q8', text: 'Enfrento prazos irrealistas', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q9', text: 'Meu horário de trabalho pode ser flexível', favorable: 0, neutral: 50, unfavorable: 50 }
+              ].map((item, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
+                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                    {item.favorable > 0 && (
+                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
+                    )}
+                    {item.neutral > 0 && (
+                      <div className="bg-yellow-400" style={{ width: `${item.neutral}%` }}></div>
+                    )}
+                    {item.unfavorable > 0 && (
+                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Visão Fatores de Papel */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Papel</h3>
+            <div className="space-y-2">
+              {[
+                { q: 'Q10', text: 'Eu entendo claramente o que é esperado', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q11', text: 'Sei como realizar meu trabalho', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q12', text: 'Sei claramente quais são minhas funções', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q13', text: 'Compreendo como o meu trabalho se encaixa', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q14', text: 'Compreendo os objetivos e metas do trabalho', favorable: 100, neutral: 0, unfavorable: 0 }
+              ].map((item, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
+                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                    <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Visão Fatores de Controle */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Controle</h3>
+            <div className="space-y-2">
+              {[
+                { q: 'Q15', text: 'Posso decidir quando fazer uma pausa', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q16', text: 'Tenho voz para decidir a velocidade', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q17', text: 'Tenho autonomia para decidir como faço', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q18', text: 'Tenho autonomia para decidir o que faço', favorable: 0, neutral: 0, unfavorable: 100 },
+                { q: 'Q19', text: 'Tenho alguma influência sobre a forma', favorable: 0, neutral: 0, unfavorable: 100 }
+              ].map((item, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
+                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                    {item.favorable > 0 && (
+                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
+                    )}
+                    {item.unfavorable > 0 && (
+                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Visão Fatores de Suporte */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Suporte</h3>
+            <div className="space-y-2">
+              {[
+                { q: 'Q20', text: 'Se o trabalho ficar difícil, meus colegas', favorable: 0, neutral: 0, unfavorable: 100 },
+                { q: 'Q21', text: 'Recebo feedback consistente sobre', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q22', text: 'Posso contar com meu supervisor', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q23', text: 'Recebo o apoio de que preciso dos', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q24', text: 'Posso conversar com meu supervisor', favorable: 0, neutral: 50, unfavorable: 50 },
+                { q: 'Q25', text: 'Recebo apoio emocional adequado', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q26', text: 'Meu supervisor dirige me incentiva', favorable: 100, neutral: 0, unfavorable: 0 }
+              ].map((item, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
+                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                    {item.favorable > 0 && (
+                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
+                    )}
+                    {item.neutral > 0 && (
+                      <div className="bg-yellow-400" style={{ width: `${item.neutral}%` }}></div>
+                    )}
+                    {item.unfavorable > 0 && (
+                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Visão Fatores de Relacionamentos */}
+          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Relacionamentos</h3>
+            <div className="space-y-2">
+              {[
+                { q: 'Q27', text: 'Sou vítima de assédio pessoal, por exemplo', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q28', text: 'Há atrito ou desenvolvimentos entre', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q29', text: 'Sou vítima de bullying no trabalho', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q30', text: 'Respeito e respeito que mereço dos', favorable: 0, neutral: 0, unfavorable: 100 },
+                { q: 'Q31', text: 'Meus colegas estão dispostos a ouvir', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q32', text: 'Os relacionamentos no trabalho estão', favorable: 100, neutral: 0, unfavorable: 0 }
+              ].map((item, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
+                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                    {item.favorable > 0 && (
+                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
+                    )}
+                    {item.unfavorable > 0 && (
+                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Visão Fatores de Mudanças */}
+          <div className="bg-white rounded-xl p-6 border border-slate-200">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Mudanças</h3>
+            <div className="space-y-2">
+              {[
+                { q: 'Q33', text: 'Tenho oportunidades suficientes para', favorable: 100, neutral: 0, unfavorable: 0 },
+                { q: 'Q34', text: 'Os funcionários são sempre consultados', favorable: 0, neutral: 100, unfavorable: 0 },
+                { q: 'Q35', text: 'Quando há mudanças no trabalho', favorable: 100, neutral: 0, unfavorable: 0 }
+              ].map((item, idx) => (
+                <div key={idx} className="space-y-1">
+                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
+                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                    {item.favorable > 0 && (
+                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
+                    )}
+                    {item.neutral > 0 && (
+                      <div className="bg-yellow-400" style={{ width: `${item.neutral}%` }}></div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         </div> {/* Fecha report-content */}
       </div>
 
