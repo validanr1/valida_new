@@ -1327,7 +1327,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         </div>
 
         {/* Anexo III - Plano de Ação e Monitoramento */}
-        <div className="report-section mb-8 bg-white rounded-xl p-8 border border-slate-200">
+        <div className="report-section print-break mb-8 bg-white rounded-xl p-8 border border-slate-200" style={{ pageBreakBefore: 'always', breakBefore: 'page' }}>
           <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo III – Plano de Ação e Monitoramento</h2>
           
           <div className="mb-6 text-slate-700 leading-relaxed">
