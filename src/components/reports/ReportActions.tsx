@@ -11,13 +11,17 @@ interface ReportActionsProps {
 const ReportActions = ({ onSave, onOpenNewTemplate, loading }: ReportActionsProps) => {
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-3 justify-end">
       <Button onClick={onSave} disabled={loading}>
         <Save className="mr-2 h-4 w-4" /> Salvar Relatório
       </Button>
       {onOpenNewTemplate && (
-        <Button variant="outline" onClick={onOpenNewTemplate} disabled={loading}>
-          <FileText className="mr-2 h-4 w-4" /> Versão Completa
+        <Button 
+          onClick={onOpenNewTemplate} 
+          disabled={loading}
+          className="bg-[#1B365D] hover:bg-[#152a4a] text-white"
+        >
+          <FileText className="mr-2 h-4 w-4" /> Relatório Geral
         </Button>
       )}
     </div>

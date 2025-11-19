@@ -512,7 +512,7 @@ const ReportsOverview = () => {
           <button
             className={`h-10 rounded-lg text-sm font-medium ${tab==='overview' ? 'bg-white shadow' : 'opacity-70 hover:opacity-100'}`}
             onClick={() => setTab('overview')}
-          >Relatório Geral</button>
+          >Resumo Geral</button>
           <button
             className={`h-10 rounded-lg text-sm font-medium ${tab==='individuals' ? 'bg-white shadow' : 'opacity-70 hover:opacity-100'}`}
             onClick={() => setTab('individuals')}
