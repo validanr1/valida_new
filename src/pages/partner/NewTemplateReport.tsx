@@ -441,25 +441,71 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         
         setProcessedCategories(processed.sort((a, b) => a.name.localeCompare(b.name)));
 
-        // Load global action plans for Anexo III
-        const { data: globalPlans } = await supabase
-          .from("action_plans")
-          .select("id,category_id,title,description,score_min,score_max")
-          .eq("is_global", true)
-          .eq("show_in_report", true)
-          .order("category_id");
-        setGlobalActionPlans(globalPlans || []);
+        // Load action plans with priority logic: partner first, then global as fallback
+        const [partnerPlansRes, globalPlansRes] = await Promise.all([
+          supabase
+            .from("action_plans")
+            .select("id,category_id,title,description,score_min,score_max,is_global,partner_id,show_in_report")
+            .eq("is_global", false)
+            .eq("partner_id", partnerId)
+            .eq("show_in_report", true),
+          supabase
+            .from("action_plans")
+            .select("id,category_id,title,description,score_min,score_max,is_global,partner_id,show_in_report")
+            .eq("is_global", true)
+            .eq("show_in_report", true)
+        ]);
+
+        const partnerPlans = partnerPlansRes.data || [];
+        const globalPlans = globalPlansRes.data || [];
+
+        // Group partner plans by category
+        const partnerByCat: Record<string, any[]> = {};
+        partnerPlans.forEach((p) => {
+          const k = p.category_id || 'uncat';
+          (partnerByCat[k] ||= []).push(p);
+        });
+
+        // Group global plans by category
+        const globalByCat: Record<string, any[]> = {};
+        globalPlans.forEach((p) => {
+          const k = p.category_id || 'uncat';
+          (globalByCat[k] ||= []).push(p);
+        });
+
+        // Build map of category average scores
+        const catAvgMap = new Map<string, number>();
+        processed.forEach(c => { catAvgMap.set(c.id, c.averageScore); });
+
+        // Decide final plans per category: partner first; else global filtered by band
+        const finalPlans: any[] = [];
+        processed.forEach((cat) => {
+          const k = cat.id;
+          const partnerItems = partnerByCat[k] || [];
+          if (partnerItems.length) {
+            // Use partner plans
+            finalPlans.push(...partnerItems.map(p => ({ ...p, categoryName: cat.name, categoryScore: cat.averageScore })));
+          } else {
+            // Use global plans filtered by score range
+            const avg = catAvgMap.get(k);
+            const globals = (globalByCat[k] || []).filter(g => {
+              if (avg == null) return false;
+              const min = typeof g.score_min === 'number' ? g.score_min : 0;
+              const max = typeof g.score_max === 'number' ? g.score_max : 100;
+              return avg >= min && avg <= max;
+            });
+            finalPlans.push(...globals.map(p => ({ ...p, categoryName: cat.name, categoryScore: cat.averageScore })));
+          }
+        });
+
+        setGlobalActionPlans(finalPlans);
 
         const { data: apCats } = await supabase.from("action_plan_categories").select("id,name").order("name");
         setApCategories(apCats || []);
-        const { data: apItems } = await supabase
-          .from("action_plans")
-          .select("id,category_id,description,is_global,partner_id,show_in_report,score_min,score_max")
-          .or(`partner_id.is.null,partner_id.eq.${partnerId}`)
-          .or(`show_in_report.is.null,show_in_report.eq.true`)
-          .order("description");
+        
+        // Keep existing apByCategory logic for other uses
         const byCat: Record<string, ActionPlan[]> = {};
-        (apItems || []).forEach((item: any) => {
+        [...partnerPlans, ...globalPlans].forEach((item: any) => {
           const key = item.category_id || "uncategorized";
           if (!byCat[key]) byCat[key] = [];
           byCat[key].push(item);
@@ -1284,35 +1330,22 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             <p><strong>OBS:</strong> Este plano deverá ser revisado conforme o ciclo de revisão do PGR da empresa, ou sempre que ocorrerem alterações significativas nas condições de trabalho, organização ou identificação de novos riscos, conforme previsto na NR-01.</p>
           </div>
 
-          {/* Tabela de Plano de Ação - Dinâmica baseada nos planos globais do banco */}
+          {/* Tabela de Plano de Ação - Dinâmica baseada nos planos do parceiro ou globais */}
           {(() => {
             // Calculate overall average from categories
             const overallAverage = processedCategories.length > 0
               ? processedCategories.reduce((sum, cat) => sum + cat.averageScore, 0) / processedCategories.length
               : 0;
             
-            // Show global action plans if average is below 75
-            const showGlobalActionPlan = overallAverage < 75;
+            // Show action plans if average is below 75
+            const showActionPlan = overallAverage < 75;
             
-            // Group plans by category and filter by score range
-            const plansToShow = showGlobalActionPlan 
-              ? processedCategories.flatMap(category => {
-                  const categoryPlans = globalActionPlans.filter(plan => 
-                    plan.category_id === category.id &&
-                    category.averageScore >= (plan.score_min || 0) &&
-                    category.averageScore <= (plan.score_max || 100)
-                  );
-                  return categoryPlans.map(plan => ({
-                    ...plan,
-                    categoryName: category.name,
-                    categoryScore: category.averageScore
-                  }));
-                })
-              : [];
+            // Use globalActionPlans which already contains the priority logic applied
+            const plansToShow = showActionPlan ? globalActionPlans : [];
             
             return (
               <div className="overflow-x-auto mb-6">
-                {showGlobalActionPlan && plansToShow.length > 0 && (
+                {showActionPlan && plansToShow.length > 0 && (
                   <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
                     <p className="text-sm text-yellow-800">
                       <strong>Atenção:</strong> A média geral da empresa está abaixo de 75% ({overallAverage.toFixed(2)}%). 
@@ -1321,7 +1354,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                   </div>
                 )}
                 
-                {showGlobalActionPlan && plansToShow.length > 0 ? (
+                {showActionPlan && plansToShow.length > 0 ? (
                   <div className="space-y-6">
                     {plansToShow.map((plan, idx) => (
                       <div key={plan.id || idx} className="border border-slate-300 rounded-lg overflow-hidden">
@@ -1338,10 +1371,10 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                       </div>
                     ))}
                   </div>
-                ) : showGlobalActionPlan ? (
+                ) : showActionPlan ? (
                   <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
-                    <p className="font-semibold text-slate-700 mb-2">Nenhum plano de ação global cadastrado</p>
-                    <p>Entre em contato com o administrador para cadastrar planos de ação globais.</p>
+                    <p className="font-semibold text-slate-700 mb-2">Nenhum plano de ação cadastrado</p>
+                    <p>Entre em contato com o administrador para cadastrar planos de ação.</p>
                   </div>
                 ) : (
                   <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
