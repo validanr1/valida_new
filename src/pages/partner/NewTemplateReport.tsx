@@ -630,11 +630,11 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               {reportConfig?.subtitle || "NR-1, NR-17, Guia de Fatores Psicossociais, HSE-SIT, ISO 45003"}
             </p>
             <div className="flex flex-wrap justify-center items-center gap-3 text-sm">
-              <span className="inline-flex items-center justify-center px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full font-medium">NR-1</span>
-              <span className="inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium">NR-17</span>
-              <span className="inline-flex items-center justify-center px-4 py-2 bg-violet-100 text-violet-800 rounded-full font-medium">Guia Psicossocial</span>
-              <span className="inline-flex items-center justify-center px-4 py-2 bg-amber-100 text-amber-800 rounded-full font-medium">HSE-SIT</span>
-              <span className="inline-flex items-center justify-center px-4 py-2 bg-rose-100 text-rose-800 rounded-full font-medium">ISO 45003</span>
+              <span className="inline-block px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>NR-1</span>
+              <span className="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>NR-17</span>
+              <span className="inline-block px-4 py-2 bg-violet-100 text-violet-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>Guia Psicossocial</span>
+              <span className="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>HSE-SIT</span>
+              <span className="inline-block px-4 py-2 bg-rose-100 text-rose-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>ISO 45003</span>
             </div>
           </div>
 
