@@ -651,67 +651,67 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           <div className="space-y-4">
             {/* Seção 1 - Identificação da Empresa */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">1</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1</div>
               <span className="text-slate-800 font-medium">Identificação da Empresa</span>
             </div>
             
             {/* Sub-seção 1.1 - Responsáveis Técnicos */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200 ml-6">
-              <div className="w-12 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">1.1</div>
+              <div className="w-12 h-8 bg-blue-500 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1.1</div>
               <span className="text-slate-800 font-medium">Responsáveis Técnicos</span>
             </div>
 
             {/* Seção 2 - Escopo do Trabalho */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">2</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>2</div>
               <span className="text-slate-800 font-medium">Escopo do Trabalho</span>
             </div>
 
             {/* Seção 3 - Fontes Técnicas */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">3</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>3</div>
               <span className="text-slate-800 font-medium">Fontes Técnicas – Organizacionais</span>
             </div>
 
             {/* Seção 4 - Fontes Jurídicas */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">4</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>4</div>
               <span className="text-slate-800 font-medium">Fontes Jurídicas</span>
             </div>
 
             {/* Seção 5 - Metodologias */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">5</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>5</div>
               <span className="text-slate-800 font-medium">Metodologias de Avaliação</span>
             </div>
 
             {/* Seção 6 - Identificação dos riscos */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">6</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>6</div>
               <span className="text-slate-800 font-medium">Identificação dos riscos psicossociais</span>
             </div>
 
             {/* Seção 7 - Estratégias */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">7</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>7</div>
               <span className="text-slate-800 font-medium">Estratégias de Avaliação</span>
             </div>
 
             {/* Seção 8 - Análise do Resultado */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">8</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>8</div>
               <span className="text-slate-800 font-medium">Análise do Resultado</span>
             </div>
 
             {/* Seção 9 - Conclusão */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">9</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>9</div>
               <span className="text-slate-800 font-medium">Conclusão</span>
             </div>
 
             {/* Seção 10 - Considerações Finais */}
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">10</div>
+              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>10</div>
               <span className="text-slate-800 font-medium">Considerações Finais</span>
             </div>
 
@@ -720,15 +720,15 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <h3 className="text-lg font-semibold text-slate-800 mb-4">Anexos</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-                  <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">I</div>
+                  <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>I</div>
                   <span className="text-slate-800 font-medium">Anexo I – Resultado das Avaliações</span>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-                  <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">II</div>
+                  <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>II</div>
                   <span className="text-slate-800 font-medium">Anexo II – Análise e Inventário dos Riscos Psicossociais</span>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
-                  <div className="w-12 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">III</div>
+                  <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>III</div>
                   <span className="text-slate-800 font-medium">Anexo III – Plano de Ação e Monitoramento</span>
                 </div>
               </div>
