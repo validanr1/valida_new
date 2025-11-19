@@ -108,7 +108,7 @@ const NewTemplateReport = () => {
     { key: "estrategias", title: "Estratégias de Avaliação", body: "Aplicação de questionário <span style='font-weight: 700;'>online, ou presencial</span> de forma <span style='font-weight: 700;'>individual</span> e <span style='font-weight: 700;'>anônima</span>, garantindo total confidencialidade e a integridade das respostas fornecidas." },
     { key: "analiseResultado", title: "Análise do Resultado", body: "A análise foi realizada a partir das respostas coletadas, com cruzamentos estatísticos, interpretando as variáveis psicossociais de acordo com as normas técnicas e regulamentações legais pertinentes." },
     { key: "conclusao", title: "Conclusão", body: "Com base na análise, conclui-se que, no momento da avaliação, os colaboradores não estão expostos a riscos psicossociais relevantes, conforme critérios das NR-01 e NR-17. A empresa deverá acompanhar continuamente os indicadores de clima organizacional e saúde mental." },
-    { key: "consideracoes", title: "Considerações Finais", body: "Mudanças em processos, cargos ou condições de trabalho devem motivar reavaliação psicossocial conforme NR-01. Este relatório reflete as condições no momento da emissão." },
+    { key: "consideracoes", title: "Considerações Finais", body: "Alterações em processos, cargos ou condições de trabalho devem motivar reavaliação psicossocial conforme a NR-01. Este relatório reflete as condições no momento da emissão." },
   ]);
 
   const [reportConfig, setReportConfig] = useState<any>({
