@@ -1441,7 +1441,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
           </div>
 
-          <div className="mt-8 text-center text-xs text-slate-500">
+          <div className="mt-8 text-center text-sm text-slate-600 avoid-break" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
             <p>Data: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
           </div>
         </div>
