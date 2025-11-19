@@ -1075,9 +1075,9 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                 {processedCategories
                   .sort((a, b) => b.averageScore - a.averageScore)
                   .map((category) => {
-                    const value = (category.averageScore / 100) * 5; // Convert 0-100 to 0-5 scale
-                    // Height based on 0-5 scale: value/5 * 100%
-                    const heightPercent = (value / 5) * 100;
+                    const value = category.averageScore; // Use 0-100 scale directly
+                    // Height based on 0-100 scale: value/100 * 100%
+                    const heightPercent = (value / 100) * 100;
                     return (
                       <div key={category.id} className="flex flex-col items-center gap-1 flex-1">
                         <div className="text-xs font-bold text-slate-700 h-4">{value.toFixed(2)}</div>
