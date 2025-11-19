@@ -33,7 +33,7 @@ if (typeof document !== 'undefined') {
 }
 
 // Dados básicos já usados no Overview
-type Company = { id: string; name: string; partner_id: string; cnpj?: string | null; cnae?: string | null; address?: string | null };
+type Company = { id: string; name: string; partner_id: string; cnpj?: string | null; cnae?: string | null; address?: string | null; responsible_name?: string | null; responsible_email?: string | null };
 type TechnicalResponsible = {
   id: string;
   partner_id: string | null;
@@ -266,7 +266,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
       try {
         const { data: companyData } = await supabase
           .from("companies")
-          .select("id, name, partner_id, cnpj, cnae, address")
+          .select("id, name, partner_id, cnpj, cnae, address, responsible_name, responsible_email")
           .eq("id", companyId)
           .maybeSingle();
         setCompany(companyData as Company);
@@ -1403,6 +1403,12 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <div className="w-full border-t-2 border-slate-400 mb-3"></div>
               <div className="text-center">
                 <p className="font-semibold text-slate-900">{company?.name || 'Empresa'}</p>
+                {company?.responsible_name && (
+                  <p className="text-sm text-slate-700 mt-1">{company.responsible_name}</p>
+                )}
+                {company?.responsible_email && (
+                  <p className="text-sm text-slate-600">{company.responsible_email}</p>
+                )}
                 <p className="text-sm text-slate-600 mt-1">Responsável pela Empresa</p>
               </div>
             </div>
