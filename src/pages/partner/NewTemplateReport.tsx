@@ -646,7 +646,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           </div>
 
         {/* Sumário Moderno - Agora vem imediatamente após o título */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8">
+        <div className="p-4">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
               <div className="w-6 h-6 text-blue-600">
@@ -661,84 +661,84 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           {/* Lista numerada de seções conforme sequência fornecida */}
           <div className="space-y-4">
             {/* Seção 1 - Identificação da Empresa */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1</div>
               <span className="text-slate-800 font-medium">Identificação da Empresa</span>
             </div>
             
             {/* Sub-seção 1.1 - Responsáveis Técnicos */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200 ml-6">
+            <div className="flex items-center gap-4 py-1 ml-6">
               <div className="w-12 h-8 bg-blue-500 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1.1</div>
               <span className="text-slate-800 font-medium">Responsáveis Técnicos</span>
             </div>
 
             {/* Seção 2 - Escopo do Trabalho */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>2</div>
               <span className="text-slate-800 font-medium">Escopo do Trabalho</span>
             </div>
 
             {/* Seção 3 - Fontes Técnicas */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>3</div>
               <span className="text-slate-800 font-medium">Fontes Técnicas – Organizacionais</span>
             </div>
 
             {/* Seção 4 - Fontes Jurídicas */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>4</div>
               <span className="text-slate-800 font-medium">Fontes Jurídicas</span>
             </div>
 
             {/* Seção 5 - Metodologias */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>5</div>
               <span className="text-slate-800 font-medium">Metodologias de Avaliação</span>
             </div>
 
             {/* Seção 6 - Identificação dos riscos */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>6</div>
               <span className="text-slate-800 font-medium">Identificação dos riscos psicossociais</span>
             </div>
 
             {/* Seção 7 - Estratégias */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>7</div>
               <span className="text-slate-800 font-medium">Estratégias de Avaliação</span>
             </div>
 
             {/* Seção 8 - Análise do Resultado */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>8</div>
               <span className="text-slate-800 font-medium">Análise do Resultado</span>
             </div>
 
             {/* Seção 9 - Conclusão */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>9</div>
               <span className="text-slate-800 font-medium">Conclusão</span>
             </div>
 
             {/* Seção 10 - Considerações Finais */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+            <div className="flex items-center gap-4 py-1">
               <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>10</div>
               <span className="text-slate-800 font-medium">Considerações Finais</span>
             </div>
 
             {/* Anexos */}
-            <div className="mt-6 pt-4 border-t border-slate-200">
+            <div className="mt-6 pt-4">
               <h3 className="text-lg font-semibold text-slate-800 mb-4">Anexos</h3>
               <div className="space-y-3">
-                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+                <div className="flex items-center gap-4 py-1">
                   <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>I</div>
                   <span className="text-slate-800 font-medium">Anexo I – Resultado das Avaliações</span>
                 </div>
-                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+                <div className="flex items-center gap-4 py-1">
                   <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>II</div>
                   <span className="text-slate-800 font-medium">Anexo II – Análise e Inventário dos Riscos Psicossociais</span>
                 </div>
-                <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+                <div className="flex items-center gap-4 py-1">
                   <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>III</div>
                   <span className="text-slate-800 font-medium">Anexo III – Plano de Ação e Monitoramento</span>
                 </div>
@@ -749,7 +749,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Identificação da Empresa - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.companyInfo !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center border border-emerald-200">
               <div className="w-6 h-6 text-emerald-600">
@@ -805,7 +805,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Responsáveis Técnicos - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.technicalResponsibles !== false) && primaryResponsible && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
               <div className="w-6 h-6 text-blue-600">
@@ -842,7 +842,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Escopo do Trabalho - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.scope !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border border-purple-200">
               <div className="w-6 h-6 text-purple-600">
@@ -860,7 +860,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Fontes Técnicas – Organizacionais - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.technicalSources !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center border border-amber-200">
               <div className="w-6 h-6 text-amber-600">
@@ -878,7 +878,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Fontes Jurídicas - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.legalSources !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-rose-100 to-red-100 rounded-xl flex items-center justify-center border border-rose-200">
               <div className="w-6 h-6 text-rose-600">
@@ -896,7 +896,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Metodologia de Avaliação - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.methodologies !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center border border-indigo-200">
               <div className="w-6 h-6 text-indigo-600">
@@ -914,7 +914,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Identificação dos Riscos Psicossociais - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.riskIdentification !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl flex items-center justify-center border border-red-200">
               <div className="w-6 h-6 text-red-600">
@@ -932,7 +932,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Estratégias de Avaliação - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.strategies !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-xl flex items-center justify-center border border-teal-200">
               <div className="w-6 h-6 text-teal-600">
@@ -950,7 +950,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Análise do Resultado - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.resultAnalysis !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl flex items-center justify-center border border-emerald-200">
               <div className="w-6 h-6 text-emerald-600">
@@ -969,7 +969,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Conclusão - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.conclusion !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center border border-violet-200">
@@ -996,7 +996,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         {/* Considerações Finais - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.finalConsiderations !== false) && (
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
+          <div className="p-4 avoid-break">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-gray-100 rounded-xl flex items-center justify-center border border-slate-200">
               <div className="w-6 h-6 text-slate-600">
@@ -1014,7 +1014,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         )}
 
         {/* Anexo I - Resultado das Avaliações */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break mt-8">
+        <div className="p-4 avoid-break mt-8">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
               <div className="w-6 h-6 text-blue-600">
