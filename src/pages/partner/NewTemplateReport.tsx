@@ -77,6 +77,9 @@ const NewTemplateReport = () => {
   const [templateText, setTemplateText] = useState<string>(defaultTemplate);
   const [renderedText, setRenderedText] = useState<string>("");
   const [showEditor, setShowEditor] = useState<boolean>(false);
+  const [editingConclusion, setEditingConclusion] = useState<boolean>(false);
+  const [conclusionText, setConclusionText] = useState<string>("");
+  const [savingConclusion, setSavingConclusion] = useState<boolean>(false);
   const [tocItems, setTocItems] = useState<string[]>([
     "Identificação da Empresa",
     "Responsáveis Técnicos",
@@ -139,6 +142,72 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
     }
   });
 
+  const handleEditConclusion = () => {
+    const currentConclusion = getSection("conclusao")?.body || "";
+    setConclusionText(currentConclusion);
+    setEditingConclusion(true);
+  };
+
+  const handleSaveConclusion = async () => {
+    if (!partnerId) return;
+    
+    setSavingConclusion(true);
+    try {
+      const { error } = await supabase
+        .from("partners")
+        .update({ custom_conclusion: conclusionText })
+        .eq("id", partnerId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setSections(prev => prev.map(section => 
+        section.key === "conclusao" 
+          ? { ...section, body: conclusionText }
+          : section
+      ));
+      
+      setEditingConclusion(false);
+      alert("Conclusão salva com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar conclusão:", error);
+      alert("Erro ao salvar conclusão. Tente novamente.");
+    } finally {
+      setSavingConclusion(false);
+    }
+  };
+
+  const handleResetConclusion = async () => {
+    if (!partnerId) return;
+    if (!confirm("Deseja restaurar o texto padrão da conclusão?")) return;
+    
+    setSavingConclusion(true);
+    try {
+      const { error } = await supabase
+        .from("partners")
+        .update({ custom_conclusion: null })
+        .eq("id", partnerId);
+      
+      if (error) throw error;
+      
+      // Reset to default text
+      const defaultConclusion = "Com base na análise, conclui-se que, no momento da avaliação, os colaboradores não estão expostos a riscos psicossociais relevantes, conforme critérios das NR-01 e NR-17. A empresa deverá acompanhar continuamente os indicadores de clima organizacional e saúde mental.";
+      setSections(prev => prev.map(section => 
+        section.key === "conclusao" 
+          ? { ...section, body: defaultConclusion }
+          : section
+      ));
+      
+      setEditingConclusion(false);
+      alert("Conclusão restaurada para o texto padrão!");
+    } catch (error) {
+      console.error("Erro ao restaurar conclusão:", error);
+      alert("Erro ao restaurar conclusão. Tente novamente.");
+    } finally {
+      setSavingConclusion(false);
+    }
+  };
+
   const fmtPercent = (v?: number | null) => (typeof v === "number" ? `${v.toFixed(1)}%` : "—");
   const formatAddress = (addr: any): string => {
     if (!addr) return "—";
@@ -184,10 +253,19 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         const { data: partnerConfigData } = await supabase
           .from("partners")
-          .select("logo_data_url")
+          .select("logo_data_url, custom_conclusion")
           .eq("id", partnerId)
           .maybeSingle();
         setPartnerLogo(partnerConfigData?.logo_data_url || null);
+        
+        // Load custom conclusion if available
+        if (partnerConfigData?.custom_conclusion) {
+          setSections(prev => prev.map(section => 
+            section.key === "conclusao" 
+              ? { ...section, body: partnerConfigData.custom_conclusion }
+              : section
+          ));
+        }
 
         let tr: TechnicalResponsible | null = null;
         {
@@ -732,15 +810,23 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         {/* Conclusão - Card Moderno */}
         {(!reportConfig?.sections || reportConfig.sections.conclusion !== false) && (
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center border border-violet-200">
-              <div className="w-6 h-6 text-violet-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
-                </svg>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center border border-violet-200">
+                <div className="w-6 h-6 text-violet-600">
+                  <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                  </svg>
+                </div>
               </div>
+              <h2 className="text-2xl font-bold text-slate-900">Conclusão</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">Conclusão</h2>
+            <button
+              onClick={handleEditConclusion}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium no-print"
+            >
+              Editar Conclusão
+            </button>
           </div>
           <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100">
             {getSection("conclusao")?.body}
@@ -769,6 +855,56 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         </div> {/* Fecha report-content */}
       </div>
+
+      {/* Modal de Edição da Conclusão */}
+      {editingConclusion && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 no-print">
+          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-slate-200">
+              <h3 className="text-xl font-bold text-slate-900">Editar Conclusão</h3>
+              <p className="text-sm text-slate-600 mt-1">Personalize o texto da conclusão do relatório</p>
+            </div>
+            
+            <div className="p-6 flex-1 overflow-y-auto">
+              <textarea
+                value={conclusionText}
+                onChange={(e) => setConclusionText(e.target.value)}
+                className="w-full h-64 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                placeholder="Digite a conclusão personalizada..."
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                Este texto substituirá a conclusão padrão em todos os relatórios gerados.
+              </p>
+            </div>
+            
+            <div className="p-6 border-t border-slate-200 flex items-center justify-between gap-4">
+              <button
+                onClick={handleResetConclusion}
+                disabled={savingConclusion}
+                className="px-4 py-2 text-slate-600 hover:text-slate-900 font-medium disabled:opacity-50"
+              >
+                Restaurar Padrão
+              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setEditingConclusion(false)}
+                  disabled={savingConclusion}
+                  className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 font-medium disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveConclusion}
+                  disabled={savingConclusion}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50"
+                >
+                  {savingConclusion ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
