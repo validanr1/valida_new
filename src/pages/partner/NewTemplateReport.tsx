@@ -853,7 +853,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Escopo do Trabalho</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100" dangerouslySetInnerHTML={{ __html: getSection("escopo")?.body || "" }}>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("escopo")?.body || "" }}>
           </div>
         </div>
         )}
@@ -871,7 +871,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Fontes Técnicas – Organizacionais</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100" dangerouslySetInnerHTML={{ __html: getSection("fontesTecnicas")?.body || "" }}>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("fontesTecnicas")?.body || "" }}>
           </div>
         </div>
         )}
@@ -889,7 +889,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Fontes Jurídicas</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100" dangerouslySetInnerHTML={{ __html: getSection("fontesJuridicas")?.body || "" }}>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("fontesJuridicas")?.body || "" }}>
           </div>
         </div>
         )}
@@ -907,7 +907,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Metodologia de Avaliação</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100" dangerouslySetInnerHTML={{ __html: getSection("metodologias")?.body || "" }}>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("metodologias")?.body || "" }}>
           </div>
         </div>
         )}
@@ -925,7 +925,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Identificação dos Riscos Psicossociais</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100" dangerouslySetInnerHTML={{ __html: getSection("identificacaoRiscos")?.body || "" }}>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("identificacaoRiscos")?.body || "" }}>
           </div>
         </div>
         )}
@@ -943,7 +943,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Estratégias de Avaliação</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100" dangerouslySetInnerHTML={{ __html: getSection("estrategias")?.body || "" }}>
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("estrategias")?.body || "" }}>
           </div>
         </div>
         )}
@@ -961,7 +961,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Análise do Resultado</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100">
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
             {getSection("analiseResultado")?.body}
           </div>
         </div>
@@ -988,7 +988,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               Editar Conclusão
             </button>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100">
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
             {getSection("conclusao")?.body}
           </div>
         </div>
@@ -1007,7 +1007,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <h2 className="text-2xl font-bold text-slate-900">Considerações Finais</h2>
           </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 bg-slate-50 rounded-xl p-6 border border-slate-100">
+          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
             {getSection("consideracoes")?.body}
           </div>
         </div>
@@ -1027,7 +1027,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           </div>
 
           {/* Visão Geral - Gráfico de Pizza */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+          <div className="mb-4">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral</h3>
             <div className="flex items-center justify-center">
               <div className="relative w-64 h-64">
@@ -1119,7 +1119,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           </div>
 
           {/* Visão Geral Fatores - Gráfico de Barras Horizontais */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+          <div className="mb-4">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral Fatores</h3>
             <div className="space-y-3">
               {processedCategories.map((category) => {
@@ -1160,7 +1160,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           </div>
 
           {/* Média Fatores - Gráfico de Barras Verticais */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+          <div className="mb-4">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Média Fatores</h3>
             <div className="relative border-b border-l border-slate-300 pb-2 pl-2">
               <div className="flex items-end justify-around gap-2" style={{ height: '240px' }}>
@@ -1199,7 +1199,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <React.Fragment key={category.id}>
                 {/* Container que agrupa questões + legendas para evitar quebra de página */}
                 <div className="avoid-break mb-6" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-                  <div className="mb-4 bg-white rounded-xl p-6 border border-slate-200">
+                  <div className="mb-4">
                     <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de {category.name}</h3>
                     <div className="space-y-2">
                       {categoryQuestions.map((question, idx) => {
@@ -1262,7 +1262,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         </div>
 
         {/* Anexo II - Análise e Inventário dos Riscos Psicossociais */}
-        <div className="report-section mb-8 bg-white rounded-xl p-8 border border-slate-200">
+        <div className="report-section mb-4">
           <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo II – Análise e Inventário dos Riscos Psicossociais</h2>
           
           <div className="mb-6 text-slate-700 leading-relaxed">
@@ -1327,7 +1327,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         </div>
 
         {/* Anexo III - Plano de Ação e Monitoramento */}
-        <div className="report-section print-break mb-8 bg-white rounded-xl p-8 border border-slate-200" style={{ pageBreakBefore: 'always', breakBefore: 'page' }}>
+        <div className="report-section print-break mb-4" style={{ pageBreakBefore: 'always', breakBefore: 'page' }}>
           <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo III – Plano de Ação e Monitoramento</h2>
           
           <div className="mb-6 text-slate-700 leading-relaxed">
@@ -1402,7 +1402,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         </div>
 
         {/* Seção de Assinaturas */}
-        <div className="report-section mt-16 mb-8 bg-white rounded-xl p-8 border border-slate-200">
+        <div className="report-section mt-8 mb-4">
           <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Assinaturas</h2>
           
           <div className="grid md:grid-cols-2 gap-12 mt-12">
