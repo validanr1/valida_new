@@ -74,6 +74,7 @@ const NewTemplateReport = () => {
   const [company, setCompany] = useState<Company | null>(null);
   const [overallAverageScore, setOverallAverageScore] = useState<number | null>(null);
   const [processedCategories, setProcessedCategories] = useState<ProcessedCategory[]>([]);
+  const [overallDistribution, setOverallDistribution] = useState<{ favorable: number; neutral: number; unfavorable: number; total: number }>({ favorable: 0, neutral: 0, unfavorable: 0, total: 0 });
 
   const [templateText, setTemplateText] = useState<string>(defaultTemplate);
   const [renderedText, setRenderedText] = useState<string>("");
@@ -379,6 +380,21 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         const overall = Array.from(categoryScores.values()).flat();
         setOverallAverageScore(overall.length ? overall.reduce((a, b) => a + b, 0) / overall.length : null);
+        
+        // Calculate overall distribution for pie chart
+        const allScores = Array.from(scoresByQuestion.values()).flat();
+        const overallFavorable = allScores.filter((s) => s >= 75).length;
+        const overallNeutral = allScores.filter((s) => s >= 40 && s < 75).length;
+        const overallUnfavorable = allScores.filter((s) => s < 40).length;
+        const overallTotal = allScores.length;
+        
+        setOverallDistribution({
+          favorable: overallFavorable,
+          neutral: overallNeutral,
+          unfavorable: overallUnfavorable,
+          total: overallTotal
+        });
+        
         setProcessedCategories(processed.sort((a, b) => a.name.localeCompare(b.name)));
 
         const { data: apCats } = await supabase.from("action_plan_categories").select("id,name").order("name");
@@ -892,61 +908,84 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral</h3>
             <div className="flex items-center justify-center">
               <div className="relative w-64 h-64">
-                <svg viewBox="0 0 200 200" className="transform -rotate-90">
-                  {/* Favorável - Verde (82.86%) */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#22c55e"
-                    strokeWidth="40"
-                    strokeDasharray={`${82.86 * 5.027} ${100 * 5.027}`}
-                    strokeDashoffset="0"
-                  />
-                  {/* Neutro - Amarelo (10%) */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#fbbf24"
-                    strokeWidth="40"
-                    strokeDasharray={`${10 * 5.027} ${100 * 5.027}`}
-                    strokeDashoffset={`-${82.86 * 5.027}`}
-                  />
-                  {/* Desfavorável - Vermelho (7.14%) */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#ef4444"
-                    strokeWidth="40"
-                    strokeDasharray={`${7.14 * 5.027} ${100 * 5.027}`}
-                    strokeDashoffset={`-${(82.86 + 10) * 5.027}`}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-slate-900">5</div>
-                    <div className="text-sm text-slate-600">(7.14%)</div>
-                  </div>
-                </div>
+                {(() => {
+                  const { favorable, neutral, unfavorable, total } = overallDistribution;
+                  const favorablePercent = total > 0 ? (favorable / total) * 100 : 0;
+                  const neutralPercent = total > 0 ? (neutral / total) * 100 : 0;
+                  const unfavorablePercent = total > 0 ? (unfavorable / total) * 100 : 0;
+                  
+                  return (
+                    <>
+                      <svg viewBox="0 0 200 200" className="transform -rotate-90">
+                        {/* Favorável - Verde */}
+                        {favorablePercent > 0 && (
+                          <circle
+                            cx="100"
+                            cy="100"
+                            r="80"
+                            fill="none"
+                            stroke="#22c55e"
+                            strokeWidth="40"
+                            strokeDasharray={`${favorablePercent * 5.027} ${100 * 5.027}`}
+                            strokeDashoffset="0"
+                          />
+                        )}
+                        {/* Neutro - Amarelo */}
+                        {neutralPercent > 0 && (
+                          <circle
+                            cx="100"
+                            cy="100"
+                            r="80"
+                            fill="none"
+                            stroke="#fbbf24"
+                            strokeWidth="40"
+                            strokeDasharray={`${neutralPercent * 5.027} ${100 * 5.027}`}
+                            strokeDashoffset={`-${favorablePercent * 5.027}`}
+                          />
+                        )}
+                        {/* Desfavorável - Vermelho */}
+                        {unfavorablePercent > 0 && (
+                          <circle
+                            cx="100"
+                            cy="100"
+                            r="80"
+                            fill="none"
+                            stroke="#ef4444"
+                            strokeWidth="40"
+                            strokeDasharray={`${unfavorablePercent * 5.027} ${100 * 5.027}`}
+                            strokeDashoffset={`-${(favorablePercent + neutralPercent) * 5.027}`}
+                          />
+                        )}
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-slate-900">{unfavorable}</div>
+                          <div className="text-sm text-slate-600">({unfavorablePercent.toFixed(2)}%)</div>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
             <div className="flex justify-center gap-6 mt-4">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span className="text-sm text-slate-700">Favorável: 58 (82.86%)</span>
+                <span className="text-sm text-slate-700">
+                  Favorável: {overallDistribution.favorable} ({overallDistribution.total > 0 ? ((overallDistribution.favorable / overallDistribution.total) * 100).toFixed(2) : 0}%)
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-yellow-400 rounded"></div>
-                <span className="text-sm text-slate-700">Neutro: 7 (10%)</span>
+                <span className="text-sm text-slate-700">
+                  Neutro: {overallDistribution.neutral} ({overallDistribution.total > 0 ? ((overallDistribution.neutral / overallDistribution.total) * 100).toFixed(2) : 0}%)
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span className="text-sm text-slate-700">Desfavorável: 5 (7.14%)</span>
+                <span className="text-sm text-slate-700">
+                  Desfavorável: {overallDistribution.unfavorable} ({overallDistribution.total > 0 ? ((overallDistribution.unfavorable / overallDistribution.total) * 100).toFixed(2) : 0}%)
+                </span>
               </div>
             </div>
           </div>
