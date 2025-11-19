@@ -1197,10 +1197,13 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             
             return (
               <React.Fragment key={category.id}>
+                {/* Espaçador para garantir que o título não seja cortado */}
+                <div style={{ height: '60px', pageBreakBefore: 'always', breakBefore: 'page' }} className="print-break"></div>
+                
                 {/* Container que agrupa questões + legendas para evitar quebra de página */}
-                <div className="avoid-break mb-6 print-break" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', pageBreakBefore: 'always', breakBefore: 'page' }}>
-                  <div className="mb-4">
-                    <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de {category.name}</h3>
+                <div className="avoid-break mb-6" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '0' }}>
+                  <div className="mb-4" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
+                    <h3 className="text-lg font-bold text-slate-800 mb-4" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Visão Fatores de {category.name}</h3>
                     <div className="space-y-2">
                       {categoryQuestions.map((question, idx) => {
                         const dist = question.responseDistribution;
