@@ -979,8 +979,8 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <div className="text-3xl font-bold text-slate-900">{total}</div>
-                          <div className="text-sm text-slate-600">Total</div>
+                          <div className="text-3xl font-bold text-slate-900">{favorablePercent.toFixed(1)}%</div>
+                          <div className="text-sm text-slate-600">Média Geral</div>
                         </div>
                       </div>
                     </>
