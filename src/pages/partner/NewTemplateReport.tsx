@@ -1010,6 +1010,22 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
           </div>
 
+          {/* Legendas das Zonas de Risco */}
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+              <h4 className="text-sm font-bold text-red-700 mb-2">🔴 Zona Vermelha (0% a 39,99%)</h4>
+              <p className="text-xs text-red-600">Risco elevado: ação corretiva imediata.</p>
+            </div>
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4">
+              <h4 className="text-sm font-bold text-yellow-700 mb-2">🟡 Zona Amarela (40% a 74,99%)</h4>
+              <p className="text-xs text-yellow-600">Atenção: possível risco psicossocial; revisar práticas.</p>
+            </div>
+            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
+              <h4 className="text-sm font-bold text-green-700 mb-2">🟢 Zona Verde (75% a 100%)</h4>
+              <p className="text-xs text-green-600">Ambiente psicossocial satisfatório; manter boas práticas.</p>
+            </div>
+          </div>
+
           {/* Visão Geral Fatores - Gráfico de Barras Horizontais */}
           <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral Fatores</h3>
