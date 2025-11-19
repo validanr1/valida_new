@@ -1054,8 +1054,8 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           {/* Média Fatores - Gráfico de Barras Verticais */}
           <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Média Fatores</h3>
-            <div className="relative h-64 border-b border-l border-slate-300 pb-2 pl-2">
-              <div className="flex items-end justify-around h-full gap-2">
+            <div className="relative border-b border-l border-slate-300 pb-2 pl-2">
+              <div className="flex items-end justify-around gap-2" style={{ height: '240px' }}>
                 {processedCategories
                   .sort((a, b) => b.averageScore - a.averageScore)
                   .map((category) => {
@@ -1063,15 +1063,15 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                     // Height based on 0-5 scale: value/5 * 100%
                     const heightPercent = (value / 5) * 100;
                     return (
-                      <div key={category.id} className="flex flex-col items-center gap-2 flex-1">
-                        <div className="text-xs font-bold text-slate-700">{value.toFixed(2)}</div>
-                        <div className="w-full flex items-end" style={{ height: '200px' }}>
+                      <div key={category.id} className="flex flex-col items-center gap-1 flex-1">
+                        <div className="text-xs font-bold text-slate-700 h-4">{value.toFixed(2)}</div>
+                        <div className="w-full flex items-end" style={{ height: '180px' }}>
                           <div 
                             className="w-full bg-green-500 rounded-t transition-all"
                             style={{ height: `${heightPercent}%` }}
                           ></div>
                         </div>
-                        <div className="text-xs text-slate-600 text-center leading-tight">{category.name}</div>
+                        <div className="text-xs text-slate-600 text-center leading-tight h-8 flex items-center justify-center">{category.name}</div>
                       </div>
                     );
                   })}
