@@ -1393,6 +1393,45 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           })()}
         </div>
 
+        {/* Seção de Assinaturas */}
+        <div className="report-section mt-16 mb-8 bg-white rounded-xl p-8 border border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Assinaturas</h2>
+          
+          <div className="grid md:grid-cols-2 gap-12 mt-12">
+            {/* Assinatura do Responsável pela Empresa */}
+            <div className="flex flex-col items-center">
+              <div className="w-full border-t-2 border-slate-400 mb-3"></div>
+              <div className="text-center">
+                <p className="font-semibold text-slate-900">{company?.name || 'Empresa'}</p>
+                <p className="text-sm text-slate-600 mt-1">Responsável pela Empresa</p>
+              </div>
+            </div>
+
+            {/* Assinatura do Responsável Técnico Principal */}
+            <div className="flex flex-col items-center">
+              <div className="w-full border-t-2 border-slate-400 mb-3"></div>
+              <div className="text-center">
+                <p className="font-semibold text-slate-900">
+                  {primaryResponsible?.name || 'Responsável Técnico'}
+                </p>
+                {primaryResponsible?.profession && (
+                  <p className="text-sm text-slate-600">{primaryResponsible.profession}</p>
+                )}
+                {primaryResponsible?.council && primaryResponsible?.registration && (
+                  <p className="text-sm text-slate-600">
+                    {primaryResponsible.council} - {primaryResponsible.registration}
+                  </p>
+                )}
+                <p className="text-sm text-slate-600 mt-1">Responsável Técnico</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center text-xs text-slate-500">
+            <p>Data: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+          </div>
+        </div>
+
         </div> {/* Fecha report-content */}
       </div>
 
