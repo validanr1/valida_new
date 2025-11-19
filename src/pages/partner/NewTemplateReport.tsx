@@ -354,9 +354,9 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             order: q.order,
             averageScore: avg,
             responseDistribution: {
-              favorable: total > 0 ? Math.round((favorable / total) * 100) : 0,
-              neutral: total > 0 ? Math.round((neutral / total) * 100) : 0,
-              unfavorable: total > 0 ? Math.round((unfavorable / total) * 100) : 0
+              favorable: total > 0 ? parseFloat(((favorable / total) * 100).toFixed(2)) : 0,
+              neutral: total > 0 ? parseFloat(((neutral / total) * 100).toFixed(2)) : 0,
+              unfavorable: total > 0 ? parseFloat(((unfavorable / total) * 100).toFixed(2)) : 0
             },
             category_id: q.category_id
           });
@@ -383,9 +383,9 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           const total = scores.length;
           
           const responseDistribution = {
-            favorable: total > 0 ? Math.round((favorable / total) * 100) : 0,
-            neutral: total > 0 ? Math.round((neutral / total) * 100) : 0,
-            unfavorable: total > 0 ? Math.round((unfavorable / total) * 100) : 0
+            favorable: total > 0 ? parseFloat(((favorable / total) * 100).toFixed(2)) : 0,
+            neutral: total > 0 ? parseFloat(((neutral / total) * 100).toFixed(2)) : 0,
+            unfavorable: total > 0 ? parseFloat(((unfavorable / total) * 100).toFixed(2)) : 0
           };
           
           processed.push({ 
@@ -984,7 +984,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <div className="text-3xl font-bold text-slate-900">{overallAverage.toFixed(1)}%</div>
+                          <div className="text-3xl font-bold text-slate-900">{overallAverage.toFixed(2)}%</div>
                           <div className="text-sm text-slate-600">Média Geral</div>
                         </div>
                       </div>
@@ -997,19 +997,19 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-green-500 rounded"></div>
                 <span className="text-sm text-slate-700">
-                  Favorável: {overallDistribution.favorable} ({overallDistribution.total > 0 ? ((overallDistribution.favorable / overallDistribution.total) * 100).toFixed(2) : 0}%)
+                  Favorável: {overallDistribution.favorable} ({overallDistribution.total > 0 ? ((overallDistribution.favorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-yellow-400 rounded"></div>
                 <span className="text-sm text-slate-700">
-                  Neutro: {overallDistribution.neutral} ({overallDistribution.total > 0 ? ((overallDistribution.neutral / overallDistribution.total) * 100).toFixed(2) : 0}%)
+                  Neutro: {overallDistribution.neutral} ({overallDistribution.total > 0 ? ((overallDistribution.neutral / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 bg-red-500 rounded"></div>
                 <span className="text-sm text-slate-700">
-                  Desfavorável: {overallDistribution.unfavorable} ({overallDistribution.total > 0 ? ((overallDistribution.unfavorable / overallDistribution.total) * 100).toFixed(2) : 0}%)
+                  Desfavorável: {overallDistribution.unfavorable} ({overallDistribution.total > 0 ? ((overallDistribution.unfavorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
                 </span>
               </div>
             </div>
