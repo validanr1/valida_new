@@ -1229,24 +1229,24 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                 </div>
                 
                 {/* Legendas das Zonas de Risco após cada categoria */}
-                <div className="mb-6 grid grid-cols-3 gap-3">
-                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444' }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
+                <div className="mb-6" style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
+                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444', flex: '1', minWidth: '0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', flexShrink: 0 }}></div>
                       <h4 className="text-xs font-bold" style={{ color: '#dc2626' }}>Zona Vermelha (0% a 39,99%)</h4>
                     </div>
                     <p className="text-xs" style={{ color: '#b91c1c' }}>Risco elevado: ação corretiva imediata.</p>
                   </div>
-                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700' }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#ffd700' }}></div>
+                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700', flex: '1', minWidth: '0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ffd700', flexShrink: 0 }}></div>
                       <h4 className="text-xs font-bold" style={{ color: '#ca8a04' }}>Zona Amarela (40% a 74,99%)</h4>
                     </div>
                     <p className="text-xs" style={{ color: '#a16207' }}>Atenção: possível risco psicossocial; revisar práticas.</p>
                   </div>
-                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e' }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
+                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e', flex: '1', minWidth: '0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', flexShrink: 0 }}></div>
                       <h4 className="text-xs font-bold" style={{ color: '#16a34a' }}>Zona Verde (75% a 100%)</h4>
                     </div>
                     <p className="text-xs" style={{ color: '#15803d' }}>Ambiente psicossocial satisfatório; manter boas práticas.</p>
