@@ -626,16 +626,12 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               {reportConfig?.title || "Relatório de Fatores de Riscos Psicossociais"}
             </h1>
-            <p className="text-lg text-slate-700 mb-6">
+            <p className="text-lg text-slate-700 mb-4">
               {reportConfig?.subtitle || "NR-1, NR-17, Guia de Fatores Psicossociais, HSE-SIT, ISO 45003"}
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-3 text-sm">
-              <span className="inline-block px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>NR-1</span>
-              <span className="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>NR-17</span>
-              <span className="inline-block px-4 py-2 bg-violet-100 text-violet-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>Guia Psicossocial</span>
-              <span className="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>HSE-SIT</span>
-              <span className="inline-block px-4 py-2 bg-rose-100 text-rose-800 rounded-full font-medium text-center" style={{ lineHeight: '1.5' }}>ISO 45003</span>
-            </div>
+            <p className="text-base text-slate-600 font-medium">
+              NR-1 | NR-17 | Guia Psicossocial | HSE-SIT | ISO 45003
+            </p>
           </div>
 
         {/* Sumário Moderno - Agora vem imediatamente após o título */}
