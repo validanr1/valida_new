@@ -527,6 +527,12 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
     
     showSuccess("Gerando PDF... Aguarde.");
     
+    // Ocultar elementos .no-print temporariamente
+    const noPrintElements = document.querySelectorAll('.no-print');
+    noPrintElements.forEach(el => {
+      (el as HTMLElement).style.display = 'none';
+    });
+    
     const opt = {
       margin: [10, 10, 10, 10],
       filename: `relatorio-${company?.name || "empresa"}-${new Date().toISOString().slice(0, 10)}.pdf`,
@@ -554,6 +560,11 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
     } catch (error) {
       console.error(error);
       showError("Falha ao gerar o PDF. Tente novamente.");
+    } finally {
+      // Restaurar elementos .no-print
+      noPrintElements.forEach(el => {
+        (el as HTMLElement).style.display = '';
+      });
     }
   }, [company]);
 
