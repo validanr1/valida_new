@@ -962,7 +962,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                             cy="100"
                             r="80"
                             fill="none"
-                            stroke="#fbbf24"
+                            stroke="#ffd700"
                             strokeWidth="40"
                             strokeDasharray={`${neutralPercent * 5.027} ${100 * 5.027}`}
                             strokeDashoffset={`-${favorablePercent * 5.027}`}
@@ -995,19 +995,19 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
             <div className="flex justify-center gap-6 mt-4">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#22c55e' }}></div>
                 <span className="text-sm text-slate-700">
                   Favorável: {overallDistribution.favorable} ({overallDistribution.total > 0 ? ((overallDistribution.favorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ffd700' }}></div>
                 <span className="text-sm text-slate-700">
                   Neutro: {overallDistribution.neutral} ({overallDistribution.total > 0 ? ((overallDistribution.neutral / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ef4444' }}></div>
                 <span className="text-sm text-slate-700">
                   Desfavorável: {overallDistribution.unfavorable} ({overallDistribution.total > 0 ? ((overallDistribution.unfavorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
                 </span>
@@ -1051,8 +1051,8 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                       )}
                       {dist.neutral > 0 && (
                         <div 
-                          className="bg-yellow-400 flex items-center justify-center text-white text-xs font-medium"
-                          style={{ width: `${dist.neutral}%` }}
+                          className="flex items-center justify-center text-white text-xs font-medium"
+                          style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}
                         >
                           {dist.neutral}%
                         </div>
@@ -1123,7 +1123,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                               <div className="bg-green-500" style={{ width: `${dist.favorable}%` }}></div>
                             )}
                             {dist.neutral > 0 && (
-                              <div className="bg-yellow-400" style={{ width: `${dist.neutral}%` }}></div>
+                              <div style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}></div>
                             )}
                             {dist.unfavorable > 0 && (
                               <div className="bg-red-500" style={{ width: `${dist.unfavorable}%` }}></div>
