@@ -1257,6 +1257,10 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             <p>Este plano tem por objetivo monitorar e reduzir os riscos psicossociais mapeados, integrando ações ao <strong>PGR – Programa de Gerenciamento de Riscos, PCMSO – Programa de Controle Médico de Saúde Ocupacional, AEP – Análise Ergonômica Preliminar.</strong></p>
           </div>
 
+          <div className="mb-6 text-slate-700 leading-relaxed">
+            <p><strong>OBS:</strong> Este plano deverá ser revisado conforme o ciclo de revisão do PGR da empresa, ou sempre que ocorrerem alterações significativas nas condições de trabalho, organização ou identificação de novos riscos, conforme previsto na NR-01.</p>
+          </div>
+
           {/* Tabela de Plano de Ação - Dinâmica baseada nos planos globais do banco */}
           {(() => {
             // Calculate overall average from categories
@@ -1331,10 +1335,6 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               </div>
             );
           })()}
-
-          <div className="text-slate-700 leading-relaxed">
-            <p><strong>OBS:</strong> Este plano deverá ser revisado conforme o ciclo de revisão do PGR da empresa, ou sempre que ocorrerem alterações significativas nas condições de trabalho, organização ou identificação de novos riscos, conforme previsto na NR-01.</p>
-          </div>
         </div>
 
         </div> {/* Fecha report-content */}
