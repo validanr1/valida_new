@@ -1059,12 +1059,13 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                 .sort((a, b) => b.averageScore - a.averageScore)
                 .map((category) => {
                   const value = (category.averageScore / 100) * 5; // Convert 0-100 to 0-5 scale
-                  const height = (category.averageScore / 100) * 100; // Use averageScore directly for height percentage
+                  // Ensure minimum height of 5% for visibility, max 100%
+                  const height = Math.max(5, Math.min(100, (category.averageScore / 100) * 100));
                   return (
                     <div key={category.id} className="flex flex-col items-center gap-2 flex-1 max-w-[100px]">
                       <div className="text-xs font-bold text-slate-700">{value.toFixed(2)}</div>
                       <div 
-                        className="w-full bg-green-500 rounded-t transition-all"
+                        className="w-full bg-green-500 rounded-t transition-all min-h-[12px]"
                         style={{ height: `${height}%` }}
                       ></div>
                       <div className="text-xs text-slate-600 text-center leading-tight">{category.name}</div>
