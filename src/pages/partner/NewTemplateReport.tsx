@@ -1197,59 +1197,62 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             
             return (
               <React.Fragment key={category.id}>
-                <div className="mb-4 bg-white rounded-xl p-6 border border-slate-200">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de {category.name}</h3>
-                  <div className="space-y-2">
-                    {categoryQuestions.map((question, idx) => {
-                      const dist = question.responseDistribution;
-                      return (
-                        <div key={question.id} className="space-y-2 avoid-break">
-                          <div className="text-xs text-slate-600 mb-1">Q{idx + 1} - {question.text}</div>
-                          <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                            {dist.favorable > 0 && (
-                              <div className="bg-green-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.favorable}%` }}>
-                                {dist.favorable >= 15 ? `${dist.favorable}%` : ''}
-                              </div>
-                            )}
-                            {dist.neutral > 0 && (
-                              <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}>
-                                {dist.neutral >= 15 ? `${dist.neutral}%` : ''}
-                              </div>
-                            )}
-                            {dist.unfavorable > 0 && (
-                              <div className="bg-red-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.unfavorable}%` }}>
-                                {dist.unfavorable >= 15 ? `${dist.unfavorable}%` : ''}
-                              </div>
-                            )}
+                {/* Container que agrupa questões + legendas para evitar quebra de página */}
+                <div className="avoid-break mb-6" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+                  <div className="mb-4 bg-white rounded-xl p-6 border border-slate-200">
+                    <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de {category.name}</h3>
+                    <div className="space-y-2">
+                      {categoryQuestions.map((question, idx) => {
+                        const dist = question.responseDistribution;
+                        return (
+                          <div key={question.id} className="space-y-2">
+                            <div className="text-xs text-slate-600 mb-1">Q{idx + 1} - {question.text}</div>
+                            <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                              {dist.favorable > 0 && (
+                                <div className="bg-green-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.favorable}%` }}>
+                                  {dist.favorable >= 15 ? `${dist.favorable}%` : ''}
+                                </div>
+                              )}
+                              {dist.neutral > 0 && (
+                                <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}>
+                                  {dist.neutral >= 15 ? `${dist.neutral}%` : ''}
+                                </div>
+                              )}
+                              {dist.unfavorable > 0 && (
+                                <div className="bg-red-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.unfavorable}%` }}>
+                                  {dist.unfavorable >= 15 ? `${dist.unfavorable}%` : ''}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                
-                {/* Legendas das Zonas de Risco após cada categoria */}
-                <div className="mb-6" style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
-                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444', flex: '1', minWidth: '0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', flexShrink: 0 }}></div>
-                      <h4 className="text-xs font-bold" style={{ color: '#dc2626' }}>Zona Vermelha (0% a 39,99%)</h4>
+                        );
+                      })}
                     </div>
-                    <p className="text-xs" style={{ color: '#b91c1c' }}>Risco elevado: ação corretiva imediata.</p>
                   </div>
-                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700', flex: '1', minWidth: '0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ffd700', flexShrink: 0 }}></div>
-                      <h4 className="text-xs font-bold" style={{ color: '#ca8a04' }}>Zona Amarela (40% a 74,99%)</h4>
+                  
+                  {/* Legendas das Zonas de Risco após cada categoria */}
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
+                    <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444', flex: '1', minWidth: '0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', flexShrink: 0 }}></div>
+                        <h4 className="text-xs font-bold" style={{ color: '#dc2626' }}>Zona Vermelha (0% a 39,99%)</h4>
+                      </div>
+                      <p className="text-xs" style={{ color: '#b91c1c' }}>Risco elevado: ação corretiva imediata.</p>
                     </div>
-                    <p className="text-xs" style={{ color: '#a16207' }}>Atenção: possível risco psicossocial; revisar práticas.</p>
-                  </div>
-                  <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e', flex: '1', minWidth: '0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', flexShrink: 0 }}></div>
-                      <h4 className="text-xs font-bold" style={{ color: '#16a34a' }}>Zona Verde (75% a 100%)</h4>
+                    <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700', flex: '1', minWidth: '0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ffd700', flexShrink: 0 }}></div>
+                        <h4 className="text-xs font-bold" style={{ color: '#ca8a04' }}>Zona Amarela (40% a 74,99%)</h4>
+                      </div>
+                      <p className="text-xs" style={{ color: '#a16207' }}>Atenção: possível risco psicossocial; revisar práticas.</p>
                     </div>
-                    <p className="text-xs" style={{ color: '#15803d' }}>Ambiente psicossocial satisfatório; manter boas práticas.</p>
+                    <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e', flex: '1', minWidth: '0' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', flexShrink: 0 }}></div>
+                        <h4 className="text-xs font-bold" style={{ color: '#16a34a' }}>Zona Verde (75% a 100%)</h4>
+                      </div>
+                      <p className="text-xs" style={{ color: '#15803d' }}>Ambiente psicossocial satisfatório; manter boas práticas.</p>
+                    </div>
                   </div>
                 </div>
               </React.Fragment>
