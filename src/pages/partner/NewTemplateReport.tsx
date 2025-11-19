@@ -524,12 +524,29 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
   const printToPdf = useCallback(async () => {
     const element = document.getElementById("report-content");
     if (!element) return;
+    
+    showSuccess("Gerando PDF... Aguarde.");
+    
     const opt = {
-      margin: 0.5,
+      margin: [10, 10, 10, 10],
       filename: `relatorio-${company?.name || "empresa"}-${new Date().toISOString().slice(0, 10)}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      },
+      jsPDF: { 
+        unit: "mm", 
+        format: "a4", 
+        orientation: "portrait" 
+      },
+      pagebreak: { 
+        mode: ['avoid-all', 'css', 'legacy'],
+        before: '.print-break',
+        avoid: '.avoid-break'
+      }
     };
     try {
       await html2pdf().set(opt).from(element).save();
@@ -605,7 +622,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           )}
 
           {/* Título Principal Moderno - Usando configurações do parceiro */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 text-center">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 text-center" style={{ pageBreakAfter: 'always', breakAfter: 'page' }}>
             <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-4">
               {reportConfig?.title || "Relatório de Fatores de Riscos Psicossociais"}
             </h1>
