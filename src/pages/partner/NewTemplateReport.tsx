@@ -37,6 +37,7 @@ interface ProcessedCategory {
   description?: string;
   averageScore: number;
   questions: ProcessedQuestion[];
+  responseDistribution?: { favorable: number; neutral: number; unfavorable: number };
 }
 
 // DB Action Plans
@@ -353,7 +354,27 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           const cat = categoriesMap.get(categoryId);
           if (!cat) return;
           const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-          processed.push({ id: categoryId, name: cat.name, description: cat.description, averageScore: avg, questions: [] });
+          
+          // Calculate distribution for this category
+          const favorable = scores.filter((s) => s >= 75).length;
+          const neutral = scores.filter((s) => s >= 40 && s < 75).length;
+          const unfavorable = scores.filter((s) => s < 40).length;
+          const total = scores.length;
+          
+          const responseDistribution = {
+            favorable: total > 0 ? Math.round((favorable / total) * 100) : 0,
+            neutral: total > 0 ? Math.round((neutral / total) * 100) : 0,
+            unfavorable: total > 0 ? Math.round((unfavorable / total) * 100) : 0
+          };
+          
+          processed.push({ 
+            id: categoryId, 
+            name: cat.name, 
+            description: cat.description, 
+            averageScore: avg, 
+            questions: [],
+            responseDistribution
+          });
         });
 
         const overall = Array.from(categoryScores.values()).flat();
@@ -934,44 +955,40 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral Fatores</h3>
             <div className="space-y-3">
-              {[
-                { name: 'Demandas', favorable: 83, neutral: 3, unfavorable: 14 },
-                { name: 'Controle', favorable: 100, neutral: 0, unfavorable: 0 },
-                { name: 'Relacionamentos', favorable: 92, neutral: 0, unfavorable: 8 },
-                { name: 'Suporte', favorable: 83, neutral: 0, unfavorable: 17 },
-                { name: 'Mudanças', favorable: 67, neutral: 33, unfavorable: 0 },
-                { name: 'Papel', favorable: 100, neutral: 0, unfavorable: 0 }
-              ].map((factor, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="text-sm font-medium text-slate-700">{factor.name}</div>
-                  <div className="flex h-8 rounded overflow-hidden border border-slate-200">
-                    {factor.favorable > 0 && (
-                      <div 
-                        className="bg-green-500 flex items-center justify-center text-white text-xs font-medium"
-                        style={{ width: `${factor.favorable}%` }}
-                      >
-                        {factor.favorable}%
-                      </div>
-                    )}
-                    {factor.neutral > 0 && (
-                      <div 
-                        className="bg-yellow-400 flex items-center justify-center text-white text-xs font-medium"
-                        style={{ width: `${factor.neutral}%` }}
-                      >
-                        {factor.neutral}%
-                      </div>
-                    )}
-                    {factor.unfavorable > 0 && (
-                      <div 
-                        className="bg-red-500 flex items-center justify-center text-white text-xs font-medium"
-                        style={{ width: `${factor.unfavorable}%` }}
-                      >
-                        {factor.unfavorable}%
-                      </div>
-                    )}
+              {processedCategories.map((category) => {
+                const dist = category.responseDistribution || { favorable: 0, neutral: 0, unfavorable: 0 };
+                return (
+                  <div key={category.id} className="space-y-1">
+                    <div className="text-sm font-medium text-slate-700">{category.name}</div>
+                    <div className="flex h-8 rounded overflow-hidden border border-slate-200">
+                      {dist.favorable > 0 && (
+                        <div 
+                          className="bg-green-500 flex items-center justify-center text-white text-xs font-medium"
+                          style={{ width: `${dist.favorable}%` }}
+                        >
+                          {dist.favorable}%
+                        </div>
+                      )}
+                      {dist.neutral > 0 && (
+                        <div 
+                          className="bg-yellow-400 flex items-center justify-center text-white text-xs font-medium"
+                          style={{ width: `${dist.neutral}%` }}
+                        >
+                          {dist.neutral}%
+                        </div>
+                      )}
+                      {dist.unfavorable > 0 && (
+                        <div 
+                          className="bg-red-500 flex items-center justify-center text-white text-xs font-medium"
+                          style={{ width: `${dist.unfavorable}%` }}
+                        >
+                          {dist.unfavorable}%
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -979,26 +996,22 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Média Fatores</h3>
             <div className="flex items-end justify-around h-64 border-b border-l border-slate-300 pb-2 pl-2">
-              {[
-                { name: 'Demandas', value: 4.31 },
-                { name: 'Relacionamentos', value: 4.08 },
-                { name: 'Papel', value: 3.83 },
-                { name: 'Suporte', value: 3.67 },
-                { name: 'Mudanças', value: 3.67 },
-                { name: 'Controle', value: 3.33 }
-              ].map((factor, idx) => {
-                const height = (factor.value / 5) * 100;
-                return (
-                  <div key={idx} className="flex flex-col items-center gap-2 flex-1 max-w-[100px]">
-                    <div className="text-xs font-bold text-slate-700">{factor.value}</div>
-                    <div 
-                      className="w-full bg-green-500 rounded-t transition-all"
-                      style={{ height: `${height}%` }}
-                    ></div>
-                    <div className="text-xs text-slate-600 text-center leading-tight">{factor.name}</div>
-                  </div>
-                );
-              })}
+              {processedCategories
+                .sort((a, b) => b.averageScore - a.averageScore)
+                .map((category) => {
+                  const value = (category.averageScore / 100) * 5; // Convert 0-100 to 0-5 scale
+                  const height = (value / 5) * 100;
+                  return (
+                    <div key={category.id} className="flex flex-col items-center gap-2 flex-1 max-w-[100px]">
+                      <div className="text-xs font-bold text-slate-700">{value.toFixed(2)}</div>
+                      <div 
+                        className="w-full bg-green-500 rounded-t transition-all"
+                        style={{ height: `${height}%` }}
+                      ></div>
+                      <div className="text-xs text-slate-600 text-center leading-tight">{category.name}</div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
 
