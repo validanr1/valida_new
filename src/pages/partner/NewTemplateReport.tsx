@@ -1054,24 +1054,28 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           {/* Média Fatores - Gráfico de Barras Verticais */}
           <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Média Fatores</h3>
-            <div className="flex items-end justify-around h-64 border-b border-l border-slate-300 pb-2 pl-2">
-              {processedCategories
-                .sort((a, b) => b.averageScore - a.averageScore)
-                .map((category) => {
-                  const value = (category.averageScore / 100) * 5; // Convert 0-100 to 0-5 scale
-                  // Height based on 0-5 scale: value/5 * 100%
-                  const height = (value / 5) * 100;
-                  return (
-                    <div key={category.id} className="flex flex-col items-center gap-2 flex-1 max-w-[100px]">
-                      <div className="text-xs font-bold text-slate-700">{value.toFixed(2)}</div>
-                      <div 
-                        className="w-full bg-green-500 rounded-t transition-all"
-                        style={{ height: `${height}%` }}
-                      ></div>
-                      <div className="text-xs text-slate-600 text-center leading-tight">{category.name}</div>
-                    </div>
-                  );
-                })}
+            <div className="relative h-64 border-b border-l border-slate-300 pb-2 pl-2">
+              <div className="flex items-end justify-around h-full gap-2">
+                {processedCategories
+                  .sort((a, b) => b.averageScore - a.averageScore)
+                  .map((category) => {
+                    const value = (category.averageScore / 100) * 5; // Convert 0-100 to 0-5 scale
+                    // Height based on 0-5 scale: value/5 * 100%
+                    const heightPercent = (value / 5) * 100;
+                    return (
+                      <div key={category.id} className="flex flex-col items-center gap-2 flex-1">
+                        <div className="text-xs font-bold text-slate-700">{value.toFixed(2)}</div>
+                        <div className="w-full flex items-end" style={{ height: '200px' }}>
+                          <div 
+                            className="w-full bg-green-500 rounded-t transition-all"
+                            style={{ height: `${heightPercent}%` }}
+                          ></div>
+                        </div>
+                        <div className="text-xs text-slate-600 text-center leading-tight">{category.name}</div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
 
