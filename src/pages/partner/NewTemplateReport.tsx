@@ -75,6 +75,7 @@ const NewTemplateReport = () => {
   const [overallAverageScore, setOverallAverageScore] = useState<number | null>(null);
   const [processedCategories, setProcessedCategories] = useState<ProcessedCategory[]>([]);
   const [overallDistribution, setOverallDistribution] = useState<{ favorable: number; neutral: number; unfavorable: number; total: number }>({ favorable: 0, neutral: 0, unfavorable: 0, total: 0 });
+  const [processedQuestions, setProcessedQuestions] = useState<ProcessedQuestion[]>([]);
 
   const [templateText, setTemplateText] = useState<string>(defaultTemplate);
   const [renderedText, setRenderedText] = useState<string>("");
@@ -335,6 +336,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         const processed: ProcessedCategory[] = [];
         const categoryScores = new Map<string, number[]>();
+        const questionsProcessed: ProcessedQuestion[] = [];
 
         Array.from(scoresByQuestion.entries()).forEach(([questionId, scores]) => {
           const q = questionsMap.get(questionId);
@@ -343,6 +345,22 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           const favorable = scores.filter((s) => s >= 75).length;
           const neutral = scores.filter((s) => s >= 40 && s < 75).length;
           const unfavorable = scores.filter((s) => s < 40).length;
+          const total = scores.length;
+          
+          // Store processed question with distribution
+          questionsProcessed.push({
+            id: questionId,
+            text: q.text,
+            order: q.order,
+            averageScore: avg,
+            responseDistribution: {
+              favorable: total > 0 ? Math.round((favorable / total) * 100) : 0,
+              neutral: total > 0 ? Math.round((neutral / total) * 100) : 0,
+              unfavorable: total > 0 ? Math.round((unfavorable / total) * 100) : 0
+            },
+            category_id: q.category_id
+          });
+          
           const categoryId = q.category_id;
           if (categoryId) {
             const catArr = categoryScores.get(categoryId) || [];
@@ -350,6 +368,8 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             categoryScores.set(categoryId, catArr);
           }
         });
+        
+        setProcessedQuestions(questionsProcessed);
 
         categoryScores.forEach((scores, categoryId) => {
           const cat = categoriesMap.get(categoryId);
@@ -1054,167 +1074,42 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
           </div>
 
-          {/* Visão Fatores de Demandas */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Demandas</h3>
-            <div className="space-y-2">
-              {[
-                { q: 'Q1', text: 'Diferentes setores/áreas de trabalho', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q2', text: 'Tenho prazo suficiente de tempo', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q3', text: 'Preciso trabalhar com muita intensidade', favorable: 0, neutral: 50, unfavorable: 50 },
-                { q: 'Q4', text: 'Preciso deixar meu trabalho inacabado', favorable: 0, neutral: 50, unfavorable: 50 },
-                { q: 'Q5', text: 'Não consigo fazer pausas suficientes', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q6', text: 'Tenho pressão de tempo para trabalhar', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q7', text: 'Preciso trabalhar muito rápido', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q8', text: 'Enfrento prazos irrealistas', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q9', text: 'Meu horário de trabalho pode ser flexível', favorable: 0, neutral: 50, unfavorable: 50 }
-              ].map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
-                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                    {item.favorable > 0 && (
-                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
-                    )}
-                    {item.neutral > 0 && (
-                      <div className="bg-yellow-400" style={{ width: `${item.neutral}%` }}></div>
-                    )}
-                    {item.unfavorable > 0 && (
-                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
-                    )}
-                  </div>
+          {/* Render question sections dynamically by category */}
+          {processedCategories.map((category) => {
+            const categoryQuestions = processedQuestions
+              .filter(q => q.category_id === category.id)
+              .sort((a, b) => a.order - b.order);
+            
+            if (categoryQuestions.length === 0) return null;
+            
+            return (
+              <div key={category.id} className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de {category.name}</h3>
+                <div className="space-y-2">
+                  {categoryQuestions.map((question, idx) => {
+                    const dist = question.responseDistribution;
+                    return (
+                      <div key={question.id} className="space-y-1">
+                        <div className="text-xs text-slate-600">Q{idx + 1} - {question.text}</div>
+                        <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                          {dist.favorable > 0 && (
+                            <div className="bg-green-500" style={{ width: `${dist.favorable}%` }}></div>
+                          )}
+                          {dist.neutral > 0 && (
+                            <div className="bg-yellow-400" style={{ width: `${dist.neutral}%` }}></div>
+                          )}
+                          {dist.unfavorable > 0 && (
+                            <div className="bg-red-500" style={{ width: `${dist.unfavorable}%` }}></div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
+            );
+          })}
 
-          {/* Visão Fatores de Papel */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Papel</h3>
-            <div className="space-y-2">
-              {[
-                { q: 'Q10', text: 'Eu entendo claramente o que é esperado', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q11', text: 'Sei como realizar meu trabalho', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q12', text: 'Sei claramente quais são minhas funções', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q13', text: 'Compreendo como o meu trabalho se encaixa', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q14', text: 'Compreendo os objetivos e metas do trabalho', favorable: 100, neutral: 0, unfavorable: 0 }
-              ].map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
-                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                    <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Visão Fatores de Controle */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Controle</h3>
-            <div className="space-y-2">
-              {[
-                { q: 'Q15', text: 'Posso decidir quando fazer uma pausa', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q16', text: 'Tenho voz para decidir a velocidade', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q17', text: 'Tenho autonomia para decidir como faço', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q18', text: 'Tenho autonomia para decidir o que faço', favorable: 0, neutral: 0, unfavorable: 100 },
-                { q: 'Q19', text: 'Tenho alguma influência sobre a forma', favorable: 0, neutral: 0, unfavorable: 100 }
-              ].map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
-                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                    {item.favorable > 0 && (
-                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
-                    )}
-                    {item.unfavorable > 0 && (
-                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Visão Fatores de Suporte */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Suporte</h3>
-            <div className="space-y-2">
-              {[
-                { q: 'Q20', text: 'Se o trabalho ficar difícil, meus colegas', favorable: 0, neutral: 0, unfavorable: 100 },
-                { q: 'Q21', text: 'Recebo feedback consistente sobre', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q22', text: 'Posso contar com meu supervisor', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q23', text: 'Recebo o apoio de que preciso dos', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q24', text: 'Posso conversar com meu supervisor', favorable: 0, neutral: 50, unfavorable: 50 },
-                { q: 'Q25', text: 'Recebo apoio emocional adequado', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q26', text: 'Meu supervisor dirige me incentiva', favorable: 100, neutral: 0, unfavorable: 0 }
-              ].map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
-                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                    {item.favorable > 0 && (
-                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
-                    )}
-                    {item.neutral > 0 && (
-                      <div className="bg-yellow-400" style={{ width: `${item.neutral}%` }}></div>
-                    )}
-                    {item.unfavorable > 0 && (
-                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Visão Fatores de Relacionamentos */}
-          <div className="mb-8 bg-white rounded-xl p-6 border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Relacionamentos</h3>
-            <div className="space-y-2">
-              {[
-                { q: 'Q27', text: 'Sou vítima de assédio pessoal, por exemplo', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q28', text: 'Há atrito ou desenvolvimentos entre', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q29', text: 'Sou vítima de bullying no trabalho', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q30', text: 'Respeito e respeito que mereço dos', favorable: 0, neutral: 0, unfavorable: 100 },
-                { q: 'Q31', text: 'Meus colegas estão dispostos a ouvir', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q32', text: 'Os relacionamentos no trabalho estão', favorable: 100, neutral: 0, unfavorable: 0 }
-              ].map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
-                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                    {item.favorable > 0 && (
-                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
-                    )}
-                    {item.unfavorable > 0 && (
-                      <div className="bg-red-500" style={{ width: `${item.unfavorable}%` }}></div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Visão Fatores de Mudanças */}
-          <div className="bg-white rounded-xl p-6 border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Fatores de Mudanças</h3>
-            <div className="space-y-2">
-              {[
-                { q: 'Q33', text: 'Tenho oportunidades suficientes para', favorable: 100, neutral: 0, unfavorable: 0 },
-                { q: 'Q34', text: 'Os funcionários são sempre consultados', favorable: 0, neutral: 100, unfavorable: 0 },
-                { q: 'Q35', text: 'Quando há mudanças no trabalho', favorable: 100, neutral: 0, unfavorable: 0 }
-              ].map((item, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="text-xs text-slate-600">{item.q} - {item.text}</div>
-                  <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                    {item.favorable > 0 && (
-                      <div className="bg-green-500" style={{ width: `${item.favorable}%` }}></div>
-                    )}
-                    {item.neutral > 0 && (
-                      <div className="bg-yellow-400" style={{ width: `${item.neutral}%` }}></div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
         </div> {/* Fecha report-content */}
