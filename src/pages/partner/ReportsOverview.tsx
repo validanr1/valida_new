@@ -7,7 +7,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/integrations/supabase/SupabaseProvider';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { showError, showSuccess } from '@/utils/toast';
-import html2pdf from 'html2pdf.js';
 
 import ReportLegend from '@/components/reports/ReportLegend';
 import OverallScoreCard from '@/components/reports/OverallScoreCard';
@@ -433,107 +432,6 @@ const ReportsOverview = () => {
     }
   };
 
-  const handleGeneratePdf = async () => {
-    try {
-      const node = document.getElementById('report-content');
-      if (!node) {
-        showError('Conteúdo do relatório não encontrado.');
-        return;
-      }
-
-      showSuccess('Gerando PDF... Aguarde.');
-
-      // Criar capa do relatório
-      const coverPage = document.createElement('div');
-      coverPage.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 297mm;
-        padding: 20px;
-        text-align: center;
-        background: #ffffff;
-        box-sizing: border-box;
-        page-break-after: always;
-        break-after: page;
-      `;
-
-      // Logo do parceiro apenas
-      if (partnerLogo) {
-        const logoImg = document.createElement('img');
-        logoImg.src = partnerLogo;
-        logoImg.style.cssText = 'max-width: 400px; max-height: 200px; margin-bottom: 80px; object-fit: contain;';
-        coverPage.appendChild(logoImg);
-      }
-
-      // Título
-      const title = document.createElement('h1');
-      title.textContent = 'Relatório de Avaliação';
-      title.style.cssText = 'font-size: 48px; font-weight: bold; margin-bottom: 20px; color: #1B365D;';
-      coverPage.appendChild(title);
-
-      // Subtítulo com nome da empresa
-      const subtitle = document.createElement('h2');
-      subtitle.textContent = company?.name || 'Empresa';
-      subtitle.style.cssText = 'font-size: 32px; font-weight: 300; margin-bottom: 80px; color: #2C5282;';
-      coverPage.appendChild(subtitle);
-
-      // Data
-      const dateText = document.createElement('p');
-      const today = new Date();
-      dateText.textContent = `Gerado em ${today.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`;
-      dateText.style.cssText = 'font-size: 18px; color: #64748b;';
-      coverPage.appendChild(dateText);
-
-      // Clone o elemento do conteúdo para não afetar a página
-      const clone = node.cloneNode(true) as HTMLElement;
-      
-      // Remove elementos que não devem aparecer no PDF
-      clone.querySelectorAll('.no-print').forEach(el => el.remove());
-      
-      // Adiciona espaçamento e garante que comece em nova página
-      clone.style.cssText = 'page-break-before: always; padding-top: 20px;';
-
-      // Container final com capa + conteúdo
-      const finalContainer = document.createElement('div');
-      finalContainer.appendChild(coverPage);
-      finalContainer.appendChild(clone);
-
-      // Configurações do html2pdf
-      const opt = {
-        margin: [10, 10, 10, 10] as [number, number, number, number],
-        filename: `Relatorio_${company?.name || 'Empresa'}_${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: { 
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
-        },
-        jsPDF: { 
-          unit: 'mm', 
-          format: 'a4', 
-          orientation: 'portrait' as const
-        },
-        pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy'],
-          before: '.print-break',
-          avoid: '.avoid-break'
-        }
-      };
-
-      // Gera e faz download do PDF
-      await html2pdf().set(opt).from(finalContainer).save();
-      
-      showSuccess('PDF gerado com sucesso!');
-    } catch (e) {
-      console.error('Falha ao gerar PDF:', e);
-      showError('Falha ao gerar o PDF. Tente novamente.');
-    }
-  };
-
   
 
   const handleDeleteSavedReport = async (id: string) => {
@@ -658,7 +556,6 @@ const ReportsOverview = () => {
           <div className="no-print">
             <ReportActions
               onSave={handleSaveReport}
-              onGeneratePdf={handleGeneratePdf}
               onOpenNewTemplate={() => navigate('/partner/reports/versao-completa')}
               loading={loading}
             />
