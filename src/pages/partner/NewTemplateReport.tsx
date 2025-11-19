@@ -1125,8 +1125,8 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               {processedCategories.map((category) => {
                 const dist = category.responseDistribution || { favorable: 0, neutral: 0, unfavorable: 0 };
                 return (
-                  <div key={category.id} className="space-y-1">
-                    <div className="text-sm font-medium text-slate-700">{category.name}</div>
+                  <div key={category.id} className="space-y-2 avoid-break">
+                    <div className="text-sm font-medium text-slate-700 mb-2">{category.name}</div>
                     <div className="flex h-8 rounded overflow-hidden border border-slate-200">
                       {dist.favorable > 0 && (
                         <div 
@@ -1203,17 +1203,23 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                     {categoryQuestions.map((question, idx) => {
                       const dist = question.responseDistribution;
                       return (
-                        <div key={question.id} className="space-y-1">
-                          <div className="text-xs text-slate-600">Q{idx + 1} - {question.text}</div>
+                        <div key={question.id} className="space-y-2 avoid-break">
+                          <div className="text-xs text-slate-600 mb-1">Q{idx + 1} - {question.text}</div>
                           <div className="flex h-6 rounded overflow-hidden border border-slate-200">
                             {dist.favorable > 0 && (
-                              <div className="bg-green-500" style={{ width: `${dist.favorable}%` }}></div>
+                              <div className="bg-green-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.favorable}%` }}>
+                                {dist.favorable >= 15 ? `${dist.favorable}%` : ''}
+                              </div>
                             )}
                             {dist.neutral > 0 && (
-                              <div style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}></div>
+                              <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}>
+                                {dist.neutral >= 15 ? `${dist.neutral}%` : ''}
+                              </div>
                             )}
                             {dist.unfavorable > 0 && (
-                              <div className="bg-red-500" style={{ width: `${dist.unfavorable}%` }}></div>
+                              <div className="bg-red-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.unfavorable}%` }}>
+                                {dist.unfavorable >= 15 ? `${dist.unfavorable}%` : ''}
+                              </div>
                             )}
                           </div>
                         </div>
