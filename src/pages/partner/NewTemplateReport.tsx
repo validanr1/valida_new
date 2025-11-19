@@ -623,10 +623,10 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
           {/* Título Principal Moderno - Usando configurações do parceiro */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200 shadow-lg p-8 text-center" style={{ pageBreakAfter: 'always', breakAfter: 'page' }}>
-            <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-4">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               {reportConfig?.title || "Relatório de Fatores de Riscos Psicossociais"}
             </h1>
-            <p className="text-lg text-slate-600 mb-4">
+            <p className="text-lg text-slate-700 mb-4">
               {reportConfig?.subtitle || "NR-1, NR-17, Guia de Fatores Psicossociais, HSE-SIT, ISO 45003"}
             </p>
             <div className="flex flex-wrap justify-center gap-3 text-sm">
