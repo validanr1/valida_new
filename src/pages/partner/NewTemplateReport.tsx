@@ -9,6 +9,29 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { showError, showSuccess } from "@/utils/toast";
 import html2pdf from 'html2pdf.js';
 
+// Inject print styles
+if (typeof document !== 'undefined') {
+  const styleId = 'report-print-styles';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      @media print {
+        .no-print { display: none !important; }
+        body { margin: 0 !important; padding: 0 !important; }
+        .report-content { margin-top: 0 !important; padding-top: 20px !important; }
+        .fixed, .sticky { position: relative !important; }
+        .shadow-lg, .shadow-xl, .shadow-md { box-shadow: none !important; }
+        .report-section { page-break-inside: avoid; }
+        h1, h2, h3 { page-break-after: avoid; }
+        table { page-break-inside: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
 // Dados básicos já usados no Overview
 type Company = { id: string; name: string; partner_id: string; cnpj?: string | null; cnae?: string | null; address?: string | null };
 type TechnicalResponsible = {
@@ -498,7 +521,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Moderno */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 no-print">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
