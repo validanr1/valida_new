@@ -76,6 +76,7 @@ const NewTemplateReport = () => {
   const [processedCategories, setProcessedCategories] = useState<ProcessedCategory[]>([]);
   const [overallDistribution, setOverallDistribution] = useState<{ favorable: number; neutral: number; unfavorable: number; total: number }>({ favorable: 0, neutral: 0, unfavorable: 0, total: 0 });
   const [processedQuestions, setProcessedQuestions] = useState<ProcessedQuestion[]>([]);
+  const [globalActionPlans, setGlobalActionPlans] = useState<any[]>([]);
 
   const [templateText, setTemplateText] = useState<string>(defaultTemplate);
   const [renderedText, setRenderedText] = useState<string>("");
@@ -416,6 +417,15 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         });
         
         setProcessedCategories(processed.sort((a, b) => a.name.localeCompare(b.name)));
+
+        // Load global action plans for Anexo III
+        const { data: globalPlans } = await supabase
+          .from("action_plans")
+          .select("id,category_id,title,description,score_min,score_max")
+          .eq("is_global", true)
+          .eq("show_in_report", true)
+          .order("category_id");
+        setGlobalActionPlans(globalPlans || []);
 
         const { data: apCats } = await supabase.from("action_plan_categories").select("id,name").order("name");
         setApCategories(apCats || []);
@@ -1247,86 +1257,77 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             <p>Este plano tem por objetivo monitorar e reduzir os riscos psicossociais mapeados, integrando ações ao <strong>PGR – Programa de Gerenciamento de Riscos, PCMSO – Programa de Controle Médico de Saúde Ocupacional, AEP – Análise Ergonômica Preliminar.</strong></p>
           </div>
 
-          {/* Tabela de Plano de Ação - Condicional baseado na média geral */}
+          {/* Tabela de Plano de Ação - Dinâmica baseada nos planos globais do banco */}
           {(() => {
             // Calculate overall average from categories
             const overallAverage = processedCategories.length > 0
               ? processedCategories.reduce((sum, cat) => sum + cat.averageScore, 0) / processedCategories.length
               : 0;
             
-            // Show global action plan if average is below 75
+            // Show global action plans if average is below 75
             const showGlobalActionPlan = overallAverage < 75;
+            
+            // Group plans by category and filter by score range
+            const plansToShow = showGlobalActionPlan 
+              ? processedCategories.flatMap(category => {
+                  const categoryPlans = globalActionPlans.filter(plan => 
+                    plan.category_id === category.id &&
+                    category.averageScore >= (plan.score_min || 0) &&
+                    category.averageScore <= (plan.score_max || 100)
+                  );
+                  return categoryPlans.map(plan => ({
+                    ...plan,
+                    categoryName: category.name,
+                    categoryScore: category.averageScore
+                  }));
+                })
+              : [];
             
             return (
               <div className="overflow-x-auto mb-6">
-                {showGlobalActionPlan && (
+                {showGlobalActionPlan && plansToShow.length > 0 && (
                   <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
                     <p className="text-sm text-yellow-800">
                       <strong>Atenção:</strong> A média geral da empresa está abaixo de 75% ({overallAverage.toFixed(2)}%). 
-                      Os planos de ação globais abaixo são recomendações padrão. Recomenda-se que o parceiro desenvolva planos de ação específicos para sua realidade.
+                      Os planos de ação abaixo são recomendações baseadas nas categorias com pontuação mais baixa.
                     </p>
                   </div>
                 )}
                 
-                <table className="w-full border-collapse border border-slate-300">
-                  <thead>
-                    <tr className="bg-slate-100">
-                      <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Ação Recomendável</th>
-                      <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Responsável</th>
-                      <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Prazo</th>
-                      <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Indicador de Sucesso</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {showGlobalActionPlan ? (
-                      <>
-                        <tr>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Redefinir metas e prazos excessivos</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Gestor de setor</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">60 dias</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Redução de queixas e turnover</td>
-                        </tr>
-                        <tr>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Criar canais de escuta ativa</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">RH</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">30 dias</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Número de sugestões recebidas/mês</td>
-                        </tr>
-                        <tr>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Realizar treinamentos sobre saúde mental</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">SESMT + Psicólogo</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Trimestral</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Frequência e avaliação de satisfação</td>
-                        </tr>
-                        <tr>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Incluir saúde mental nas consultas clínicas</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Médico do trabalho</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Imediato</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Registros de acolhimento e encaminhamentos</td>
-                        </tr>
-                        <tr>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Monitorar indicadores de absenteísmo</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">RH + SESMT</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Mensal</td>
-                          <td className="border border-slate-300 p-3 text-sm text-slate-700">Relatórios periódicos com tendências</td>
-                        </tr>
-                      </>
-                    ) : (
-                      <tr>
-                        <td colSpan={4} className="border border-slate-300 p-6 text-center text-sm text-slate-600">
-                          <div className="flex flex-col items-center gap-2">
-                            <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p className="font-semibold text-slate-700">Média geral satisfatória ({overallAverage.toFixed(2)}%)</p>
-                            <p>A empresa apresenta condições psicossociais favoráveis. Não há necessidade de planos de ação corretivos no momento.</p>
-                            <p className="text-xs mt-2">Recomenda-se manter o monitoramento contínuo e as boas práticas atuais.</p>
+                {showGlobalActionPlan && plansToShow.length > 0 ? (
+                  <div className="space-y-6">
+                    {plansToShow.map((plan, idx) => (
+                      <div key={plan.id || idx} className="border border-slate-300 rounded-lg overflow-hidden">
+                        <div className="bg-slate-100 p-3 border-b border-slate-300">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-bold text-slate-900">{plan.categoryName}</h4>
+                            <span className="text-xs text-slate-600">Média: {plan.categoryScore.toFixed(2)}% | Nível de Risco: {plan.categoryScore >= 75 ? 'Favorável' : plan.categoryScore >= 40 ? 'Neutro' : 'Desfavorável'}</span>
                           </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                        </div>
+                        <div className="p-4">
+                          <h5 className="text-sm font-semibold text-slate-800 mb-2">{plan.title}</h5>
+                          <div className="text-sm text-slate-700 whitespace-pre-wrap">{plan.description}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : showGlobalActionPlan ? (
+                  <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
+                    <p className="font-semibold text-slate-700 mb-2">Nenhum plano de ação global cadastrado</p>
+                    <p>Entre em contato com o administrador para cadastrar planos de ação globais.</p>
+                  </div>
+                ) : (
+                  <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
+                    <div className="flex flex-col items-center gap-2">
+                      <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="font-semibold text-slate-700">Média geral satisfatória ({overallAverage.toFixed(2)}%)</p>
+                      <p>A empresa apresenta condições psicossociais favoráveis. Não há necessidade de planos de ação corretivos no momento.</p>
+                      <p className="text-xs mt-2">Recomenda-se manter o monitoramento contínuo e as boas práticas atuais.</p>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })()}
