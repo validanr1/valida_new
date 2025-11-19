@@ -1174,6 +1174,71 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         </div>
 
+        {/* Anexo II - Análise e Inventário dos Riscos Psicossociais */}
+        <div className="report-section mb-8 bg-white rounded-xl p-8 border border-slate-200">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo II – Análise e Inventário dos Riscos Psicossociais</h2>
+          
+          <div className="mb-6 text-slate-700 leading-relaxed">
+            <p>A análise foi realizada com base nas respostas obtidas pelo questionário Stress Indicator Tool (SIT), aplicado de forma anônima e individual. A interpretação seguiu os critérios de probabilidade x severidade, com apoio de análise estatística.</p>
+          </div>
+
+          {/* Tabela de Análise de Riscos */}
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-slate-300">
+              <thead>
+                <tr className="bg-slate-100">
+                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Fator Psicossocial Avaliado</th>
+                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Classificação de Risco</th>
+                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Observações Relevantes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Demandas: carga de trabalho, padrões de trabalho e ambiente</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">
+                    <strong>Favorável:</strong> Indica boas condições de trabalho e aspectos positivos no ambiente organizacional.<br/>
+                    Respostas possíveis:<br/>
+                    Frequentemente e Sempre
+                  </td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Sobrecarga frequente e prazos apertados.</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Controle: autonomia sobre como o trabalho é realizado</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">
+                    <strong>Neutro:</strong> Representa uma posição intermediária, sem uma inclinação clara para o positivo ou negativo.<br/>
+                    Resposta possível: Às vezes
+                  </td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Limitações em decisões operacionais.</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Suporte: apoio da gestão e dos colegas</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">
+                    <strong>Desfavorável:</strong> Aponta possíveis problemas que podem afetar a saúde, segurança e bem-estar dos funcionários.<br/>
+                    Respostas possíveis:<br/>
+                    Nunca e Raramente.
+                  </td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Necessidade de maior escuta e feedback.</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Relacionamentos: prevenção de conflitos e assédio</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Interações colaborativas bem avaliadas.</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Papel: clareza das funções e ausência de conflitos de responsabilidade</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Dúvidas recorrentes sobre papéis e metas.</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Mudanças: gestão e comunicação sobre mudanças organizacionais</td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         </div> {/* Fecha report-content */}
       </div>
 
