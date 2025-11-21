@@ -304,7 +304,7 @@ const Empresas = () => {
       cnpj: formattedDoc,
       responsible_name: responsibleName.trim() || null,
       responsible_email: responsibleEmail.trim().toLowerCase() || null,
-      // responsible_position: responsiblePosition.trim() || null, // TODO: Descomentar após aplicar migração
+      responsible_position: responsiblePosition.trim() || null,
       assessment_type_id: assessmentTypeId,
       cnae: cnae.trim() || null,
       risk_grade_id: riskGradeId,
