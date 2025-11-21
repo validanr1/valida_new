@@ -204,16 +204,16 @@ const Empresas = () => {
 
   const loadCompanyAssessmentStats = async () => {
     if (!partnerId) return;
-    
+
     try {
       const { data, error } = await supabase
         .rpc('get_company_assessment_stats', { partner_id_param: partnerId });
-      
+
       if (error) {
         console.error('Erro ao carregar estatísticas de avaliações:', error);
         return;
       }
-      
+
       if (data) {
         const stats: Record<string, { used: number; remaining: number }> = {};
         data.forEach((stat) => {
@@ -404,6 +404,13 @@ const Empresas = () => {
     showSuccess("Empresa excluída.");
   };
 
+  const handleSelectCompany = (company: Company) => {
+    if (company.id === selectedCompanyId) return;
+    setCurrentCompany(company.id);
+    window.dispatchEvent(new CustomEvent("companies_changed"));
+    showSuccess(`Empresa "${company.name}" selecionada.`);
+  };
+
   async function lookupCNPJ() {
     const digits = onlyDigits(cnpj);
     if (digits.length !== 14) {
@@ -526,7 +533,7 @@ const Empresas = () => {
             <div>
               <h3 className="text-sm font-medium text-zinc-900">Distribuição de Avaliações</h3>
               <p className="text-xs text-zinc-600">
-                Total de cotas alocadas: {companies.reduce((sum, c) => sum + (c.assessment_quota || 0), 0)} / 
+                Total de cotas alocadas: {companies.reduce((sum, c) => sum + (c.assessment_quota || 0), 0)} /
                 Limite do plano: {currentAssignment?.plans?.limits?.active_assessments || 0}
               </p>
             </div>
@@ -536,195 +543,195 @@ const Empresas = () => {
           </div>
         </Card>
       )}
-      
+
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-          <DialogContent className="sm:max-w-[720px] z-[100] max-h-[95vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingId ? "Editar Empresa" : "Nova Empresa"}</DialogTitle>
-            </DialogHeader>
+        <DialogContent className="sm:max-w-[720px] z-[100] max-h-[95vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingId ? "Editar Empresa" : "Nova Empresa"}</DialogTitle>
+          </DialogHeader>
 
-            <div className="space-y-5 py-1">
-              {/* Nome e CNPJ */}
-              <div className="grid gap-4 sm:grid-cols-[1fr_260px]">
-                <div className="space-y-2">
-                  <label htmlFor="empresa-nome" className="text-sm font-medium">Nome da Empresa</label>
-                  <Input
-                    id="empresa-nome"
-                    placeholder="Ex.: EMPRESA DE LIMPEZA URBANA"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="h-10 rounded-xl"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="empresa-cnpj" className="text-sm font-medium">CNPJ/CPF</label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="empresa-cnpj"
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="off"
-                      placeholder="00.000.000/0000-00 ou 000.000.000-00"
-                      value={cnpj}
-                      onChange={(e) => setCnpj(formatDoc(e.target.value))}
-                      className="h-10 rounded-xl"
-                    />
-                    <Button type="button" variant="secondary" onClick={lookupCNPJ} disabled={loadingCnpj}>
-                      {loadingCnpj ? "Buscando..." : "Buscar"}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Responsável (agora campos de texto) */}
-              <div className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Nome do Responsável</label>
-                    <Input
-                      placeholder="Ex.: Maria Silva"
-                      value={responsibleName}
-                      onChange={(e) => setResponsibleName(e.target.value)}
-                      className="h-10 rounded-xl"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">E-mail do Responsável</label>
-                    <Input
-                      type="email"
-                      placeholder="email@empresa.com"
-                      value={responsibleEmail}
-                      onChange={(e) => setResponsibleEmail(e.target.value)}
-                      className="h-10 rounded-xl"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Cargo do Responsável</label>
-                  <Input
-                    placeholder="Ex.: Gerente de Segurança, Coordenador de RH"
-                    value={responsiblePosition}
-                    onChange={(e) => setResponsiblePosition(e.target.value)}
-                    className="h-10 rounded-xl"
-                  />
-                </div>
-              </div>
-
-              {/* Tipo, CNAE, Grau */}
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">Tipo de Avaliação</div>
-                  <Select value={assessmentTypeId} onValueChange={setAssessmentTypeId}>
-                    <SelectTrigger className="h-10 rounded-xl">
-                      <SelectValue placeholder={assessmentTypes.length ? "Selecione um tipo" : "Nenhum tipo ativo"} />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      {assessmentTypes.map((t) => (
-                        <SelectItem key={t.id} value={t.id}>{t.name ?? t.id}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">CNAE do Estabelecimento</label>
-                  <Input
-                    id="empresa-cnae"
-                    placeholder="Ex.: 8121-4/00 - Limpeza em prédios e domicílios"
-                    value={cnae}
-                    onChange={(e) => setCnae(e.target.value)}
-                    className="h-10 rounded-xl"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">Grau de Risco</div>
-                  <Select value={riskGradeId} onValueChange={setRiskGradeId}>
-                    <SelectTrigger className="h-10 rounded-xl">
-                      <SelectValue placeholder={riskGrades.length ? "Selecione o grau" : "Nenhum grau ativo"} />
-                    </SelectTrigger>
-                    <SelectContent className="z-[200]">
-                      {riskGrades.map((g) => (
-                        <SelectItem key={g.id} value={g.id}>{g.name ?? g.id}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Cota de Avaliações */}
+          <div className="space-y-5 py-1">
+            {/* Nome e CNPJ */}
+            <div className="grid gap-4 sm:grid-cols-[1fr_260px]">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Cota de Avaliações</label>
+                <label htmlFor="empresa-nome" className="text-sm font-medium">Nome da Empresa</label>
+                <Input
+                  id="empresa-nome"
+                  placeholder="Ex.: EMPRESA DE LIMPEZA URBANA"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="empresa-cnpj" className="text-sm font-medium">CNPJ/CPF</label>
                 <div className="flex gap-2">
                   <Input
-                    type="number"
-                    placeholder="0"
-                    value={assessmentQuota}
-                    onChange={(e) => setAssessmentQuota(e.target.value.replace(/\D/g, ""))}
+                    id="empresa-cnpj"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder="00.000.000/0000-00 ou 000.000.000-00"
+                    value={cnpj}
+                    onChange={(e) => setCnpj(formatDoc(e.target.value))}
                     className="h-10 rounded-xl"
                   />
-                  <div className="text-xs text-muted-foreground self-center">
-                    0 = sem limite
-                  </div>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Número máximo de avaliações ativas permitidas para esta empresa
-                </div>
-              </div>
-
-              {/* Endereço */}
-              <div className="space-y-2">
-                <div className="text-sm font-medium">Endereço</div>
-                <div className="grid gap-3 sm:grid-cols-[160px_1fr_120px]">
-                  <Input
-                    placeholder="CEP"
-                    value={zip}
-                    onChange={(e) => setZip(formatCEP(e.target.value))}
-                    className="h-10 rounded-xl"
-                  />
-                  <Input
-                    placeholder="Logradouro"
-                    value={street}
-                    onChange={(e) => setStreet(e.target.value)}
-                    className="h-10 rounded-xl"
-                  />
-                  <Input
-                    placeholder="Número"
-                    value={number}
-                    onChange={(e) => setNumber(e.target.value)}
-                    className="h-10 rounded-xl"
-                  />
-                </div>
-                <div className="grid gap-3 sm:grid-cols-[1fr_220px_120px]">
-                  <Input
-                    placeholder="Bairro"
-                    value={neighborhood}
-                    onChange={(e) => setNeighborhood(e.target.value)}
-                    className="h-10 rounded-xl"
-                  />
-                  <Input
-                    placeholder="Cidade"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    className="h-10 rounded-xl"
-                  />
-                  <Input
-                    placeholder="UF"
-                    value={stateUF}
-                    onChange={(e) => setStateUF(e.target.value.toUpperCase().slice(0, 2))}
-                    className="h-10 rounded-xl"
-                  />
+                  <Button type="button" variant="secondary" onClick={lookupCNPJ} disabled={loadingCnpj}>
+                    {loadingCnpj ? "Buscando..." : "Buscar"}
+                  </Button>
                 </div>
               </div>
             </div>
 
-            <DialogFooter>
-              <Button onClick={onSave} disabled={isSaving}>
-                {isSaving ? "Salvando..." : (editingId ? "Salvar alterações" : "Salvar")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            {/* Responsável (agora campos de texto) */}
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Nome do Responsável</label>
+                  <Input
+                    placeholder="Ex.: Maria Silva"
+                    value={responsibleName}
+                    onChange={(e) => setResponsibleName(e.target.value)}
+                    className="h-10 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">E-mail do Responsável</label>
+                  <Input
+                    type="email"
+                    placeholder="email@empresa.com"
+                    value={responsibleEmail}
+                    onChange={(e) => setResponsibleEmail(e.target.value)}
+                    className="h-10 rounded-xl"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Cargo do Responsável</label>
+                <Input
+                  placeholder="Ex.: Gerente de Segurança, Coordenador de RH"
+                  value={responsiblePosition}
+                  onChange={(e) => setResponsiblePosition(e.target.value)}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+            </div>
+
+            {/* Tipo, CNAE, Grau */}
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-2">
+                <div className="text-sm font-medium">Tipo de Avaliação</div>
+                <Select value={assessmentTypeId} onValueChange={setAssessmentTypeId}>
+                  <SelectTrigger className="h-10 rounded-xl">
+                    <SelectValue placeholder={assessmentTypes.length ? "Selecione um tipo" : "Nenhum tipo ativo"} />
+                  </SelectTrigger>
+                  <SelectContent className="z-[200]">
+                    {assessmentTypes.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>{t.name ?? t.id}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">CNAE do Estabelecimento</label>
+                <Input
+                  id="empresa-cnae"
+                  placeholder="Ex.: 8121-4/00 - Limpeza em prédios e domicílios"
+                  value={cnae}
+                  onChange={(e) => setCnae(e.target.value)}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-sm font-medium">Grau de Risco</div>
+                <Select value={riskGradeId} onValueChange={setRiskGradeId}>
+                  <SelectTrigger className="h-10 rounded-xl">
+                    <SelectValue placeholder={riskGrades.length ? "Selecione o grau" : "Nenhum grau ativo"} />
+                  </SelectTrigger>
+                  <SelectContent className="z-[200]">
+                    {riskGrades.map((g) => (
+                      <SelectItem key={g.id} value={g.id}>{g.name ?? g.id}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Cota de Avaliações */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Cota de Avaliações</label>
+              <div className="flex gap-2">
+                <Input
+                  type="number"
+                  placeholder="0"
+                  value={assessmentQuota}
+                  onChange={(e) => setAssessmentQuota(e.target.value.replace(/\D/g, ""))}
+                  className="h-10 rounded-xl"
+                />
+                <div className="text-xs text-muted-foreground self-center">
+                  0 = sem limite
+                </div>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Número máximo de avaliações ativas permitidas para esta empresa
+              </div>
+            </div>
+
+            {/* Endereço */}
+            <div className="space-y-2">
+              <div className="text-sm font-medium">Endereço</div>
+              <div className="grid gap-3 sm:grid-cols-[160px_1fr_120px]">
+                <Input
+                  placeholder="CEP"
+                  value={zip}
+                  onChange={(e) => setZip(formatCEP(e.target.value))}
+                  className="h-10 rounded-xl"
+                />
+                <Input
+                  placeholder="Logradouro"
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
+                  className="h-10 rounded-xl"
+                />
+                <Input
+                  placeholder="Número"
+                  value={number}
+                  onChange={(e) => setNumber(e.target.value)}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-[1fr_220px_120px]">
+                <Input
+                  placeholder="Bairro"
+                  value={neighborhood}
+                  onChange={(e) => setNeighborhood(e.target.value)}
+                  className="h-10 rounded-xl"
+                />
+                <Input
+                  placeholder="Cidade"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="h-10 rounded-xl"
+                />
+                <Input
+                  placeholder="UF"
+                  value={stateUF}
+                  onChange={(e) => setStateUF(e.target.value.toUpperCase().slice(0, 2))}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button onClick={onSave} disabled={isSaving}>
+              {isSaving ? "Salvando..." : (editingId ? "Salvar alterações" : "Salvar")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Grid de cards */}
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -745,6 +752,7 @@ const Empresas = () => {
             usedAssessments={companyAssessmentStats[c.id]?.used || 0}
             onEdit={() => openEdit(c)}
             onDelete={() => onDelete(c)}
+            onSelect={() => handleSelectCompany(c)}
           />
         ))}
         {list.length === 0 && (
