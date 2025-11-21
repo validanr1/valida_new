@@ -266,7 +266,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
       try {
         const { data: companyData } = await supabase
           .from("companies")
-          .select("id, name, partner_id, cnpj, cnae, address, responsible_name, responsible_email")
+          .select("id, name, partner_id, cnpj, cnae, address, responsible_name, responsible_email, responsible_position")
           .eq("id", companyId)
           .maybeSingle();
         setCompany(companyData as Company);
@@ -1420,7 +1420,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                 {company?.responsible_email && (
                   <p className="text-sm text-slate-600">{company.responsible_email}</p>
                 )}
-                <p className="text-sm text-slate-600 mt-1">Responsável pela Empresa</p>
+                <p className="text-sm text-slate-600 mt-1">{company?.responsible_position || 'Responsável pela Empresa'}</p>
               </div>
             </div>
 
