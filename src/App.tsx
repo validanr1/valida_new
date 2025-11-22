@@ -70,6 +70,7 @@ import ActionPlansAdmin from "./pages/admin/ActionPlansAdmin";
 import Support from "./pages/admin/Support";
 import Tasks from "./pages/admin/Tasks";
 import TasksWagner from "./pages/admin/TasksWagner";
+import Help from "./pages/admin/Help";
 
 
 const queryClient = new QueryClient();
@@ -159,6 +160,7 @@ const AppContent = () => {
           <Route path="/admin/suporte" element={<AdminRoute requiredPermissions={["admin:dashboard:view"]}><Support /></AdminRoute>} key="admin-support" />
           <Route path="/admin/tarefas" element={<AdminRoute requiredPermissions={["admin:dashboard:view"]}><Tasks /></AdminRoute>} key="admin-tasks" />
           <Route path="/admin/tasks_wagner" element={<TasksWagner />} key="admin-tasks-wagner" />
+          <Route path="/admin/ajuda" element={<AdminRoute><Help /></AdminRoute>} key="admin-help" />
           {/* Redirect legacy user-management route */}
           <Route path="/admin/user-management" element={<Navigate to="/admin/usuarios" replace />} />
         </Route>

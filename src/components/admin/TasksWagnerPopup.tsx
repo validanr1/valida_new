@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
@@ -9,12 +9,16 @@ import { useSession } from "@/integrations/supabase/SupabaseProvider";
 
 type TWItem = { id: string; title: string; description?: string | null; status: string; updated_at?: string };
 
-const TasksWagnerPopup = () => {
+interface TasksWagnerPopupProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const TasksWagnerPopup = ({ isOpen, onClose }: TasksWagnerPopupProps) => {
   const { session } = useSession();
   const isAdmin = session?.roleContext === "SuperAdmin";
   const isAllowed = Boolean(isAdmin);
   const location = useLocation();
-  const [open, setOpen] = useState(false);
   const [items, setItems] = useState<TWItem[]>([]);
 
   useEffect(() => {
@@ -30,11 +34,10 @@ const TasksWagnerPopup = () => {
       const rows = (data as TWItem[]) ?? [];
       if (mounted) {
         setItems(rows);
-        setOpen(rows.length > 0);
       }
     })();
     return () => { mounted = false; };
-  }, [isAllowed, location.pathname]);
+  }, [isAllowed, location.pathname, isOpen]); // Re-fetch when opened
 
   if (!isAllowed) return null;
 
@@ -42,16 +45,11 @@ const TasksWagnerPopup = () => {
     const { error } = await supabase.from("tasks_wagner").update({ acknowledged: true }).eq("id", id);
     if (error) return;
     setItems((prev) => prev.filter((x) => x.id !== id));
-    setOpen((prev) => {
-      const remaining = items.filter((x) => x.id !== id).length;
-      return remaining > 0 ? prev : false;
-    });
+    // Do not auto-close when items are empty, let user close
   };
 
-  const dismiss = () => setOpen(false);
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={(val) => !val && onClose()}>
       <DialogContent className="sm:max-w-[50rem]">
         <DialogHeader>
           <DialogTitle>Tarefas Concluídas</DialogTitle>
@@ -73,10 +71,10 @@ const TasksWagnerPopup = () => {
             </Card>
           ))}
           {items.length === 0 && (
-            <div className="text-sm text-muted-foreground">Nenhuma tarefa cadastrada.</div>
+            <div className="text-sm text-muted-foreground">Nenhuma tarefa pendente de confirmação.</div>
           )}
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="ghost" onClick={dismiss}>Fechar</Button>
+            <Button variant="ghost" onClick={onClose}>Fechar</Button>
           </div>
         </div>
       </DialogContent>

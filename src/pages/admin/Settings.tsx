@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSettings, saveSettings, type PlatformSettings } from "@/services/settings";
@@ -16,6 +15,17 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import UserManagement from "@/pages/admin/UserManagement";
+import {
+  Settings as SettingsIcon,
+  Users,
+  Mail,
+  ClipboardList,
+  Network,
+  FileText,
+  AlertTriangle,
+  Layers,
+  Scale
+} from "lucide-react";
 
 // Função de formatação de telefone (reutilizada de Partners.tsx)
 function formatPhoneBR(input: string) {
@@ -144,200 +154,227 @@ const Settings = () => {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-4 md:p-6">
       <div>
         <h1 className="text-xl font-semibold">Configurações</h1>
         <p className="mt-1 text-sm text-muted-foreground">Ajuste preferências da plataforma e módulos administrativos.</p>
       </div>
 
-      <Card className="p-4">
-        <Tabs defaultValue="geral">
-          <TabsList className="w-full grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-9">
-            <TabsTrigger value="geral" className="w-full">Geral</TabsTrigger>
-            <TabsTrigger value="usuarios" className="w-full">Usuários</TabsTrigger>
-            <TabsTrigger value="emails" className="w-full">E-mails</TabsTrigger>
-            <TabsTrigger value="questionarios" className="w-full">Questionários</TabsTrigger>
-            <TabsTrigger value="integracoes" className="w-full">Integrações</TabsTrigger>
-            <TabsTrigger value="tipos-avaliacao" className="w-full">Tipos de Avaliação</TabsTrigger>
-            <TabsTrigger value="graus-risco" className="w-full">Graus de Risco</TabsTrigger>
-            <TabsTrigger value="niveis" className="w-full">Níveis</TabsTrigger>
-            <TabsTrigger value="juridico" className="w-full">Jurídico</TabsTrigger>
-          </TabsList>
+      <Tabs defaultValue="geral" className="flex flex-col md:flex-row gap-4 md:gap-6" orientation="vertical">
+        <aside className="w-full md:w-64 shrink-0">
+          <Card className="p-2 sticky top-6">
+            <TabsList className="flex flex-col h-auto w-full justify-start gap-1 bg-transparent p-0">
+              <TabsTrigger value="geral" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <SettingsIcon size={16} /> Geral
+              </TabsTrigger>
+              <TabsTrigger value="usuarios" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <Users size={16} /> Usuários
+              </TabsTrigger>
+              <TabsTrigger value="emails" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <Mail size={16} /> E-mails
+              </TabsTrigger>
+              <TabsTrigger value="questionarios" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <ClipboardList size={16} /> Questionários
+              </TabsTrigger>
+              <TabsTrigger value="integracoes" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <Network size={16} /> Integrações
+              </TabsTrigger>
+              <TabsTrigger value="tipos-avaliacao" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <FileText size={16} /> Tipos de Avaliação
+              </TabsTrigger>
+              <TabsTrigger value="graus-risco" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <AlertTriangle size={16} /> Graus de Risco
+              </TabsTrigger>
+              <TabsTrigger value="niveis" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <Layers size={16} /> Níveis
+              </TabsTrigger>
+              <TabsTrigger value="juridico" className="w-full justify-start gap-2 px-3 py-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                <Scale size={16} /> Jurídico
+              </TabsTrigger>
+            </TabsList>
+          </Card>
+        </aside>
 
-          <TabsContent value="geral" className="space-y-6 pt-4">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-3">
+        <div className="flex-1 min-w-0">
+          <TabsContent value="geral" className="mt-0">
+            <Card className="p-4 md:p-6 space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-sm font-medium">Logo Primário</div>
+                    <div className="text-xs text-muted-foreground">
+                      Usado no ambiente do parceiro e na tela de login.
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="h-16 w-28 overflow-hidden rounded-md bg-muted grid place-items-center">
+                      {logoPrimaryPreview ? (
+                        <img src={logoPrimaryPreview} alt="Logo Primário" className="max-h-16 object-contain" />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Sem logo</span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                        Enviar arquivo
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => e.target.files?.[0] && onFileChange(e.target.files[0], "primary")}
+                        />
+                      </label>
+                      {logoPrimaryPreview ? (
+                        <Button variant="destructive" size="sm" onClick={() => removeLogo("primary")}>
+                          Remover
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-sm font-medium">Logo Negativo</div>
+                    <div className="text-xs text-muted-foreground">
+                      Usado no ambiente admin (fundos escuros).
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="h-16 w-28 overflow-hidden rounded-md bg-muted grid place-items-center">
+                      {logoNegativePreview ? (
+                        <img src={logoNegativePreview} alt="Logo Negativo" className="max-h-16 object-contain" />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Sem logo</span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                        Enviar arquivo
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => e.target.files?.[0] && onFileChange(e.target.files[0], "negative")}
+                        />
+                      </label>
+                      {logoNegativePreview ? (
+                        <Button variant="destructive" size="sm" onClick={() => removeLogo("negative")}>
+                          Remover
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Nome da Plataforma</label>
+                  <Input
+                    value={settings.platformName}
+                    onChange={(e) => setSettings((s) => (s ? { ...s, platformName: e.target.value } : null))}
+                    className="h-10 rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium">Descrição</label>
+                  <Textarea
+                    value={settings.description ?? ""}
+                    onChange={(e) => setSettings((s) => (s ? { ...s, description: e.target.value } : null))}
+                    rows={3}
+                    className="rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">WhatsApp de Suporte</label>
+                  <Input
+                    placeholder="(11) 98765-4321"
+                    value={settings.supportWhatsapp ?? ""}
+                    onChange={(e) => setSettings((s) => (s ? { ...s, supportWhatsapp: formatPhoneBR(e.target.value) } : null))}
+                    className="h-10 rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">E-mail de Suporte</label>
+                  <Input
+                    type="email"
+                    placeholder="ex.: suporte@validanr1.com.br"
+                    value={settings.supportEmail ?? ""}
+                    onChange={(e) => setSettings((s) => (s ? { ...s, supportEmail: e.target.value } : null))}
+                    className="h-10 rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium">E-mail para Notificações (Logins e Cadastros)</label>
+                  <Input
+                    type="email"
+                    placeholder="ex.: admin@validanr1.com.br"
+                    value={settings.leadsNotifyEmail ?? ""}
+                    onChange={(e) => setSettings((s) => (s ? { ...s, leadsNotifyEmail: e.target.value } : null))}
+                    className="h-10 rounded-xl"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    E-mail que receberá notificações automáticas de novos logins e cadastros de parceiros.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Button onClick={onSaveGeneral} disabled={isSaving}>
+                  {isSaving ? "Salvando..." : "Salvar"}
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="usuarios" className="mt-0">
+            <Card className="p-4">
+              <Tabs defaultValue="perfis">
+                <TabsList className="w-full grid grid-cols-2">
+                  <TabsTrigger value="perfis" className="w-full">Perfis de Acesso</TabsTrigger>
+                  <TabsTrigger value="gestao" className="w-full">Gestão de Usuários</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="perfis" className="pt-4">
+                  <AccessProfiles />
+                </TabsContent>
+
+                <TabsContent value="gestao" className="pt-4">
+                  <UserManagement />
+                </TabsContent>
+              </Tabs>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="emails" className="mt-0 space-y-6">
+            <Card className="p-4 md:p-6">
+              <div className="space-y-4">
                 <div>
-                  <div className="text-sm font-medium">Logo Primário</div>
-                  <div className="text-xs text-muted-foreground">
-                    Usado no ambiente do parceiro e na tela de login.
-                  </div>
+                  <h3 className="text-lg font-semibold">E-mails Transacionais (Resend)</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Configure os templates de e-mails transacionais (boas-vindas, suspensão, ativação, etc.) enviados via Resend.
+                  </p>
+                  <p className="text-xs text-amber-600 mt-2">
+                    ⚠️ E-mails de autenticação (confirmação de cadastro, reset de senha) são gerenciados pelo Supabase Auth no dashboard.
+                  </p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="h-16 w-28 overflow-hidden rounded-md bg-muted grid place-items-center">
-                    {logoPrimaryPreview ? (
-                      <img src={logoPrimaryPreview} alt="Logo Primário" className="max-h-16 object-contain" />
-                    ) : (
-                      <span className="text-xs text-muted-foreground">Sem logo</span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm hover:bg-muted">
-                      Enviar arquivo
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => e.target.files?.[0] && onFileChange(e.target.files[0], "primary")}
-                      />
-                    </label>
-                    {logoPrimaryPreview ? (
-                      <Button variant="destructive" size="sm" onClick={() => removeLogo("primary")}>
-                        Remover
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
 
-              <div className="space-y-3">
-                <div>
-                  <div className="text-sm font-medium">Logo Negativo</div>
-                  <div className="text-xs text-muted-foreground">
-                    Usado no ambiente admin (fundos escuros).
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="h-16 w-28 overflow-hidden rounded-md bg-muted grid place-items-center">
-                    {logoNegativePreview ? (
-                      <img src={logoNegativePreview} alt="Logo Negativo" className="max-h-16 object-contain" />
-                    ) : (
-                      <span className="text-xs text-muted-foreground">Sem logo</span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-sm hover:bg-muted">
-                      Enviar arquivo
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => e.target.files?.[0] && onFileChange(e.target.files[0], "negative")}
-                      />
-                    </label>
-                    {logoNegativePreview ? (
-                      <Button variant="destructive" size="sm" onClick={() => removeLogo("negative")}>
-                        Remover
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
+                <EmailTemplates />
               </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Nome da Plataforma</label>
-                <Input
-                  value={settings.platformName}
-                  onChange={(e) => setSettings((s) => (s ? { ...s, platformName: e.target.value } : null))}
-                  className="h-10 rounded-xl"
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium">Descrição</label>
-                <Textarea
-                  value={settings.description ?? ""}
-                  onChange={(e) => setSettings((s) => (s ? { ...s, description: e.target.value } : null))}
-                  rows={3}
-                  className="rounded-xl"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">WhatsApp de Suporte</label>
-                <Input
-                  placeholder="(11) 98765-4321"
-                  value={settings.supportWhatsapp ?? ""}
-                  onChange={(e) => setSettings((s) => (s ? { ...s, supportWhatsapp: formatPhoneBR(e.target.value) } : null))}
-                  className="h-10 rounded-xl"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">E-mail de Suporte</label>
-                <Input
-                  type="email"
-                  placeholder="ex.: suporte@validanr1.com.br"
-                  value={settings.supportEmail ?? ""}
-                  onChange={(e) => setSettings((s) => (s ? { ...s, supportEmail: e.target.value } : null))}
-                  className="h-10 rounded-xl"
-                />
-              </div>
-
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium">E-mail para Notificações (Logins e Cadastros)</label>
-                <Input
-                  type="email"
-                  placeholder="ex.: admin@validanr1.com.br"
-                  value={settings.leadsNotifyEmail ?? ""}
-                  onChange={(e) => setSettings((s) => (s ? { ...s, leadsNotifyEmail: e.target.value } : null))}
-                  className="h-10 rounded-xl"
-                />
-                <p className="text-xs text-muted-foreground">
-                  E-mail que receberá notificações automáticas de novos logins e cadastros de parceiros.
-                </p>
-              </div>
-            </div>
-
-            {/* Seção de toggles removida conforme solicitado */}
-
-            <div className="pt-2">
-              <Button onClick={onSaveGeneral} disabled={isSaving}>
-                {isSaving ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
+            </Card>
           </TabsContent>
 
-          <TabsContent value="usuarios" className="pt-4">
-            {/* Sub-aba interna para separar Perfis de Gestão de Usuários */}
-            <Tabs defaultValue="perfis">
-              <TabsList className="w-full grid grid-cols-2">
-                <TabsTrigger value="perfis" className="w-full">Perfis de Acesso</TabsTrigger>
-                <TabsTrigger value="gestao" className="w-full">Gestão de Usuários</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="perfis" className="pt-4">
-                <AccessProfiles />
-              </TabsContent>
-
-              <TabsContent value="gestao" className="pt-4">
-                <UserManagement />
-              </TabsContent>
-            </Tabs>
+          <TabsContent value="questionarios" className="mt-0">
+            <Card className="p-4">
+              <Questionnaires />
+            </Card>
           </TabsContent>
 
-          <TabsContent value="emails" className="pt-4 space-y-6">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold">E-mails Transacionais (Resend)</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Configure os templates de e-mails transacionais (boas-vindas, suspensão, ativação, etc.) enviados via Resend.
-                </p>
-                <p className="text-xs text-amber-600 mt-2">
-                  ⚠️ E-mails de autenticação (confirmação de cadastro, reset de senha) são gerenciados pelo Supabase Auth no dashboard.
-                </p>
-              </div>
-
-              <EmailTemplates />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="questionarios" className="pt-4">
-            <Questionnaires />
-          </TabsContent>
-
-          <TabsContent value="integracoes" className="pt-4 space-y-6">
+          <TabsContent value="integracoes" className="mt-0 space-y-6">
             <Tabs defaultValue="resend">
               <TabsList className="w-full grid grid-cols-2">
                 <TabsTrigger value="resend">Resend</TabsTrigger>
@@ -345,7 +382,7 @@ const Settings = () => {
               </TabsList>
 
               <TabsContent value="resend" className="pt-4">
-                <Card className="p-6">
+                <Card className="p-4 md:p-6">
                   <div className="space-y-3">
                     <div>
                       <div className="text-sm font-medium">Configuração de E-mail (Resend)</div>
@@ -373,7 +410,7 @@ const Settings = () => {
               </TabsContent>
 
               <TabsContent value="smtp" className="pt-4">
-                <Card className="p-6">
+                <Card className="p-4 md:p-6">
                   <div className="space-y-3">
                     <div>
                       <div className="text-sm font-medium">Configuração de E-mail (SMTP)</div>
@@ -459,7 +496,7 @@ const Settings = () => {
               </TabsContent>
             </Tabs>
             {/* Novo campo de seleção para emailProvider */}
-            <Card className="p-6">
+            <Card className="p-4 md:p-6">
               <div className="space-y-3">
                 <div>
                   <div className="text-sm font-medium">Provedor de E-mail Principal</div>
@@ -488,38 +525,44 @@ const Settings = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="tipos-avaliacao" className="pt-4">
-            <SimpleManager
-              title="Tipos de Avaliação"
-              collectionKey="assessment_types"
-              createLabel="Novo Tipo"
-              nameLabel="Nome do Tipo"
-              emptyMessage="Nenhum tipo cadastrado."
-            />
+          <TabsContent value="tipos-avaliacao" className="mt-0">
+            <Card className="p-4">
+              <SimpleManager
+                title="Tipos de Avaliação"
+                collectionKey="assessment_types"
+                createLabel="Novo Tipo"
+                nameLabel="Nome do Tipo"
+                emptyMessage="Nenhum tipo cadastrado."
+              />
+            </Card>
           </TabsContent>
 
-          <TabsContent value="graus-risco" className="pt-4">
-            <SimpleManager
-              title="Graus de Risco"
-              collectionKey="risk_grades"
-              createLabel="Novo Grau"
-              nameLabel="Nome do Grau"
-              emptyMessage="Nenhum grau cadastrado."
-            />
+          <TabsContent value="graus-risco" className="mt-0">
+            <Card className="p-4">
+              <SimpleManager
+                title="Graus de Risco"
+                collectionKey="risk_grades"
+                createLabel="Novo Grau"
+                nameLabel="Nome do Grau"
+                emptyMessage="Nenhum grau cadastrado."
+              />
+            </Card>
           </TabsContent>
 
-          <TabsContent value="niveis" className="pt-4">
-            <SimpleManager
-              title="Níveis"
-              collectionKey="levels"
-              createLabel="Novo Nível"
-              nameLabel="Nome do Nível"
-              emptyMessage="Nenhum nível cadastrado."
-            />
+          <TabsContent value="niveis" className="mt-0">
+            <Card className="p-4">
+              <SimpleManager
+                title="Níveis"
+                collectionKey="levels"
+                createLabel="Novo Nível"
+                nameLabel="Nome do Nível"
+                emptyMessage="Nenhum nível cadastrado."
+              />
+            </Card>
           </TabsContent>
 
-          <TabsContent value="juridico" className="pt-4 space-y-6">
-            <Card className="p-6 space-y-4">
+          <TabsContent value="juridico" className="mt-0 space-y-6">
+            <Card className="p-4 md:p-6 space-y-4">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Termos de Uso (HTML)</div>
@@ -564,8 +607,8 @@ const Settings = () => {
               </div>
             </Card>
           </TabsContent>
-        </Tabs>
-      </Card>
+        </div>
+      </Tabs>
     </div>
   );
 };

@@ -104,9 +104,9 @@ const AdminDashboard = () => {
           if (plan && typeof plan.total_price === 'number') {
             const monthlyValue = plan.total_price / (
               plan.period === "monthly" ? 1 :
-              plan.period === "quarterly" ? 3 :
-              plan.period === "semiannual" ? 6 :
-              plan.period === "yearly" ? 12 : 1
+                plan.period === "quarterly" ? 3 :
+                  plan.period === "semiannual" ? 6 :
+                    plan.period === "yearly" ? 12 : 1
             );
             currentMonthRevenue += monthlyValue;
             previousMonthRevenue += monthlyValue; // Assuming recurring revenue for simplicity
@@ -172,29 +172,29 @@ const AdminDashboard = () => {
       </div>
 
       {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg">
-        <StatCard 
-          title="Total de Parceiros" 
-          value={loading ? "..." : partnersCount} 
-          icon={<Users size={18} />} 
+      <div id="admin-dashboard-stats" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg">
+        <StatCard
+          title="Total de Parceiros"
+          value={loading ? "..." : partnersCount}
+          icon={<Users size={18} />}
           helperText={loading ? "..." : `${partnersThisMonth} este mês`}
         />
-        <StatCard 
-          title="Empresas Ativas" 
-          value={loading ? "..." : activeCompaniesCount} 
-          icon={<Building2 size={18} />} 
+        <StatCard
+          title="Empresas Ativas"
+          value={loading ? "..." : activeCompaniesCount}
+          icon={<Building2 size={18} />}
           helperText={loading ? "..." : `${companiesThisWeek} esta semana`}
         />
-        <StatCard 
-          title="Usuários Totais" 
-          value={loading ? "..." : totalUsersCount} 
-          icon={<LayoutGrid size={18} />} 
+        <StatCard
+          title="Usuários Totais"
+          value={loading ? "..." : totalUsersCount}
+          icon={<LayoutGrid size={18} />}
           helperText={loading ? "..." : `${usersThisMonth} este mês`}
         />
-        <StatCard 
-          title="Receita Mensal" 
-          value={loading ? "..." : formatCurrency(monthlyRevenue)} 
-          icon={<DollarSign size={18} />} 
+        <StatCard
+          title="Receita Mensal"
+          value={loading ? "..." : formatCurrency(monthlyRevenue)}
+          icon={<DollarSign size={18} />}
           helperText={loading ? "..." : `${revenueChangePercent.toFixed(1)}% vs mês anterior`}
         />
       </div>

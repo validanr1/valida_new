@@ -177,23 +177,23 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
   const handleSaveConclusion = async () => {
     if (!partnerId) return;
-    
+
     setSavingConclusion(true);
     try {
       const { error } = await supabase
         .from("partners")
         .update({ custom_conclusion: conclusionText })
         .eq("id", partnerId);
-      
+
       if (error) throw error;
-      
+
       // Update local state
-      setSections(prev => prev.map(section => 
-        section.key === "conclusao" 
+      setSections(prev => prev.map(section =>
+        section.key === "conclusao"
           ? { ...section, body: conclusionText }
           : section
       ));
-      
+
       setEditingConclusion(false);
       alert("Conclusão salva com sucesso!");
     } catch (error) {
@@ -207,24 +207,24 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
   const handleResetConclusion = async () => {
     if (!partnerId) return;
     if (!confirm("Deseja restaurar o texto padrão da conclusão?")) return;
-    
+
     setSavingConclusion(true);
     try {
       const { error } = await supabase
         .from("partners")
         .update({ custom_conclusion: null })
         .eq("id", partnerId);
-      
+
       if (error) throw error;
-      
+
       // Reset to default text
       const defaultConclusion = "Com base na análise, conclui-se que, no momento da avaliação, os colaboradores não estão expostos a riscos psicossociais relevantes, conforme critérios das NR-01 e NR-17. A empresa deverá acompanhar continuamente os indicadores de clima organizacional e saúde mental.";
-      setSections(prev => prev.map(section => 
-        section.key === "conclusao" 
+      setSections(prev => prev.map(section =>
+        section.key === "conclusao"
           ? { ...section, body: defaultConclusion }
           : section
       ));
-      
+
       setEditingConclusion(false);
       alert("Conclusão restaurada para o texto padrão!");
     } catch (error) {
@@ -284,11 +284,11 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           .eq("id", partnerId)
           .maybeSingle();
         setPartnerLogo(partnerConfigData?.logo_data_url || null);
-        
+
         // Load custom conclusion if available
         if (partnerConfigData?.custom_conclusion) {
-          setSections(prev => prev.map(section => 
-            section.key === "conclusao" 
+          setSections(prev => prev.map(section =>
+            section.key === "conclusao"
               ? { ...section, body: partnerConfigData.custom_conclusion }
               : section
           ));
@@ -370,7 +370,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
           const neutral = scores.filter((s) => s >= 40 && s < 75).length;
           const unfavorable = scores.filter((s) => s < 40).length;
           const total = scores.length;
-          
+
           // Store processed question with distribution
           questionsProcessed.push({
             id: questionId,
@@ -384,7 +384,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             },
             category_id: q.category_id
           });
-          
+
           const categoryId = q.category_id;
           if (categoryId) {
             const catArr = categoryScores.get(categoryId) || [];
@@ -392,31 +392,31 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             categoryScores.set(categoryId, catArr);
           }
         });
-        
+
         setProcessedQuestions(questionsProcessed);
 
         categoryScores.forEach((scores, categoryId) => {
           const cat = categoriesMap.get(categoryId);
           if (!cat) return;
           const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-          
+
           // Calculate distribution for this category
           const favorable = scores.filter((s) => s >= 75).length;
           const neutral = scores.filter((s) => s >= 40 && s < 75).length;
           const unfavorable = scores.filter((s) => s < 40).length;
           const total = scores.length;
-          
+
           const responseDistribution = {
             favorable: total > 0 ? parseFloat(((favorable / total) * 100).toFixed(2)) : 0,
             neutral: total > 0 ? parseFloat(((neutral / total) * 100).toFixed(2)) : 0,
             unfavorable: total > 0 ? parseFloat(((unfavorable / total) * 100).toFixed(2)) : 0
           };
-          
-          processed.push({ 
-            id: categoryId, 
-            name: cat.name, 
-            description: cat.description, 
-            averageScore: avg, 
+
+          processed.push({
+            id: categoryId,
+            name: cat.name,
+            description: cat.description,
+            averageScore: avg,
             questions: [],
             responseDistribution
           });
@@ -424,21 +424,21 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         const overall = Array.from(categoryScores.values()).flat();
         setOverallAverageScore(overall.length ? overall.reduce((a, b) => a + b, 0) / overall.length : null);
-        
+
         // Calculate overall distribution for pie chart
         const allScores = Array.from(scoresByQuestion.values()).flat();
         const overallFavorable = allScores.filter((s) => s >= 75).length;
         const overallNeutral = allScores.filter((s) => s >= 40 && s < 75).length;
         const overallUnfavorable = allScores.filter((s) => s < 40).length;
         const overallTotal = allScores.length;
-        
+
         setOverallDistribution({
           favorable: overallFavorable,
           neutral: overallNeutral,
           unfavorable: overallUnfavorable,
           total: overallTotal
         });
-        
+
         setProcessedCategories(processed.sort((a, b) => a.name.localeCompare(b.name)));
 
         // Load action plans with priority logic: partner first, then global as fallback
@@ -502,7 +502,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
 
         const { data: apCats } = await supabase.from("action_plan_categories").select("id,name").order("name");
         setApCategories(apCats || []);
-        
+
         // Keep existing apByCategory logic for other uses
         const byCat: Record<string, ActionPlan[]> = {};
         [...partnerPlans, ...globalPlans].forEach((item: any) => {
@@ -524,31 +524,31 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
   const printToPdf = useCallback(async () => {
     const element = document.getElementById("report-content");
     if (!element) return;
-    
+
     showSuccess("Gerando PDF... Aguarde.");
-    
+
     // Ocultar elementos .no-print temporariamente
     const noPrintElements = document.querySelectorAll('.no-print');
     noPrintElements.forEach(el => {
       (el as HTMLElement).style.display = 'none';
     });
-    
+
     const opt = {
       margin: [10, 10, 10, 10],
       filename: `relatorio-${company?.name || "empresa"}-${new Date().toISOString().slice(0, 10)}.pdf`,
       image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { 
-        scale: 2, 
+      html2canvas: {
+        scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff'
       },
-      jsPDF: { 
-        unit: "mm", 
-        format: "a4", 
-        orientation: "portrait" 
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait"
       },
-      pagebreak: { 
+      pagebreak: {
         mode: ['avoid-all', 'css', 'legacy'],
         before: '.print-break',
         avoid: '.avoid-break'
@@ -612,7 +612,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </div>
           </div>
           <div className="flex gap-3">
-            <Button 
+            <Button
               onClick={printToPdf}
               className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
             >
@@ -622,7 +622,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
         </div>
 
         <div id="report-content" className="space-y-8">
-          
+
           {/* Logo do parceiro */}
           {partnerLogo && (
             <div className="flex justify-center mb-8">
@@ -645,809 +645,809 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
             </p>
           </div>
 
-        {/* Sumário Moderno - Agora vem imediatamente após o título */}
-        <div className="p-4">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
-              <div className="w-6 h-6 text-blue-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Sumário</h2>
-          </div>
-
-          {/* Lista numerada de seções conforme sequência fornecida */}
-          <div className="space-y-4">
-            {/* Seção 1 - Identificação da Empresa */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1</div>
-              <span className="text-slate-800 font-medium">Identificação da Empresa</span>
-            </div>
-            
-            {/* Sub-seção 1.1 - Responsáveis Técnicos */}
-            <div className="flex items-center gap-4 py-1 ml-6">
-              <div className="w-12 h-8 bg-blue-500 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1.1</div>
-              <span className="text-slate-800 font-medium">Responsáveis Técnicos</span>
-            </div>
-
-            {/* Seção 2 - Escopo do Trabalho */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>2</div>
-              <span className="text-slate-800 font-medium">Escopo do Trabalho</span>
-            </div>
-
-            {/* Seção 3 - Fontes Técnicas */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>3</div>
-              <span className="text-slate-800 font-medium">Fontes Técnicas – Organizacionais</span>
-            </div>
-
-            {/* Seção 4 - Fontes Jurídicas */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>4</div>
-              <span className="text-slate-800 font-medium">Fontes Jurídicas</span>
-            </div>
-
-            {/* Seção 5 - Metodologias */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>5</div>
-              <span className="text-slate-800 font-medium">Metodologias de Avaliação</span>
-            </div>
-
-            {/* Seção 6 - Identificação dos riscos */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>6</div>
-              <span className="text-slate-800 font-medium">Identificação dos riscos psicossociais</span>
-            </div>
-
-            {/* Seção 7 - Estratégias */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>7</div>
-              <span className="text-slate-800 font-medium">Estratégias de Avaliação</span>
-            </div>
-
-            {/* Seção 8 - Análise do Resultado */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>8</div>
-              <span className="text-slate-800 font-medium">Análise do Resultado</span>
-            </div>
-
-            {/* Seção 9 - Conclusão */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>9</div>
-              <span className="text-slate-800 font-medium">Conclusão</span>
-            </div>
-
-            {/* Seção 10 - Considerações Finais */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>10</div>
-              <span className="text-slate-800 font-medium">Considerações Finais</span>
-            </div>
-
-            {/* Anexos */}
-            <div className="mt-6 pt-4">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Anexos</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-4 py-1">
-                  <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>I</div>
-                  <span className="text-slate-800 font-medium">Anexo I – Resultado das Avaliações</span>
-                </div>
-                <div className="flex items-center gap-4 py-1">
-                  <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>II</div>
-                  <span className="text-slate-800 font-medium">Anexo II – Análise e Inventário dos Riscos Psicossociais</span>
-                </div>
-                <div className="flex items-center gap-4 py-1">
-                  <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>III</div>
-                  <span className="text-slate-800 font-medium">Anexo III – Plano de Ação e Monitoramento</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Identificação da Empresa - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.companyInfo !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center border border-emerald-200">
-              <div className="w-6 h-6 text-emerald-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Identificação da Empresa</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
-            <div>
-              <div className="text-muted-foreground">Razão Social</div>
-              <div className="font-medium">{company?.name || "—"}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">CNPJ</div>
-              <div className="font-medium">{(company as any)?.cnpj || "—"}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">CNAE</div>
-              <div className="font-medium">{(company as any)?.cnae || "—"}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">Endereço</div>
-              <div className="font-medium">{formatAddress((company as any)?.address)}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">Setores</div>
-              <div className="font-medium">{departmentNames || "—"}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">Data da Avaliação</div>
-              <div className="font-medium">{assessmentDateRange || "—"}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">Grau de Risco</div>
-              <div className="font-medium">
-                {overallAverageScore !== null ? (
-                  overallAverageScore < 40 ? (
-                    <span className="text-red-600 font-bold">ELEVADO (Zona Vermelha)</span>
-                  ) : overallAverageScore < 75 ? (
-                    <span className="text-yellow-500 font-bold">MODERADO (Zona Amarela)</span>
-                  ) : (
-                    <span className="text-emerald-600 font-bold">BAIXO (Zona Verde)</span>
-                  )
-                ) : "—"}
-              </div>
-            </div>
-          </div>
-        </div>
-        )}
-
-        {/* Responsáveis Técnicos - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.technicalResponsibles !== false) && primaryResponsible && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
-              <div className="w-6 h-6 text-blue-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.5 2.5 0 0 0 17.5 6H15v2h2.5c.28 0 .5.22.5.5s-.22.5-.5.5H14c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h2.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h2c1.1 0 2 .9 2 2s-.9 2-2 2h-6v-2h-2v2h-2v-2H6v2H4v-2H2v-2h2v-6H2.5l2.54-7.63A2.5 2.5 0 0 1 6.5 10H9V8H6.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5H11c.55 0 1 .45 1 1v3.5c0 .83-.67 1.5-1.5 1.5H10v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H10v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H10v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H10V22h6c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2v-2h2v-2h-2v-2h2c1.1 0 2-.9 2-2z"/>
-                </svg>
-              </div>
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900">Responsáveis Técnicos</h2>
-              <p className="text-sm text-slate-600 mt-1">FRPRT (Fatores De Riscos Psicossociais Relacionados ao Trabalho)</p>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Nome</div>
-              <div className="font-bold text-slate-900">{primaryResponsible?.name || '—'}</div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Conselho</div>
-              <div className="font-bold text-slate-900">{primaryResponsible?.council || '—'}</div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Registro</div>
-              <div className="font-bold text-slate-900">{primaryResponsible?.registration || '—'}</div>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Contato</div>
-              <div className="font-bold text-slate-900">{[primaryResponsible?.contact_email, primaryResponsible?.contact_phone].filter(Boolean).join(' | ') || '—'}</div>
-            </div>
-          </div>
-        </div>
-        )}
-
-        {/* Escopo do Trabalho - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.scope !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border border-purple-200">
-              <div className="w-6 h-6 text-purple-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Escopo do Trabalho</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("escopo")?.body || "" }}>
-          </div>
-        </div>
-        )}
-
-        {/* Fontes Técnicas – Organizacionais - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.technicalSources !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center border border-amber-200">
-              <div className="w-6 h-6 text-amber-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V11A1,1 0 0,0 12,12A1,1 0 0,0 13,11V5A1,1 0 0,0 12,4M12,15A3,3 0 0,1 15,18V19H16V21H8V19H9V18A3,3 0 0,1 12,15M12,17A1,1 0 0,0 11,18V19H13V18A1,1 0 0,0 12,17Z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Fontes Técnicas – Organizacionais</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("fontesTecnicas")?.body || "" }}>
-          </div>
-        </div>
-        )}
-
-        {/* Fontes Jurídicas - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.legalSources !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-rose-100 to-red-100 rounded-xl flex items-center justify-center border border-rose-200">
-              <div className="w-6 h-6 text-rose-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12,2A2,2 0 0,1 14,4V20A2,2 0 0,1 12,22A2,2 0 0,1 10,20V4A2,2 0 0,1 12,2M12,4A1,1 0 0,0 11,5V19A1,1 0 0,0 12,20A1,1 0 0,0 13,19V5A1,1 0 0,0 12,4Z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Fontes Jurídicas</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("fontesJuridicas")?.body || "" }}>
-          </div>
-        </div>
-        )}
-
-        {/* Metodologia de Avaliação - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.methodologies !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center border border-indigo-200">
-              <div className="w-6 h-6 text-indigo-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Metodologia de Avaliação</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("metodologias")?.body || "" }}>
-          </div>
-        </div>
-        )}
-
-        {/* Identificação dos Riscos Psicossociais - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.riskIdentification !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl flex items-center justify-center border border-red-200">
-              <div className="w-6 h-6 text-red-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12,2L1,21H23M12,6L19.5,19H4.5M12,10L15.5,16H8.5"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Identificação dos Riscos Psicossociais</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("identificacaoRiscos")?.body || "" }}>
-          </div>
-        </div>
-        )}
-
-        {/* Estratégias de Avaliação - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.strategies !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-xl flex items-center justify-center border border-teal-200">
-              <div className="w-6 h-6 text-teal-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Estratégias de Avaliação</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("estrategias")?.body || "" }}>
-          </div>
-        </div>
-        )}
-
-        {/* Análise do Resultado - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.resultAnalysis !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl flex items-center justify-center border border-emerald-200">
-              <div className="w-6 h-6 text-emerald-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21M16,8A2,2 0 0,0 18,6V4H20V2H16V4H14V6A2,2 0 0,0 16,8M16,5V6H18V4H16V5M6,8A2,2 0 0,0 8,6V4H10V2H6V4H4V6A2,2 0 0,0 6,8M6,5V6H8V4H6V5Z"/>
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Análise do Resultado</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
-            {getSection("analiseResultado")?.body}
-          </div>
-        </div>
-        )}
-
-        {/* Conclusão - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.conclusion !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center border border-violet-200">
-                <div className="w-6 h-6 text-violet-600">
+          {/* Sumário Moderno - Agora vem imediatamente após o título */}
+          <div className="p-4">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
+                <div className="w-6 h-6 text-blue-600">
                   <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
                   </svg>
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">Conclusão</h2>
+              <h2 className="text-2xl font-bold text-slate-900">Sumário</h2>
             </div>
-            <button
-              onClick={handleEditConclusion}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium no-print"
-            >
-              Editar Conclusão
-            </button>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
-            {getSection("conclusao")?.body}
-          </div>
-        </div>
-        )}
 
-        {/* Considerações Finais - Card Moderno */}
-        {(!reportConfig?.sections || reportConfig.sections.finalConsiderations !== false) && (
-          <div className="p-4 avoid-break">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-gray-100 rounded-xl flex items-center justify-center border border-slate-200">
-              <div className="w-6 h-6 text-slate-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
-                </svg>
+            {/* Lista numerada de seções conforme sequência fornecida */}
+            <div className="space-y-4">
+              {/* Seção 1 - Identificação da Empresa */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1</div>
+                <span className="text-slate-800 font-medium">Identificação da Empresa</span>
               </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Considerações Finais</h2>
-          </div>
-          <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
-            {getSection("consideracoes")?.body}
-          </div>
-        </div>
-        )}
 
-        {/* Anexo I - Resultado das Avaliações */}
-        <div className="p-4 avoid-break mt-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
-              <div className="w-6 h-6 text-blue-600">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M3,3H21V21H3V3M5,5V19H19V5H5M7,7H17V9H7V7M7,11H17V13H7V11M7,15H17V17H7V15Z"/>
-                </svg>
+              {/* Sub-seção 1.1 - Responsáveis Técnicos */}
+              <div className="flex items-center gap-4 py-1 ml-6">
+                <div className="w-12 h-8 bg-blue-500 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>1.1</div>
+                <span className="text-slate-800 font-medium">Responsáveis Técnicos</span>
               </div>
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900">Anexo I – Resultado das Avaliações</h2>
-          </div>
 
-          {/* Visão Geral - Gráfico de Pizza */}
-          <div className="mb-4">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral</h3>
-            <div className="flex items-center justify-center">
-              <div className="relative w-64 h-64">
-                {(() => {
-                  const { favorable, neutral, unfavorable, total } = overallDistribution;
-                  const favorablePercent = total > 0 ? (favorable / total) * 100 : 0;
-                  const neutralPercent = total > 0 ? (neutral / total) * 100 : 0;
-                  const unfavorablePercent = total > 0 ? (unfavorable / total) * 100 : 0;
-                  
-                  // Calculate overall average as the average of category averages
-                  const overallAverage = processedCategories.length > 0
-                    ? processedCategories.reduce((sum, cat) => sum + cat.averageScore, 0) / processedCategories.length
-                    : 0;
-                  
-                  return (
-                    <>
-                      <svg viewBox="0 0 200 200" className="transform -rotate-90">
-                        {/* Favorável - Verde */}
-                        {favorablePercent > 0 && (
-                          <circle
-                            cx="100"
-                            cy="100"
-                            r="80"
-                            fill="none"
-                            stroke="#22c55e"
-                            strokeWidth="40"
-                            strokeDasharray={`${favorablePercent * 5.027} ${100 * 5.027}`}
-                            strokeDashoffset="0"
-                          />
-                        )}
-                        {/* Neutro - Amarelo */}
-                        {neutralPercent > 0 && (
-                          <circle
-                            cx="100"
-                            cy="100"
-                            r="80"
-                            fill="none"
-                            stroke="#ffd700"
-                            strokeWidth="40"
-                            strokeDasharray={`${neutralPercent * 5.027} ${100 * 5.027}`}
-                            strokeDashoffset={`-${favorablePercent * 5.027}`}
-                          />
-                        )}
-                        {/* Desfavorável - Vermelho */}
-                        {unfavorablePercent > 0 && (
-                          <circle
-                            cx="100"
-                            cy="100"
-                            r="80"
-                            fill="none"
-                            stroke="#ef4444"
-                            strokeWidth="40"
-                            strokeDasharray={`${unfavorablePercent * 5.027} ${100 * 5.027}`}
-                            strokeDashoffset={`-${(favorablePercent + neutralPercent) * 5.027}`}
-                          />
-                        )}
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="text-3xl font-bold text-slate-900">{overallAverage.toFixed(2)}%</div>
-                          <div className="text-sm text-slate-600">Média Geral</div>
-                        </div>
-                      </div>
-                    </>
-                  );
-                })()}
+              {/* Seção 2 - Escopo do Trabalho */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>2</div>
+                <span className="text-slate-800 font-medium">Escopo do Trabalho</span>
               </div>
-            </div>
-            <div className="flex justify-center gap-6 mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#22c55e' }}></div>
-                <span className="text-sm text-slate-700">
-                  Favorável: {overallDistribution.favorable} ({overallDistribution.total > 0 ? ((overallDistribution.favorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ffd700' }}></div>
-                <span className="text-sm text-slate-700">
-                  Neutro: {overallDistribution.neutral} ({overallDistribution.total > 0 ? ((overallDistribution.neutral / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ef4444' }}></div>
-                <span className="text-sm text-slate-700">
-                  Desfavorável: {overallDistribution.unfavorable} ({overallDistribution.total > 0 ? ((overallDistribution.unfavorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
-                </span>
-              </div>
-            </div>
-          </div>
 
-          {/* Visão Geral Fatores - Gráfico de Barras Horizontais */}
-          <div className="mb-4">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral Fatores</h3>
-            <div className="space-y-3">
-              {processedCategories.map((category) => {
-                const dist = category.responseDistribution || { favorable: 0, neutral: 0, unfavorable: 0 };
-                return (
-                  <div key={category.id} className="space-y-2 avoid-break">
-                    <div className="text-sm font-medium text-slate-700 mb-2">{category.name}</div>
-                    <div className="flex h-8 rounded overflow-hidden border border-slate-200">
-                      {dist.favorable > 0 && (
-                        <div 
-                          className="bg-green-500 flex items-center justify-center text-white text-xs font-medium"
-                          style={{ width: `${dist.favorable}%` }}
-                        >
-                          {dist.favorable}%
-                        </div>
-                      )}
-                      {dist.neutral > 0 && (
-                        <div 
-                          className="flex items-center justify-center text-white text-xs font-medium"
-                          style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}
-                        >
-                          {dist.neutral}%
-                        </div>
-                      )}
-                      {dist.unfavorable > 0 && (
-                        <div 
-                          className="bg-red-500 flex items-center justify-center text-white text-xs font-medium"
-                          style={{ width: `${dist.unfavorable}%` }}
-                        >
-                          {dist.unfavorable}%
-                        </div>
-                      )}
-                    </div>
+              {/* Seção 3 - Fontes Técnicas */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>3</div>
+                <span className="text-slate-800 font-medium">Fontes Técnicas – Organizacionais</span>
+              </div>
+
+              {/* Seção 4 - Fontes Jurídicas */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>4</div>
+                <span className="text-slate-800 font-medium">Fontes Jurídicas</span>
+              </div>
+
+              {/* Seção 5 - Metodologias */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>5</div>
+                <span className="text-slate-800 font-medium">Metodologias de Avaliação</span>
+              </div>
+
+              {/* Seção 6 - Identificação dos riscos */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>6</div>
+                <span className="text-slate-800 font-medium">Identificação dos riscos psicossociais</span>
+              </div>
+
+              {/* Seção 7 - Estratégias */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>7</div>
+                <span className="text-slate-800 font-medium">Estratégias de Avaliação</span>
+              </div>
+
+              {/* Seção 8 - Análise do Resultado */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>8</div>
+                <span className="text-slate-800 font-medium">Análise do Resultado</span>
+              </div>
+
+              {/* Seção 9 - Conclusão */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>9</div>
+                <span className="text-slate-800 font-medium">Conclusão</span>
+              </div>
+
+              {/* Seção 10 - Considerações Finais */}
+              <div className="flex items-center gap-4 py-1">
+                <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>10</div>
+                <span className="text-slate-800 font-medium">Considerações Finais</span>
+              </div>
+
+              {/* Anexos */}
+              <div className="mt-6 pt-4">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Anexos</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4 py-1">
+                    <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>I</div>
+                    <span className="text-slate-800 font-medium">Anexo I – Resultado das Avaliações</span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Média Fatores - Gráfico de Barras Verticais */}
-          <div className="mb-4">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Média Fatores</h3>
-            <div className="relative border-b border-l border-slate-300 pb-2 pl-2">
-              <div className="flex items-end justify-around gap-2" style={{ height: '240px' }}>
-                {processedCategories
-                  .sort((a, b) => b.averageScore - a.averageScore)
-                  .map((category) => {
-                    const value = category.averageScore; // Use 0-100 scale directly
-                    // Height based on 0-100 scale: value/100 * 100%
-                    const heightPercent = (value / 100) * 100;
-                    return (
-                      <div key={category.id} className="flex flex-col items-center gap-1 flex-1">
-                        <div className="text-xs font-bold text-slate-700 h-4">{value.toFixed(2)}</div>
-                        <div className="w-full flex items-end" style={{ height: '180px' }}>
-                          <div 
-                            className="w-full bg-green-500 rounded-t transition-all"
-                            style={{ height: `${heightPercent}%` }}
-                          ></div>
-                        </div>
-                        <div className="text-xs text-slate-600 text-center leading-tight h-8 flex items-center justify-center">{category.name}</div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          </div>
-
-          {/* Render question sections dynamically by category */}
-          {processedCategories.map((category) => {
-            const categoryQuestions = processedQuestions
-              .filter(q => q.category_id === category.id)
-              .sort((a, b) => a.order - b.order);
-            
-            if (categoryQuestions.length === 0) return null;
-            
-            return (
-              <React.Fragment key={category.id}>
-                {/* Espaçador para garantir que o título não seja cortado */}
-                <div style={{ height: '60px', pageBreakBefore: 'always', breakBefore: 'page' }} className="print-break"></div>
-                
-                {/* Container que agrupa questões + legendas para evitar quebra de página */}
-                <div className="avoid-break mb-6" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '0' }}>
-                  <div className="mb-4" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
-                    <h3 className="text-lg font-bold text-slate-800 mb-4" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Visão Fatores de {category.name}</h3>
-                    <div className="space-y-2">
-                      {categoryQuestions.map((question, idx) => {
-                        const dist = question.responseDistribution;
-                        return (
-                          <div key={question.id} className="space-y-2">
-                            <div className="text-xs text-slate-600 mb-1">Q{idx + 1} - {question.text}</div>
-                            <div className="flex h-6 rounded overflow-hidden border border-slate-200">
-                              {dist.favorable > 0 && (
-                                <div className="bg-green-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.favorable}%` }}>
-                                  {dist.favorable >= 15 ? `${dist.favorable}%` : ''}
-                                </div>
-                              )}
-                              {dist.neutral > 0 && (
-                                <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}>
-                                  {dist.neutral >= 15 ? `${dist.neutral}%` : ''}
-                                </div>
-                              )}
-                              {dist.unfavorable > 0 && (
-                                <div className="bg-red-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.unfavorable}%` }}>
-                                  {dist.unfavorable >= 15 ? `${dist.unfavorable}%` : ''}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                  <div className="flex items-center gap-4 py-1">
+                    <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>II</div>
+                    <span className="text-slate-800 font-medium">Anexo II – Análise e Inventário dos Riscos Psicossociais</span>
                   </div>
-                  
-                  {/* Legendas das Zonas de Risco após cada categoria */}
-                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
-                    <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444', flex: '1', minWidth: '0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', flexShrink: 0 }}></div>
-                        <h4 className="text-xs font-bold" style={{ color: '#dc2626' }}>Zona Vermelha (0% a 39,99%)</h4>
-                      </div>
-                      <p className="text-xs" style={{ color: '#b91c1c' }}>Risco elevado: ação corretiva imediata.</p>
-                    </div>
-                    <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700', flex: '1', minWidth: '0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ffd700', flexShrink: 0 }}></div>
-                        <h4 className="text-xs font-bold" style={{ color: '#ca8a04' }}>Zona Amarela (40% a 74,99%)</h4>
-                      </div>
-                      <p className="text-xs" style={{ color: '#a16207' }}>Atenção: possível risco psicossocial; revisar práticas.</p>
-                    </div>
-                    <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e', flex: '1', minWidth: '0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', flexShrink: 0 }}></div>
-                        <h4 className="text-xs font-bold" style={{ color: '#16a34a' }}>Zona Verde (75% a 100%)</h4>
-                      </div>
-                      <p className="text-xs" style={{ color: '#15803d' }}>Ambiente psicossocial satisfatório; manter boas práticas.</p>
-                    </div>
+                  <div className="flex items-center gap-4 py-1">
+                    <div className="w-12 h-8 bg-blue-600 rounded-lg text-white font-bold text-sm flex-shrink-0 text-center" style={{ lineHeight: '2rem' }}>III</div>
+                    <span className="text-slate-800 font-medium">Anexo III – Plano de Ação e Monitoramento</span>
                   </div>
                 </div>
-              </React.Fragment>
-            );
-          })}
-
-        </div>
-
-        {/* Anexo II - Análise e Inventário dos Riscos Psicossociais */}
-        <div className="report-section mb-4">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo II – Análise e Inventário dos Riscos Psicossociais</h2>
-          
-          <div className="mb-6 text-slate-700 leading-relaxed">
-            <p>A análise foi realizada com base nas respostas obtidas pelo questionário Stress Indicator Tool (SIT), aplicado de forma anônima e individual. A interpretação seguiu os critérios de probabilidade x severidade, com apoio de análise estatística.</p>
+              </div>
+            </div>
           </div>
 
-          {/* Tabela de Análise de Riscos */}
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-slate-300">
-              <thead>
-                <tr className="bg-slate-100">
-                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Fator Psicossocial Avaliado</th>
-                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Classificação de Risco</th>
-                  <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Observações Relevantes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Demandas: carga de trabalho, padrões de trabalho e ambiente</td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">
-                    <strong>Favorável:</strong> Indica boas condições de trabalho e aspectos positivos no ambiente organizacional.<br/>
-                    Respostas possíveis:<br/>
-                    Frequentemente e Sempre
-                  </td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Sobrecarga frequente e prazos apertados.</td>
-                </tr>
-                <tr>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Controle: autonomia sobre como o trabalho é realizado</td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">
-                    <strong>Neutro:</strong> Representa uma posição intermediária, sem uma inclinação clara para o positivo ou negativo.<br/>
-                    Resposta possível: Às vezes
-                  </td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Limitações em decisões operacionais.</td>
-                </tr>
-                <tr>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Suporte: apoio da gestão e dos colegas</td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">
-                    <strong>Desfavorável:</strong> Aponta possíveis problemas que podem afetar a saúde, segurança e bem-estar dos funcionários.<br/>
-                    Respostas possíveis:<br/>
-                    Nunca e Raramente.
-                  </td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Necessidade de maior escuta e feedback.</td>
-                </tr>
-                <tr>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Relacionamentos: prevenção de conflitos e assédio</td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Interações colaborativas bem avaliadas.</td>
-                </tr>
-                <tr>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Papel: clareza das funções e ausência de conflitos de responsabilidade</td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Dúvidas recorrentes sobre papéis e metas.</td>
-                </tr>
-                <tr>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700">Mudanças: gestão e comunicação sobre mudanças organizacionais</td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
-                  <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Anexo III - Plano de Ação e Monitoramento */}
-        <div className="report-section print-break mb-4" style={{ pageBreakBefore: 'always', breakBefore: 'page' }}>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo III – Plano de Ação e Monitoramento</h2>
-          
-          <div className="mb-6 text-slate-700 leading-relaxed">
-            <p>Este plano tem por objetivo monitorar e reduzir os riscos psicossociais mapeados, integrando ações ao <strong>PGR – Programa de Gerenciamento de Riscos, PCMSO – Programa de Controle Médico de Saúde Ocupacional, AEP – Análise Ergonômica Preliminar.</strong></p>
-          </div>
-
-          <div className="mb-6 text-slate-700 leading-relaxed">
-            <p><strong>OBS:</strong> Este plano deverá ser revisado conforme o ciclo de revisão do PGR da empresa, ou sempre que ocorrerem alterações significativas nas condições de trabalho, organização ou identificação de novos riscos, conforme previsto na NR-01.</p>
-          </div>
-
-          {/* Tabela de Plano de Ação - Dinâmica baseada nos planos do parceiro ou globais */}
-          {(() => {
-            // Calculate overall average from categories
-            const overallAverage = processedCategories.length > 0
-              ? processedCategories.reduce((sum, cat) => sum + cat.averageScore, 0) / processedCategories.length
-              : 0;
-            
-            // Show action plans if average is below 75
-            const showActionPlan = overallAverage < 75;
-            
-            // Use globalActionPlans which already contains the priority logic applied
-            const plansToShow = showActionPlan ? globalActionPlans : [];
-            
-            return (
-              <div className="overflow-x-auto mb-6">
-                {showActionPlan && plansToShow.length > 0 && (
-                  <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Atenção:</strong> A média geral da empresa está abaixo de 75% ({overallAverage.toFixed(2)}%). 
-                      Os planos de ação abaixo são recomendações baseadas nas categorias com pontuação mais baixa.
-                    </p>
+          {/* Identificação da Empresa - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.companyInfo !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl flex items-center justify-center border border-emerald-200">
+                  <div className="w-6 h-6 text-emerald-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
+                    </svg>
                   </div>
-                )}
-                
-                {showActionPlan && plansToShow.length > 0 ? (
-                  <div className="space-y-6">
-                    {plansToShow.map((plan, idx) => (
-                      <div key={plan.id || idx} className="border border-slate-300 rounded-lg overflow-hidden">
-                        <div className="bg-slate-100 p-3 border-b border-slate-300">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-bold text-slate-900">{plan.categoryName}</h4>
-                            <span className="text-xs text-slate-600">Média: {plan.categoryScore.toFixed(2)}% | Nível de Risco: {plan.categoryScore >= 75 ? 'Favorável' : plan.categoryScore >= 40 ? 'Neutro' : 'Desfavorável'}</span>
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <h5 className="text-sm font-semibold text-slate-800 mb-2">{plan.title}</h5>
-                          <div className="text-sm text-slate-700 whitespace-pre-wrap">{plan.description}</div>
-                        </div>
-                      </div>
-                    ))}
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Identificação da Empresa</h2>
+              </div>
+              <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+                <div>
+                  <div className="text-muted-foreground">Razão Social</div>
+                  <div className="font-medium">{company?.name || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">CNPJ</div>
+                  <div className="font-medium">{(company as any)?.cnpj || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">CNAE</div>
+                  <div className="font-medium">{(company as any)?.cnae || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Endereço</div>
+                  <div className="font-medium">{formatAddress((company as any)?.address)}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Setores</div>
+                  <div className="font-medium">{departmentNames || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Data da Avaliação</div>
+                  <div className="font-medium">{assessmentDateRange || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Grau de Risco</div>
+                  <div className="font-medium">
+                    {overallAverageScore !== null ? (
+                      overallAverageScore < 40 ? (
+                        <span className="text-red-600 font-bold">ELEVADO (Zona Vermelha)</span>
+                      ) : overallAverageScore < 75 ? (
+                        <span className="text-yellow-500 font-bold">MODERADO (Zona Amarela)</span>
+                      ) : (
+                        <span className="text-emerald-600 font-bold">BAIXO (Zona Verde)</span>
+                      )
+                    ) : "—"}
                   </div>
-                ) : showActionPlan ? (
-                  <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
-                    <p className="font-semibold text-slate-700 mb-2">Nenhum plano de ação cadastrado</p>
-                    <p>Entre em contato com o administrador para cadastrar planos de ação.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Responsáveis Técnicos - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.technicalResponsibles !== false) && primaryResponsible && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
+                  <div className="w-6 h-6 text-blue-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.5 2.5 0 0 0 17.5 6H15v2h2.5c.28 0 .5.22.5.5s-.22.5-.5.5H14c-.55 0-1-.45-1-1V6c0-.55.45-1 1-1h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h2.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H16v2h2c1.1 0 2 .9 2 2s-.9 2-2 2h-6v-2h-2v2h-2v-2H6v2H4v-2H2v-2h2v-6H2.5l2.54-7.63A2.5 2.5 0 0 1 6.5 10H9V8H6.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5H11c.55 0 1 .45 1 1v3.5c0 .83-.67 1.5-1.5 1.5H10v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H10v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H10v2h1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5H10V22h6c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2v-2h2v-2h-2v-2h2c1.1 0 2-.9 2-2z" />
+                    </svg>
                   </div>
-                ) : (
-                  <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
-                    <div className="flex flex-col items-center gap-2">
-                      <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Responsáveis Técnicos</h2>
+                  <p className="text-sm text-slate-600 mt-1">FRPRT (Fatores De Riscos Psicossociais Relacionados ao Trabalho)</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Nome</div>
+                  <div className="font-bold text-slate-900">{primaryResponsible?.name || '—'}</div>
+                </div>
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Conselho</div>
+                  <div className="font-bold text-slate-900">{primaryResponsible?.council || '—'}</div>
+                </div>
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Registro</div>
+                  <div className="font-bold text-slate-900">{primaryResponsible?.registration || '—'}</div>
+                </div>
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Contato</div>
+                  <div className="font-bold text-slate-900">{[primaryResponsible?.contact_email, primaryResponsible?.contact_phone].filter(Boolean).join(' | ') || '—'}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Escopo do Trabalho - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.scope !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border border-purple-200">
+                  <div className="w-6 h-6 text-purple-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Escopo do Trabalho</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("escopo")?.body || "" }}>
+              </div>
+            </div>
+          )}
+
+          {/* Fontes Técnicas – Organizacionais - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.technicalSources !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 rounded-xl flex items-center justify-center border border-amber-200">
+                  <div className="w-6 h-6 text-amber-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V11A1,1 0 0,0 12,12A1,1 0 0,0 13,11V5A1,1 0 0,0 12,4M12,15A3,3 0 0,1 15,18V19H16V21H8V19H9V18A3,3 0 0,1 12,15M12,17A1,1 0 0,0 11,18V19H13V18A1,1 0 0,0 12,17Z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Fontes Técnicas – Organizacionais</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("fontesTecnicas")?.body || "" }}>
+              </div>
+            </div>
+          )}
+
+          {/* Fontes Jurídicas - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.legalSources !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-rose-100 to-red-100 rounded-xl flex items-center justify-center border border-rose-200">
+                  <div className="w-6 h-6 text-rose-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12,2A2,2 0 0,1 14,4V20A2,2 0 0,1 12,22A2,2 0 0,1 10,20V4A2,2 0 0,1 12,2M12,4A1,1 0 0,0 11,5V19A1,1 0 0,0 12,20A1,1 0 0,0 13,19V5A1,1 0 0,0 12,4Z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Fontes Jurídicas</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("fontesJuridicas")?.body || "" }}>
+              </div>
+            </div>
+          )}
+
+          {/* Metodologia de Avaliação - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.methodologies !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center border border-indigo-200">
+                  <div className="w-6 h-6 text-indigo-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Metodologia de Avaliação</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("metodologias")?.body || "" }}>
+              </div>
+            </div>
+          )}
+
+          {/* Identificação dos Riscos Psicossociais - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.riskIdentification !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl flex items-center justify-center border border-red-200">
+                  <div className="w-6 h-6 text-red-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12,2L1,21H23M12,6L19.5,19H4.5M12,10L15.5,16H8.5" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Identificação dos Riscos Psicossociais</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("identificacaoRiscos")?.body || "" }}>
+              </div>
+            </div>
+          )}
+
+          {/* Estratégias de Avaliação - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.strategies !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-xl flex items-center justify-center border border-teal-200">
+                  <div className="w-6 h-6 text-teal-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Estratégias de Avaliação</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" dangerouslySetInnerHTML={{ __html: getSection("estrategias")?.body || "" }}>
+              </div>
+            </div>
+          )}
+
+          {/* Análise do Resultado - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.resultAnalysis !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl flex items-center justify-center border border-emerald-200">
+                  <div className="w-6 h-6 text-emerald-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21M16,8A2,2 0 0,0 18,6V4H20V2H16V4H14V6A2,2 0 0,0 16,8M16,5V6H18V4H16V5M6,8A2,2 0 0,0 8,6V4H10V2H6V4H4V6A2,2 0 0,0 6,8M6,5V6H8V4H6V5Z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Análise do Resultado</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
+                {getSection("analiseResultado")?.body}
+              </div>
+            </div>
+          )}
+
+          {/* Conclusão - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.conclusion !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center border border-violet-200">
+                    <div className="w-6 h-6 text-violet-600">
+                      <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
                       </svg>
-                      <p className="font-semibold text-slate-700">Média geral satisfatória ({overallAverage.toFixed(2)}%)</p>
-                      <p>A empresa apresenta condições psicossociais favoráveis. Não há necessidade de planos de ação corretivos no momento.</p>
-                      <p className="text-xs mt-2">Recomenda-se manter o monitoramento contínuo e as boas práticas atuais.</p>
                     </div>
                   </div>
-                )}
+                  <h2 className="text-2xl font-bold text-slate-900">Conclusão</h2>
+                </div>
+                <button
+                  onClick={handleEditConclusion}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium no-print"
+                >
+                  Editar Conclusão
+                </button>
               </div>
-            );
-          })()}
-        </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
+                {getSection("conclusao")?.body}
+              </div>
+            </div>
+          )}
 
-        {/* Seção de Assinaturas */}
-        <div className="report-section mt-8 mb-4">
-          <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Assinaturas</h2>
-          
-          <div className="grid md:grid-cols-2 gap-12 mt-12">
-            {/* Assinatura do Responsável pela Empresa */}
-            <div className="flex flex-col items-center">
-              <div className="w-full border-t-2 border-slate-400 mb-3"></div>
-              <div className="text-center">
-                <p className="font-semibold text-slate-900">{company?.name || 'Empresa'}</p>
-                {company?.responsible_name && (
-                  <p className="text-sm text-slate-700 mt-1">{company.responsible_name}</p>
-                )}
-                {company?.responsible_email && (
-                  <p className="text-sm text-slate-600">{company.responsible_email}</p>
-                )}
-                <p className="text-sm text-slate-600 mt-1">{company?.responsible_position || 'Responsável pela Empresa'}</p>
+          {/* Considerações Finais - Card Moderno */}
+          {(!reportConfig?.sections || reportConfig.sections.finalConsiderations !== false) && (
+            <div className="p-4 avoid-break">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-gray-100 rounded-xl flex items-center justify-center border border-slate-200">
+                  <div className="w-6 h-6 text-slate-600">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">Considerações Finais</h2>
+              </div>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">
+                {getSection("consideracoes")?.body}
+              </div>
+            </div>
+          )}
+
+          {/* Anexo I - Resultado das Avaliações */}
+          <div className="p-4 avoid-break mt-8">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center border border-blue-200">
+                <div className="w-6 h-6 text-blue-600">
+                  <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3,3H21V21H3V3M5,5V19H19V5H5M7,7H17V9H7V7M7,11H17V13H7V11M7,15H17V17H7V15Z" />
+                  </svg>
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900">Anexo I – Resultado das Avaliações</h2>
+            </div>
+
+            {/* Visão Geral - Gráfico de Pizza */}
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral</h3>
+              <div className="flex items-center justify-center">
+                <div className="relative w-64 h-64">
+                  {(() => {
+                    const { favorable, neutral, unfavorable, total } = overallDistribution;
+                    const favorablePercent = total > 0 ? (favorable / total) * 100 : 0;
+                    const neutralPercent = total > 0 ? (neutral / total) * 100 : 0;
+                    const unfavorablePercent = total > 0 ? (unfavorable / total) * 100 : 0;
+
+                    // Calculate overall average as the average of category averages
+                    const overallAverage = processedCategories.length > 0
+                      ? processedCategories.reduce((sum, cat) => sum + cat.averageScore, 0) / processedCategories.length
+                      : 0;
+
+                    return (
+                      <>
+                        <svg viewBox="0 0 200 200" className="transform -rotate-90">
+                          {/* Favorável - Verde */}
+                          {favorablePercent > 0 && (
+                            <circle
+                              cx="100"
+                              cy="100"
+                              r="80"
+                              fill="none"
+                              stroke="#22c55e"
+                              strokeWidth="40"
+                              strokeDasharray={`${favorablePercent * 5.027} ${100 * 5.027}`}
+                              strokeDashoffset="0"
+                            />
+                          )}
+                          {/* Neutro - Amarelo */}
+                          {neutralPercent > 0 && (
+                            <circle
+                              cx="100"
+                              cy="100"
+                              r="80"
+                              fill="none"
+                              stroke="#ffd700"
+                              strokeWidth="40"
+                              strokeDasharray={`${neutralPercent * 5.027} ${100 * 5.027}`}
+                              strokeDashoffset={`-${favorablePercent * 5.027}`}
+                            />
+                          )}
+                          {/* Desfavorável - Vermelho */}
+                          {unfavorablePercent > 0 && (
+                            <circle
+                              cx="100"
+                              cy="100"
+                              r="80"
+                              fill="none"
+                              stroke="#ef4444"
+                              strokeWidth="40"
+                              strokeDasharray={`${unfavorablePercent * 5.027} ${100 * 5.027}`}
+                              strokeDashoffset={`-${(favorablePercent + neutralPercent) * 5.027}`}
+                            />
+                          )}
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="text-3xl font-bold text-slate-900">{overallAverage.toFixed(2)}%</div>
+                            <div className="text-sm text-slate-600">Média Geral</div>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+              <div className="flex justify-center gap-6 mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#22c55e' }}></div>
+                  <span className="text-sm text-slate-700">
+                    Favorável: {overallDistribution.favorable} ({overallDistribution.total > 0 ? ((overallDistribution.favorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ffd700' }}></div>
+                  <span className="text-sm text-slate-700">
+                    Neutro: {overallDistribution.neutral} ({overallDistribution.total > 0 ? ((overallDistribution.neutral / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded" style={{ backgroundColor: '#ef4444' }}></div>
+                  <span className="text-sm text-slate-700">
+                    Desfavorável: {overallDistribution.unfavorable} ({overallDistribution.total > 0 ? ((overallDistribution.unfavorable / overallDistribution.total) * 100).toFixed(2) : '0.00'}%)
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Assinatura do Responsável Técnico Principal */}
-            <div className="flex flex-col items-center">
-              <div className="w-full border-t-2 border-slate-400 mb-3"></div>
-              <div className="text-center">
-                <p className="font-semibold text-slate-900">
-                  {primaryResponsible?.name || 'Responsável Técnico'}
-                </p>
-                {primaryResponsible?.profession && (
-                  <p className="text-sm text-slate-600">{primaryResponsible.profession}</p>
-                )}
-                {primaryResponsible?.council && primaryResponsible?.registration && (
-                  <p className="text-sm text-slate-600">
-                    {primaryResponsible.council} - {primaryResponsible.registration}
+            {/* Visão Geral Fatores - Gráfico de Barras Horizontais */}
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-slate-800 mb-4">Visão Geral Fatores</h3>
+              <div className="space-y-3">
+                {processedCategories.map((category) => {
+                  const dist = category.responseDistribution || { favorable: 0, neutral: 0, unfavorable: 0 };
+                  return (
+                    <div key={category.id} className="space-y-2 avoid-break">
+                      <div className="text-sm font-medium text-slate-700 mb-2">{category.name}</div>
+                      <div className="flex h-8 rounded overflow-hidden border border-slate-200">
+                        {dist.favorable > 0 && (
+                          <div
+                            className="bg-green-500 flex items-center justify-center text-white text-xs font-medium"
+                            style={{ width: `${dist.favorable}%` }}
+                          >
+                            {dist.favorable}%
+                          </div>
+                        )}
+                        {dist.neutral > 0 && (
+                          <div
+                            className="flex items-center justify-center text-white text-xs font-medium"
+                            style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}
+                          >
+                            {dist.neutral}%
+                          </div>
+                        )}
+                        {dist.unfavorable > 0 && (
+                          <div
+                            className="bg-red-500 flex items-center justify-center text-white text-xs font-medium"
+                            style={{ width: `${dist.unfavorable}%` }}
+                          >
+                            {dist.unfavorable}%
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Média Fatores - Gráfico de Barras Verticais */}
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-slate-800 mb-4">Média Fatores</h3>
+              <div className="relative border-b border-l border-slate-300 pb-2 pl-2">
+                <div className="flex items-end justify-around gap-2" style={{ height: '240px' }}>
+                  {processedCategories
+                    .sort((a, b) => b.averageScore - a.averageScore)
+                    .map((category) => {
+                      const value = category.averageScore; // Use 0-100 scale directly
+                      // Height based on 0-100 scale: value/100 * 100%
+                      const heightPercent = (value / 100) * 100;
+                      return (
+                        <div key={category.id} className="flex flex-col items-center gap-1 flex-1">
+                          <div className="text-xs font-bold text-slate-700 h-4">{value.toFixed(2)}</div>
+                          <div className="w-full flex items-end" style={{ height: '180px' }}>
+                            <div
+                              className="w-full bg-green-500 rounded-t transition-all"
+                              style={{ height: `${heightPercent}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-slate-600 text-center leading-tight h-8 flex items-center justify-center">{category.name}</div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+
+            {/* Render question sections dynamically by category */}
+            {processedCategories.map((category) => {
+              const categoryQuestions = processedQuestions
+                .filter(q => q.category_id === category.id)
+                .sort((a, b) => a.order - b.order);
+
+              if (categoryQuestions.length === 0) return null;
+
+              return (
+                <React.Fragment key={category.id}>
+                  {/* Espaçador para garantir que o título não seja cortado */}
+                  <div style={{ height: '60px', pageBreakBefore: 'always', breakBefore: 'page' }} className="print-break"></div>
+
+                  {/* Container que agrupa questões + legendas para evitar quebra de página */}
+                  <div className="avoid-break mb-6" style={{ pageBreakInside: 'avoid', breakInside: 'avoid', marginTop: '0' }}>
+                    <div className="mb-4" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>
+                      <h3 className="text-lg font-bold text-slate-800 mb-4" style={{ pageBreakAfter: 'avoid', breakAfter: 'avoid' }}>Visão Fatores de {category.name}</h3>
+                      <div className="space-y-2">
+                        {categoryQuestions.map((question, idx) => {
+                          const dist = question.responseDistribution;
+                          return (
+                            <div key={question.id} className="space-y-2">
+                              <div className="text-xs text-slate-600 mb-1">Q{idx + 1} - {question.text}</div>
+                              <div className="flex h-6 rounded overflow-hidden border border-slate-200">
+                                {dist.favorable > 0 && (
+                                  <div className="bg-green-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.favorable}%` }}>
+                                    {dist.favorable >= 15 ? `${dist.favorable}%` : ''}
+                                  </div>
+                                )}
+                                {dist.neutral > 0 && (
+                                  <div className="flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.neutral}%`, backgroundColor: '#ffd700' }}>
+                                    {dist.neutral >= 15 ? `${dist.neutral}%` : ''}
+                                  </div>
+                                )}
+                                {dist.unfavorable > 0 && (
+                                  <div className="bg-red-500 flex items-center justify-center text-white text-xs font-medium" style={{ width: `${dist.unfavorable}%` }}>
+                                    {dist.unfavorable >= 15 ? `${dist.unfavorable}%` : ''}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Legendas das Zonas de Risco após cada categoria */}
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
+                      <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#ffe5e5', borderColor: '#ef4444', flex: '1', minWidth: '0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ef4444', flexShrink: 0 }}></div>
+                          <h4 className="text-xs font-bold" style={{ color: '#dc2626' }}>Zona Vermelha (0% a 39,99%)</h4>
+                        </div>
+                        <p className="text-xs" style={{ color: '#b91c1c' }}>Risco elevado: ação corretiva imediata.</p>
+                      </div>
+                      <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#fff9e5', borderColor: '#ffd700', flex: '1', minWidth: '0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ffd700', flexShrink: 0 }}></div>
+                          <h4 className="text-xs font-bold" style={{ color: '#ca8a04' }}>Zona Amarela (40% a 74,99%)</h4>
+                        </div>
+                        <p className="text-xs" style={{ color: '#a16207' }}>Atenção: possível risco psicossocial; revisar práticas.</p>
+                      </div>
+                      <div className="rounded-lg p-3 border-2" style={{ backgroundColor: '#e5ffe5', borderColor: '#22c55e', flex: '1', minWidth: '0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', flexShrink: 0 }}></div>
+                          <h4 className="text-xs font-bold" style={{ color: '#16a34a' }}>Zona Verde (75% a 100%)</h4>
+                        </div>
+                        <p className="text-xs" style={{ color: '#15803d' }}>Ambiente psicossocial satisfatório; manter boas práticas.</p>
+                      </div>
+                    </div>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+
+          </div>
+
+          {/* Anexo II - Análise e Inventário dos Riscos Psicossociais */}
+          <div className="report-section mb-4">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo II – Análise e Inventário dos Riscos Psicossociais</h2>
+
+            <div className="mb-6 text-slate-700 leading-relaxed">
+              <p>A análise foi realizada com base nas respostas obtidas pelo questionário Stress Indicator Tool (SIT), aplicado de forma anônima e individual. A interpretação seguiu os critérios de probabilidade x severidade, com apoio de análise estatística.</p>
+            </div>
+
+            {/* Tabela de Análise de Riscos */}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-slate-300">
+                <thead>
+                  <tr className="bg-slate-100">
+                    <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Fator Psicossocial Avaliado</th>
+                    <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Classificação de Risco</th>
+                    <th className="border border-slate-300 p-3 text-left text-sm font-bold text-slate-900">Observações Relevantes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Demandas: carga de trabalho, padrões de trabalho e ambiente</td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">
+                      <strong>Favorável:</strong> Indica boas condições de trabalho e aspectos positivos no ambiente organizacional.<br />
+                      Respostas possíveis:<br />
+                      Frequentemente e Sempre
+                    </td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Sobrecarga frequente e prazos apertados.</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Controle: autonomia sobre como o trabalho é realizado</td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">
+                      <strong>Neutro:</strong> Representa uma posição intermediária, sem uma inclinação clara para o positivo ou negativo.<br />
+                      Resposta possível: Às vezes
+                    </td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Limitações em decisões operacionais.</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Suporte: apoio da gestão e dos colegas</td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">
+                      <strong>Desfavorável:</strong> Aponta possíveis problemas que podem afetar a saúde, segurança e bem-estar dos funcionários.<br />
+                      Respostas possíveis:<br />
+                      Nunca e Raramente.
+                    </td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Necessidade de maior escuta e feedback.</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Relacionamentos: prevenção de conflitos e assédio</td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Interações colaborativas bem avaliadas.</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Papel: clareza das funções e ausência de conflitos de responsabilidade</td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Dúvidas recorrentes sobre papéis e metas.</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700">Mudanças: gestão e comunicação sobre mudanças organizacionais</td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                    <td className="border border-slate-300 p-3 text-sm text-slate-700"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Anexo III - Plano de Ação e Monitoramento */}
+          <div className="report-section print-break mb-4" style={{ pageBreakBefore: 'always', breakBefore: 'page' }}>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Anexo III – Plano de Ação e Monitoramento</h2>
+
+            <div className="mb-6 text-slate-700 leading-relaxed">
+              <p>Este plano tem por objetivo monitorar e reduzir os riscos psicossociais mapeados, integrando ações ao <strong>PGR – Programa de Gerenciamento de Riscos, PCMSO – Programa de Controle Médico de Saúde Ocupacional, AEP – Análise Ergonômica Preliminar.</strong></p>
+            </div>
+
+            <div className="mb-6 text-slate-700 leading-relaxed">
+              <p><strong>OBS:</strong> Este plano deverá ser revisado conforme o ciclo de revisão do PGR da empresa, ou sempre que ocorrerem alterações significativas nas condições de trabalho, organização ou identificação de novos riscos, conforme previsto na NR-01.</p>
+            </div>
+
+            {/* Tabela de Plano de Ação - Dinâmica baseada nos planos do parceiro ou globais */}
+            {(() => {
+              // Calculate overall average from categories
+              const overallAverage = processedCategories.length > 0
+                ? processedCategories.reduce((sum, cat) => sum + cat.averageScore, 0) / processedCategories.length
+                : 0;
+
+              // Show action plans if average is below 75
+              const showActionPlan = overallAverage < 75;
+
+              // Use globalActionPlans which already contains the priority logic applied
+              const plansToShow = showActionPlan ? globalActionPlans : [];
+
+              return (
+                <div className="overflow-x-auto mb-6">
+                  {showActionPlan && plansToShow.length > 0 && (
+                    <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Atenção:</strong> A média geral da empresa está abaixo de 75% ({overallAverage.toFixed(2)}%).
+                        Os planos de ação abaixo são recomendações baseadas nas categorias com pontuação mais baixa.
+                      </p>
+                    </div>
+                  )}
+
+                  {showActionPlan && plansToShow.length > 0 ? (
+                    <div className="space-y-6">
+                      {plansToShow.map((plan, idx) => (
+                        <div key={plan.id || idx} className="border border-slate-300 rounded-lg overflow-hidden">
+                          <div className="bg-slate-100 p-3 border-b border-slate-300">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-sm font-bold text-slate-900">{plan.categoryName}</h4>
+                              <span className="text-xs text-slate-600">Média: {plan.categoryScore.toFixed(2)}% | Nível de Risco: {plan.categoryScore >= 75 ? 'Favorável' : plan.categoryScore >= 40 ? 'Neutro' : 'Desfavorável'}</span>
+                            </div>
+                          </div>
+                          <div className="p-4">
+                            <h5 className="text-sm font-semibold text-slate-800 mb-2">{plan.title}</h5>
+                            <div className="text-sm text-slate-700 whitespace-pre-wrap">{plan.description}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : showActionPlan ? (
+                    <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
+                      <p className="font-semibold text-slate-700 mb-2">Nenhum plano de ação cadastrado</p>
+                      <p>Entre em contato com o administrador para cadastrar planos de ação.</p>
+                    </div>
+                  ) : (
+                    <div className="border border-slate-300 rounded-lg p-6 text-center text-sm text-slate-600">
+                      <div className="flex flex-col items-center gap-2">
+                        <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="font-semibold text-slate-700">Média geral satisfatória ({overallAverage.toFixed(2)}%)</p>
+                        <p>A empresa apresenta condições psicossociais favoráveis. Não há necessidade de planos de ação corretivos no momento.</p>
+                        <p className="text-xs mt-2">Recomenda-se manter o monitoramento contínuo e as boas práticas atuais.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Seção de Assinaturas */}
+          <div className="report-section mt-8 mb-4">
+            <h2 className="text-2xl font-bold text-slate-900 mb-8 text-center">Assinaturas</h2>
+
+            <div className="grid md:grid-cols-2 gap-12 mt-12">
+              {/* Assinatura do Responsável pela Empresa */}
+              <div className="flex flex-col items-center">
+                <div className="w-full border-t-2 border-slate-400 mb-3"></div>
+                <div className="text-center">
+                  <p className="font-semibold text-slate-900">{company?.name || 'Empresa'}</p>
+                  {company?.responsible_name && (
+                    <p className="text-sm text-slate-700 mt-1">{company.responsible_name}</p>
+                  )}
+                  <p className="text-sm text-slate-600 mt-1">{company?.responsible_position || 'Responsável pela Empresa'}</p>
+                  {company?.responsible_email && (
+                    <p className="text-sm text-slate-600">{company.responsible_email}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Assinatura do Responsável Técnico Principal */}
+              <div className="flex flex-col items-center">
+                <div className="w-full border-t-2 border-slate-400 mb-3"></div>
+                <div className="text-center">
+                  <p className="font-semibold text-slate-900">
+                    {primaryResponsible?.name || 'Responsável Técnico'}
                   </p>
-                )}
-                <p className="text-sm text-slate-600 mt-1">Responsável Técnico</p>
+                  {primaryResponsible?.profession && (
+                    <p className="text-sm text-slate-600">{primaryResponsible.profession}</p>
+                  )}
+                  {primaryResponsible?.council && primaryResponsible?.registration && (
+                    <p className="text-sm text-slate-600">
+                      {primaryResponsible.council} - {primaryResponsible.registration}
+                    </p>
+                  )}
+                  <p className="text-sm text-slate-600 mt-1">Responsável Técnico</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="mt-8 text-center text-sm text-slate-600 avoid-break" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-            <p>Data: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+            <div className="mt-8 text-center text-sm text-slate-600 avoid-break" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
+              <p>Data: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+            </div>
           </div>
-        </div>
 
         </div> {/* Fecha report-content */}
       </div>
@@ -1460,7 +1460,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
               <h3 className="text-xl font-bold text-slate-900">Editar Conclusão</h3>
               <p className="text-sm text-slate-600 mt-1">Personalize o texto da conclusão do relatório</p>
             </div>
-            
+
             <div className="p-6 flex-1 overflow-y-auto">
               <textarea
                 value={conclusionText}
@@ -1472,7 +1472,7 @@ As recomendações apresentadas visam promover a melhoria contínua das condiç�
                 Este texto substituirá a conclusão padrão em todos os relatórios gerados.
               </p>
             </div>
-            
+
             <div className="p-6 border-t border-slate-200 flex items-center justify-between gap-4">
               <button
                 onClick={handleResetConclusion}

@@ -515,8 +515,8 @@ const Companies = () => {
         </Dialog>
       </div>
       <Card className="p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="grid w-full gap-3 sm:grid-cols-[1fr_1fr_220px_220px_180px]">
+        <div className="flex flex-col xl:flex-row gap-3">
+          <div className="grid w-full gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <Input
               placeholder="Pesquisar por nome ou CNPJ"
               value={filterText}
@@ -572,7 +572,7 @@ const Companies = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 gap-2 justify-end xl:justify-start">
             <Button
               variant="secondary"
               onClick={() => {

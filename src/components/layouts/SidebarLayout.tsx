@@ -11,13 +11,16 @@ import {
   LogOut,
   AlertTriangle,
   UserCog,
-  DollarSign,
-  Wallet,
   Star,
   MessageSquare,
   ListTodo,
+  PanelLeftClose,
+  PanelLeftOpen,
+  HelpCircle,
+  ClipboardCheck,
+  PlayCircle,
 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -30,9 +33,10 @@ import { getSettings, type PlatformSettings } from "@/services/settings";
 import { applyTheme, getTheme, type ThemeMode } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/integrations/supabase/SupabaseProvider";
-import { signOut } from "@/services/auth"; // Corrigido: import signOut
+import { signOut } from "@/services/auth";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import TasksWagnerPopup from "@/components/admin/TasksWagnerPopup";
+import AdminOnboarding from "@/components/admin/AdminOnboarding";
 
 type UserProfile = { id: string; name: string; email: string; avatar_url?: string };
 
@@ -90,14 +94,14 @@ const SidebarLayout = () => {
   const demoMode = (import.meta.env.VITE_DEMO_MODE === 'true') || !hasSupabaseEnv;
   const effectiveSession = demoMode
     ? ({
-        roleContext: 'SuperAdmin',
-        partnerId: 'demo-partner',
-        user: { id: 'demo-user', email: 'admin@demo.local' },
-        company_id: 'demo-company',
-        permissions: [
-          'admin:dashboard:view','admin:partners:read','admin:companies:read','admin:assessments:view','admin:settings:read','admin:users:read','admin:sales:read','admin:subscriptions:read','admin:billing:read','admin:platform_ratings:read'
-        ],
-      } as any)
+      roleContext: 'SuperAdmin',
+      partnerId: 'demo-partner',
+      user: { id: 'demo-user', email: 'admin@demo.local' },
+      company_id: 'demo-company',
+      permissions: [
+        'admin:dashboard:view', 'admin:partners:read', 'admin:companies:read', 'admin:assessments:view', 'admin:settings:read', 'admin:users:read', 'admin:sales:read', 'admin:subscriptions:read', 'admin:billing:read', 'admin:platform_ratings:read'
+      ],
+    } as any)
     : session;
   const effectiveSessionLoading = demoMode ? false : sessionLoading;
   const [theme, setThemeState] = useState<ThemeMode>(getTheme());
@@ -105,6 +109,18 @@ const SidebarLayout = () => {
   const [platformSettings, setPlatformSettings] = useState<PlatformSettings | null>(null);
   const [loadingSettings, setLoadingSettings] = useState(true);
   const [loadingUserProfile, setLoadingUserProfile] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isTasksPopupOpen, setIsTasksPopupOpen] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
+
+  useEffect(() => {
+    // Check if tour should auto-start
+    const completed = localStorage.getItem("admin_onboarding_completed");
+    if (!completed) {
+      const timer = setTimeout(() => setIsTourOpen(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     console.log("[SidebarLayout] useEffect: Applying theme:", theme);
@@ -193,13 +209,11 @@ const SidebarLayout = () => {
 
   const hasPermission = (permission: string) => {
     const has = effectiveSession?.roleContext === "SuperAdmin" || (effectiveSession?.permissions?.includes(permission) ?? false);
-    // console.log(`[SidebarLayout] Checking permission "${permission}": ${has}`);
     return has;
   };
 
   const isAdminDashboard = location.pathname === "/admin";
   const isPartners = location.pathname.startsWith("/admin/parceiros");
-  // Do not match '/admin/planos-acao' as 'planos'
   const isActionPlansAdmin = location.pathname.startsWith("/admin/planos-acao");
   const isPlans = location.pathname.startsWith("/admin/planos") && !isActionPlansAdmin;
   const isSales = location.pathname.startsWith("/admin/vendas");
@@ -215,9 +229,7 @@ const SidebarLayout = () => {
   const isPlatformRatings = location.pathname.startsWith("/admin/platform-ratings");
   const isSupport = location.pathname.startsWith("/admin/suporte");
   const isTasks = location.pathname.startsWith("/admin/tarefas");
-  // const isLeads = location.pathname.startsWith("/admin/leads");
 
-  // Atualizar título da página imediatamente ao montar e quando a rota mudar
   useEffect(() => {
     const platformName = platformSettings?.platformName || "Valida NR1";
     let pageName = "Admin";
@@ -236,20 +248,19 @@ const SidebarLayout = () => {
     else if (isPlatformRatings) pageName = "Reviews";
     else if (isSupport) pageName = "Suporte";
     else if (isTasks) pageName = "Tarefas";
+    else if (location.pathname === "/admin/ajuda") pageName = "Ajuda";
     document.title = `${pageName} — ${platformName}`;
   }, [location.pathname, platformSettings?.platformName, isAdminDashboard, isPartners, isPlans, isCompanies, isAssessments, isDenuncias, isSettings, isUserManagement, isProfilePage, isSubscriptions, isBilling, isPlatformRatings, isActionPlansAdmin, isSupport, isTasks]);
 
   const onLogout = async () => {
     console.log("[SidebarLayout] onLogout called. Initiating signOut.");
     try {
-      await signOut(); // Corrigido: chamar signOut
+      await signOut();
     } catch (error) {
       console.error("[SidebarLayout] Error during signOut:", error);
-      // Even if signOut fails, we should still attempt to navigate away
     } finally {
       console.log("[SidebarLayout] Logout complete. Navigating to /login.");
       navigate("/login", { replace: true });
-      // Hard redirect as a fallback to ensure state resets across the app
       setTimeout(() => {
         if (location.pathname !== "/login") {
           window.location.replace("/login");
@@ -259,7 +270,6 @@ const SidebarLayout = () => {
   };
 
   const negativeLogo = platformSettings?.logoNegativeDataUrl;
-
   const footerText = "Five Agância Digital";
 
   if (loadingLayout) {
@@ -279,9 +289,13 @@ const SidebarLayout = () => {
 
   return (
     <div className="min-h-screen flex">
-      <aside className="sticky top-0 h-screen flex flex-col justify-between bg-[#0E3A4D] text-white w-[250px] shrink-0">
+      <aside
+        id="admin-sidebar"
+        className={`sticky top-0 h-screen flex flex-col justify-between bg-[#0E3A4D] text-white transition-all duration-300 ease-in-out shrink-0 ${sidebarOpen ? "w-[250px] translate-x-0" : "w-0 -translate-x-full overflow-hidden opacity-0"
+          }`}
+      >
         <div className="overflow-y-auto">
-          <div className="px-4 pt-5">
+          <div className="px-4 pt-5 flex justify-between items-center">
             {negativeLogo ? (
               <img
                 src={negativeLogo}
@@ -297,6 +311,9 @@ const SidebarLayout = () => {
                 className="h-[52px] w-[80px]"
               />
             )}
+            <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white/70 hover:text-white">
+              <PanelLeftClose size={20} />
+            </button>
           </div>
 
           <div className="my-4 mx-4 h-px bg-white/20" />
@@ -316,18 +333,17 @@ const SidebarLayout = () => {
             <Item active={isAssessments} to="/admin/avaliacoes" icon={<FileText size={18} />} requiredPermission="admin:assessments:view" hasPermission={hasPermission}>Avaliações NR1</Item>
             <Item active={isDenuncias} to="/admin/denuncias" icon={<AlertTriangle size={18} />} requiredPermission="admin:reports:view" hasPermission={hasPermission}>Denúncias</Item>
             <Item active={isActionPlansAdmin} to="/admin/planos-acao" icon={<FileText size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Planos de Ação</Item>
-            <Item active={isSupport} to="/admin/suporte" icon={<MessageSquare size={18} />} requiredPermission="admin:dashboard:view" hasPermission={hasPermission}>Suporte</Item>
-            <Item active={isTasks} to="/admin/tarefas" icon={<ListTodo size={18} />} requiredPermission="admin:dashboard:view" hasPermission={hasPermission}>Tarefas</Item>
+            <Item active={location.pathname === "/admin/ajuda"} to="/admin/ajuda" icon={<HelpCircle size={18} />} hasPermission={hasPermission}>Ajuda</Item>
           </nav>
 
-        <SectionTitle>Configurações</SectionTitle>
-        <nav className="flex flex-col gap-2 px-3">
-          <Item active={isSettings} to="/admin/configuracoes" icon={<Settings size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Configurações</Item>
-          <Item active={isLegal} to="/admin/juridico" icon={<FileText size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Jurídico / LGPD</Item>
-        </nav>
+          <SectionTitle>Configurações</SectionTitle>
+          <nav className="flex flex-col gap-2 px-3">
+            <Item active={isSettings} to="/admin/configuracoes" icon={<Settings size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Configurações</Item>
+            <Item active={isLegal} to="/admin/juridico" icon={<FileText size={18} />} requiredPermission="admin:settings:read" hasPermission={hasPermission}>Jurídico / LGPD</Item>
+          </nav>
         </div>
 
-        <div className="px-3 pb-4">
+        <div className="px-3 pb-4" id="admin-profile-menu">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -383,10 +399,48 @@ const SidebarLayout = () => {
         </div>
       </aside>
 
-      <main className="flex-1 bg-background overflow-auto p-6 md:p-8">
-        <Outlet />
+      <main className="flex-1 bg-background overflow-auto flex flex-col h-screen">
+        <header className="flex items-center p-4 border-b bg-white shadow-sm shrink-0">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 rounded-md hover:bg-slate-100 text-slate-600 mr-4"
+            title={sidebarOpen ? "Fechar menu" : "Abrir menu"}
+          >
+            {sidebarOpen ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
+          </button>
+          <div className="flex-1"></div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsTourOpen(true)}
+              className="p-2 rounded-md hover:bg-slate-100 text-slate-600"
+              title="Iniciar Tour"
+            >
+              <PlayCircle size={20} />
+            </button>
+            <button
+              id="admin-help-btn"
+              onClick={() => navigate('/admin/ajuda')}
+              className="p-2 rounded-md hover:bg-slate-100 text-slate-600"
+              title="Ajuda"
+            >
+              <HelpCircle size={20} />
+            </button>
+            <button
+              id="admin-tasks-btn"
+              onClick={() => setIsTasksPopupOpen(true)}
+              className="p-2 rounded-md hover:bg-slate-100 text-slate-600"
+              title="Tarefas Concluídas"
+            >
+              <ClipboardCheck size={20} />
+            </button>
+          </div>
+        </header>
+        <div className="flex-1 overflow-auto p-6 md:p-8">
+          <Outlet />
+        </div>
       </main>
-      <TasksWagnerPopup />
+      <TasksWagnerPopup isOpen={isTasksPopupOpen} onClose={() => setIsTasksPopupOpen(false)} />
+      <AdminOnboarding isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />
     </div>
   );
 };
