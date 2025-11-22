@@ -150,6 +150,18 @@ export default function AdminOnboarding({ isOpen, onClose }: AdminOnboardingProp
                     }
                 }
 
+                if (style.top && typeof style.top === 'number') {
+                    const popoverHeight = 250; // Approximate height
+                    const windowHeight = window.innerHeight;
+
+                    if (style.top < 10) {
+                        style.top = 10;
+                    } else if (style.top + popoverHeight > windowHeight - 10) {
+                        // If it goes off the bottom edge, align to the bottom edge with some padding
+                        style.top = windowHeight - popoverHeight - 10;
+                    }
+                }
+
                 setPopoverStyle(style);
             }
         };
